@@ -1,103 +1,102 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `sudachi&#x2F;src&#x2F;dic&#x2F;dictionary.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>dictionary.rs - source</title><link rel="stylesheet" type="text/css" href="../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../../ayu.css" disabled ><script id="default-settings" ></script><script src="../../../storage.js"></script><script src="../../../crates.js"></script><script defer src="../../../main.js"></script><script defer src="../../../source-script.js"></script><script defer src="../../../source-files.js"></script>
-    <noscript><link rel="stylesheet" href="../../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../../favicon.svg"><style type="text/css">#crate-search{background-image:url("../../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu" role="button">&#9776;</div><a href='../../../sudachi/index.html'><div class='logo-container rust-logo'><img src='../../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu" title="themes"><img width="18" height="18" alt="Pick another theme!" src="../../../brush.svg"></button><div id="theme-choices" role="menu"></div></div><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" id="help-button" title="help">?</button><a id="settings-menu" href="../../../settings.html" title="settings"><img width="18" height="18" alt="Change settings" src="../../../wheel.svg"></a></div></form></nav><section id="main" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">  1</span>
-<span id="2">  2</span>
-<span id="3">  3</span>
-<span id="4">  4</span>
-<span id="5">  5</span>
-<span id="6">  6</span>
-<span id="7">  7</span>
-<span id="8">  8</span>
-<span id="9">  9</span>
-<span id="10"> 10</span>
-<span id="11"> 11</span>
-<span id="12"> 12</span>
-<span id="13"> 13</span>
-<span id="14"> 14</span>
-<span id="15"> 15</span>
-<span id="16"> 16</span>
-<span id="17"> 17</span>
-<span id="18"> 18</span>
-<span id="19"> 19</span>
-<span id="20"> 20</span>
-<span id="21"> 21</span>
-<span id="22"> 22</span>
-<span id="23"> 23</span>
-<span id="24"> 24</span>
-<span id="25"> 25</span>
-<span id="26"> 26</span>
-<span id="27"> 27</span>
-<span id="28"> 28</span>
-<span id="29"> 29</span>
-<span id="30"> 30</span>
-<span id="31"> 31</span>
-<span id="32"> 32</span>
-<span id="33"> 33</span>
-<span id="34"> 34</span>
-<span id="35"> 35</span>
-<span id="36"> 36</span>
-<span id="37"> 37</span>
-<span id="38"> 38</span>
-<span id="39"> 39</span>
-<span id="40"> 40</span>
-<span id="41"> 41</span>
-<span id="42"> 42</span>
-<span id="43"> 43</span>
-<span id="44"> 44</span>
-<span id="45"> 45</span>
-<span id="46"> 46</span>
-<span id="47"> 47</span>
-<span id="48"> 48</span>
-<span id="49"> 49</span>
-<span id="50"> 50</span>
-<span id="51"> 51</span>
-<span id="52"> 52</span>
-<span id="53"> 53</span>
-<span id="54"> 54</span>
-<span id="55"> 55</span>
-<span id="56"> 56</span>
-<span id="57"> 57</span>
-<span id="58"> 58</span>
-<span id="59"> 59</span>
-<span id="60"> 60</span>
-<span id="61"> 61</span>
-<span id="62"> 62</span>
-<span id="63"> 63</span>
-<span id="64"> 64</span>
-<span id="65"> 65</span>
-<span id="66"> 66</span>
-<span id="67"> 67</span>
-<span id="68"> 68</span>
-<span id="69"> 69</span>
-<span id="70"> 70</span>
-<span id="71"> 71</span>
-<span id="72"> 72</span>
-<span id="73"> 73</span>
-<span id="74"> 74</span>
-<span id="75"> 75</span>
-<span id="76"> 76</span>
-<span id="77"> 77</span>
-<span id="78"> 78</span>
-<span id="79"> 79</span>
-<span id="80"> 80</span>
-<span id="81"> 81</span>
-<span id="82"> 82</span>
-<span id="83"> 83</span>
-<span id="84"> 84</span>
-<span id="85"> 85</span>
-<span id="86"> 86</span>
-<span id="87"> 87</span>
-<span id="88"> 88</span>
-<span id="89"> 89</span>
-<span id="90"> 90</span>
-<span id="91"> 91</span>
-<span id="92"> 92</span>
-<span id="93"> 93</span>
-<span id="94"> 94</span>
-<span id="95"> 95</span>
-<span id="96"> 96</span>
-<span id="97"> 97</span>
-<span id="98"> 98</span>
-<span id="99"> 99</span>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `sudachi/src/dic/dictionary.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>dictionary.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" href="../../../normalize.css"><link rel="stylesheet" href="../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" href="../../../ayu.css" disabled><link rel="stylesheet" href="../../../dark.css" disabled><link rel="stylesheet" href="../../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../../storage.js"></script><script defer src="../../../source-script.js"></script><script defer src="../../../source-files.js"></script><script defer src="../../../main.js"></script><noscript><link rel="stylesheet" href="../../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../../favicon.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="sidebar-logo" href="../../../sudachi/index.html"><div class="logo-container"><img class="rust-logo" src="../../../rust-logo.svg" alt="logo"></div></a><h2 class="location"></h2></nav><nav class="sidebar"><a class="sidebar-logo" href="../../../sudachi/index.html"><div class="logo-container"><img class="rust-logo" src="../../../rust-logo.svg" alt="logo"></div></a></nav><main><div class="width-limiter"><div class="sub-container"><a class="sub-logo-container" href="../../../sudachi/index.html"><img class="rust-logo" src="../../../rust-logo.svg" alt="logo"></a><nav class="sub"><form class="search-form"><div class="search-container"><span></span><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><button type="button">?</button></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../wheel.svg"></a></div></div></form></nav></div><section id="main-content" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">1</span>
+<span id="2">2</span>
+<span id="3">3</span>
+<span id="4">4</span>
+<span id="5">5</span>
+<span id="6">6</span>
+<span id="7">7</span>
+<span id="8">8</span>
+<span id="9">9</span>
+<span id="10">10</span>
+<span id="11">11</span>
+<span id="12">12</span>
+<span id="13">13</span>
+<span id="14">14</span>
+<span id="15">15</span>
+<span id="16">16</span>
+<span id="17">17</span>
+<span id="18">18</span>
+<span id="19">19</span>
+<span id="20">20</span>
+<span id="21">21</span>
+<span id="22">22</span>
+<span id="23">23</span>
+<span id="24">24</span>
+<span id="25">25</span>
+<span id="26">26</span>
+<span id="27">27</span>
+<span id="28">28</span>
+<span id="29">29</span>
+<span id="30">30</span>
+<span id="31">31</span>
+<span id="32">32</span>
+<span id="33">33</span>
+<span id="34">34</span>
+<span id="35">35</span>
+<span id="36">36</span>
+<span id="37">37</span>
+<span id="38">38</span>
+<span id="39">39</span>
+<span id="40">40</span>
+<span id="41">41</span>
+<span id="42">42</span>
+<span id="43">43</span>
+<span id="44">44</span>
+<span id="45">45</span>
+<span id="46">46</span>
+<span id="47">47</span>
+<span id="48">48</span>
+<span id="49">49</span>
+<span id="50">50</span>
+<span id="51">51</span>
+<span id="52">52</span>
+<span id="53">53</span>
+<span id="54">54</span>
+<span id="55">55</span>
+<span id="56">56</span>
+<span id="57">57</span>
+<span id="58">58</span>
+<span id="59">59</span>
+<span id="60">60</span>
+<span id="61">61</span>
+<span id="62">62</span>
+<span id="63">63</span>
+<span id="64">64</span>
+<span id="65">65</span>
+<span id="66">66</span>
+<span id="67">67</span>
+<span id="68">68</span>
+<span id="69">69</span>
+<span id="70">70</span>
+<span id="71">71</span>
+<span id="72">72</span>
+<span id="73">73</span>
+<span id="74">74</span>
+<span id="75">75</span>
+<span id="76">76</span>
+<span id="77">77</span>
+<span id="78">78</span>
+<span id="79">79</span>
+<span id="80">80</span>
+<span id="81">81</span>
+<span id="82">82</span>
+<span id="83">83</span>
+<span id="84">84</span>
+<span id="85">85</span>
+<span id="86">86</span>
+<span id="87">87</span>
+<span id="88">88</span>
+<span id="89">89</span>
+<span id="90">90</span>
+<span id="91">91</span>
+<span id="92">92</span>
+<span id="93">93</span>
+<span id="94">94</span>
+<span id="95">95</span>
+<span id="96">96</span>
+<span id="97">97</span>
+<span id="98">98</span>
+<span id="99">99</span>
 <span id="100">100</span>
 <span id="101">101</span>
 <span id="102">102</span>
@@ -161,6 +160,10 @@
 <span id="160">160</span>
 <span id="161">161</span>
 <span id="162">162</span>
+<span id="163">163</span>
+<span id="164">164</span>
+<span id="165">165</span>
+<span id="166">166</span>
 </pre><pre class="rust"><code><span class="comment">/*
  *  Copyright (c) 2021 Works Applications Co., Ltd.
  *
@@ -175,154 +178,157 @@
  *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
- */</span>
+ */
 
-<span class="kw">use</span> <span class="ident">std::fs::File</span>;
-<span class="kw">use</span> <span class="ident">std::path::Path</span>;
+</span><span class="kw">use </span>std::fs::File;
+<span class="kw">use </span>std::path::Path;
 
-<span class="kw">use</span> <span class="ident">memmap2::Mmap</span>;
+<span class="kw">use </span>memmap2::Mmap;
 
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::analysis::stateless_tokenizer::DictionaryAccess</span>;
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::config::Config</span>;
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::dic::grammar::Grammar</span>;
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::dic::lexicon_set::LexiconSet</span>;
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::dic::storage</span>::{<span class="ident">Storage</span>, <span class="ident">SudachiDicData</span>};
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::dic</span>::{<span class="ident">DictionaryLoader</span>, <span class="ident">LoadedDictionary</span>};
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::error</span>::{<span class="ident">SudachiError</span>, <span class="ident">SudachiResult</span>};
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::plugin::input_text::InputTextPlugin</span>;
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::plugin::oov::OovProviderPlugin</span>;
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::plugin::path_rewrite::PathRewritePlugin</span>;
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::plugin::Plugins</span>;
+<span class="kw">use </span><span class="kw">crate</span>::analysis::stateless_tokenizer::DictionaryAccess;
+<span class="kw">use </span><span class="kw">crate</span>::config::Config;
+<span class="kw">use </span><span class="kw">crate</span>::dic::grammar::Grammar;
+<span class="kw">use </span><span class="kw">crate</span>::dic::lexicon_set::LexiconSet;
+<span class="kw">use </span><span class="kw">crate</span>::dic::storage::{Storage, SudachiDicData};
+<span class="kw">use </span><span class="kw">crate</span>::dic::{DictionaryLoader, LoadedDictionary};
+<span class="kw">use </span><span class="kw">crate</span>::error::{SudachiError, SudachiResult};
+<span class="kw">use </span><span class="kw">crate</span>::plugin::input_text::InputTextPlugin;
+<span class="kw">use </span><span class="kw">crate</span>::plugin::oov::OovProviderPlugin;
+<span class="kw">use </span><span class="kw">crate</span>::plugin::path_rewrite::PathRewritePlugin;
+<span class="kw">use </span><span class="kw">crate</span>::plugin::Plugins;
 
-<span class="comment">// It is self-referential struct with &#39;static lifetime as a workaround</span>
-<span class="comment">// for the impossibility to specify the correct lifetime for</span>
-<span class="comment">// those fields. Accessor functions always provide the correct lifetime,</span>
-<span class="comment">// tied to the lifetime of the struct itself.</span>
-<span class="comment">// It is safe to move this structure around because the</span>
-<span class="comment">// pointers from memory mappings themselves are stable and</span>
-<span class="comment">// will not change if the structure will be moved around.</span>
-<span class="comment">// This structure is always read only after creation and is safe to share</span>
-<span class="comment">// between threads.</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">JapaneseDictionary</span> {
-    <span class="ident">storage</span>: <span class="ident">SudachiDicData</span>,
-    <span class="ident">plugins</span>: <span class="ident">Plugins</span>,
-    <span class="comment">//&#39;static is a a lie, lifetime is the same with StorageBackend</span>
-    <span class="ident">_grammar</span>: <span class="ident">Grammar</span><span class="op">&lt;</span><span class="lifetime">&#39;static</span><span class="op">&gt;</span>,
-    <span class="comment">//&#39;static is a a lie, lifetime is the same with StorageBackend</span>
-    <span class="ident">_lexicon</span>: <span class="ident">LexiconSet</span><span class="op">&lt;</span><span class="lifetime">&#39;static</span><span class="op">&gt;</span>,
+<span class="comment">// It is self-referential struct with &#39;static lifetime as a workaround
+// for the impossibility to specify the correct lifetime for
+// those fields. Accessor functions always provide the correct lifetime,
+// tied to the lifetime of the struct itself.
+// It is safe to move this structure around because the
+// pointers from memory mappings themselves are stable and
+// will not change if the structure will be moved around.
+// This structure is always read only after creation and is safe to share
+// between threads.
+</span><span class="kw">pub struct </span>JapaneseDictionary {
+    storage: SudachiDicData,
+    plugins: Plugins,
+    <span class="comment">//&#39;static is a a lie, lifetime is the same with StorageBackend
+    </span>_grammar: Grammar&lt;<span class="lifetime">&#39;static</span>&gt;,
+    <span class="comment">//&#39;static is a a lie, lifetime is the same with StorageBackend
+    </span>_lexicon: LexiconSet&lt;<span class="lifetime">&#39;static</span>&gt;,
 }
 
-<span class="kw">fn</span> <span class="ident">map_file</span>(<span class="ident">path</span>: <span class="kw-2">&amp;</span><span class="ident">Path</span>) -&gt; <span class="ident">SudachiResult</span><span class="op">&lt;</span><span class="ident">Storage</span><span class="op">&gt;</span> {
-    <span class="kw">let</span> <span class="ident">file</span> <span class="op">=</span> <span class="ident">File::open</span>(<span class="ident">path</span>)<span class="question-mark">?</span>;
-    <span class="kw">let</span> <span class="ident">mapping</span> <span class="op">=</span> <span class="kw">unsafe</span> { <span class="ident">Mmap::map</span>(<span class="kw-2">&amp;</span><span class="ident">file</span>) }<span class="question-mark">?</span>;
-    <span class="prelude-val">Ok</span>(<span class="ident">Storage::File</span>(<span class="ident">mapping</span>))
+<span class="kw">fn </span>map_file(path: <span class="kw-2">&amp;</span>Path) -&gt; SudachiResult&lt;Storage&gt; {
+    <span class="kw">let </span>file = File::open(path)<span class="question-mark">?</span>;
+    <span class="kw">let </span>mapping = <span class="kw">unsafe </span>{ Mmap::map(<span class="kw-2">&amp;</span>file) }<span class="question-mark">?</span>;
+    <span class="prelude-val">Ok</span>(Storage::File(mapping))
 }
 
-<span class="kw">fn</span> <span class="ident">load_system_dic</span>(<span class="ident">cfg</span>: <span class="kw-2">&amp;</span><span class="ident">Config</span>) -&gt; <span class="ident">SudachiResult</span><span class="op">&lt;</span><span class="ident">Storage</span><span class="op">&gt;</span> {
-    <span class="kw">let</span> <span class="ident">p</span> <span class="op">=</span> <span class="ident">cfg</span>.<span class="ident">resolved_system_dict</span>()<span class="question-mark">?</span>;
-    <span class="ident">map_file</span>(<span class="kw-2">&amp;</span><span class="ident">p</span>).<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">e</span><span class="op">|</span> <span class="ident">e</span>.<span class="ident">with_context</span>(<span class="ident">p</span>.<span class="ident">as_os_str</span>().<span class="ident">to_string_lossy</span>()))
+<span class="kw">fn </span>load_system_dic(cfg: <span class="kw-2">&amp;</span>Config) -&gt; SudachiResult&lt;Storage&gt; {
+    <span class="kw">let </span>p = cfg.resolved_system_dict()<span class="question-mark">?</span>;
+    map_file(<span class="kw-2">&amp;</span>p).map_err(|e| e.with_context(p.as_os_str().to_string_lossy()))
 }
 
-<span class="kw">impl</span> <span class="ident">JapaneseDictionary</span> {
-    <span class="doccomment">/// Creates a dictionary from the specified configuration</span>
-    <span class="doccomment">/// Dictionaries will be read from disk</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">from_cfg</span>(<span class="ident">cfg</span>: <span class="kw-2">&amp;</span><span class="ident">Config</span>) -&gt; <span class="ident">SudachiResult</span><span class="op">&lt;</span><span class="ident">JapaneseDictionary</span><span class="op">&gt;</span> {
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">sb</span> <span class="op">=</span> <span class="ident">SudachiDicData::new</span>(<span class="ident">load_system_dic</span>(<span class="ident">cfg</span>)<span class="question-mark">?</span>);
+<span class="kw">impl </span>JapaneseDictionary {
+    <span class="doccomment">/// Creates a dictionary from the specified configuration
+    /// Dictionaries will be read from disk
+    </span><span class="kw">pub fn </span>from_cfg(cfg: <span class="kw-2">&amp;</span>Config) -&gt; SudachiResult&lt;JapaneseDictionary&gt; {
+        <span class="kw">let </span><span class="kw-2">mut </span>sb = SudachiDicData::new(load_system_dic(cfg)<span class="question-mark">?</span>);
 
-        <span class="kw">for</span> <span class="ident">udic</span> <span class="kw">in</span> <span class="ident">cfg</span>.<span class="ident">resolved_user_dicts</span>()<span class="question-mark">?</span> {
-            <span class="ident">sb</span>.<span class="ident">add_user</span>(
-                <span class="ident">map_file</span>(<span class="kw-2">&amp;</span><span class="ident">udic</span>).<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">e</span><span class="op">|</span> <span class="ident">e</span>.<span class="ident">with_context</span>(<span class="ident">udic</span>.<span class="ident">as_os_str</span>().<span class="ident">to_string_lossy</span>()))<span class="question-mark">?</span>,
+        <span class="kw">for </span>udic <span class="kw">in </span>cfg.resolved_user_dicts()<span class="question-mark">? </span>{
+            sb.add_user(
+                map_file(<span class="kw-2">&amp;</span>udic).map_err(|e| e.with_context(udic.as_os_str().to_string_lossy()))<span class="question-mark">?</span>,
             )
         }
 
-        <span class="ident"><span class="self">Self</span>::from_cfg_storage</span>(<span class="ident">cfg</span>, <span class="ident">sb</span>)
+        <span class="self">Self</span>::from_cfg_storage(cfg, sb)
     }
 
-    <span class="doccomment">/// Creats a dictionary from the specified configuration and storage</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">from_cfg_storage</span>(
-        <span class="ident">cfg</span>: <span class="kw-2">&amp;</span><span class="ident">Config</span>,
-        <span class="ident">storage</span>: <span class="ident">SudachiDicData</span>,
-    ) -&gt; <span class="ident">SudachiResult</span><span class="op">&lt;</span><span class="ident">JapaneseDictionary</span><span class="op">&gt;</span> {
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">basic_dict</span> <span class="op">=</span> <span class="ident">LoadedDictionary::from_system_dictionary</span>(
-            <span class="kw">unsafe</span> { <span class="ident">storage</span>.<span class="ident">system_static_slice</span>() },
-            <span class="ident">cfg</span>.<span class="ident">complete_path</span>(<span class="kw-2">&amp;</span><span class="ident">cfg</span>.<span class="ident">character_definition_file</span>)<span class="question-mark">?</span>.<span class="ident">as_path</span>(),
+    <span class="doccomment">/// Creats a dictionary from the specified configuration and storage
+    </span><span class="kw">pub fn </span>from_cfg_storage(
+        cfg: <span class="kw-2">&amp;</span>Config,
+        storage: SudachiDicData,
+    ) -&gt; SudachiResult&lt;JapaneseDictionary&gt; {
+        <span class="kw">let </span><span class="kw-2">mut </span>basic_dict = LoadedDictionary::from_system_dictionary(
+            <span class="kw">unsafe </span>{ storage.system_static_slice() },
+            cfg.complete_path(<span class="kw-2">&amp;</span>cfg.character_definition_file)<span class="question-mark">?</span>.as_path(),
         )<span class="question-mark">?</span>;
 
-        <span class="kw">let</span> <span class="ident">plugins</span> <span class="op">=</span> <span class="ident">Plugins::load</span>(<span class="ident">cfg</span>, <span class="kw-2">&amp;</span><span class="ident">basic_dict</span>.<span class="ident">grammar</span>)<span class="question-mark">?</span>;
+        <span class="kw">let </span>plugins = {
+            <span class="kw">let </span>grammar = <span class="kw-2">&amp;mut </span>basic_dict.grammar;
+            <span class="kw">let </span>cfg = <span class="kw-2">&amp;*</span>cfg;
+            Plugins::load(cfg, grammar)<span class="question-mark">?
+        </span>};
 
-        <span class="kw">if</span> <span class="ident">plugins</span>.<span class="ident">oov</span>.<span class="ident">is_empty</span>() {
-            <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">SudachiError::NoOOVPluginProvided</span>);
+        <span class="kw">if </span>plugins.oov.is_empty() {
+            <span class="kw">return </span><span class="prelude-val">Err</span>(SudachiError::NoOOVPluginProvided);
         }
 
-        <span class="kw">for</span> <span class="ident">p</span> <span class="kw">in</span> <span class="ident">plugins</span>.<span class="ident">connect_cost</span>.<span class="ident">plugins</span>() {
-            <span class="ident">p</span>.<span class="ident">edit</span>(<span class="kw-2">&amp;mut</span> <span class="ident">basic_dict</span>.<span class="ident">grammar</span>);
+        <span class="kw">for </span>p <span class="kw">in </span>plugins.connect_cost.plugins() {
+            p.edit(<span class="kw-2">&amp;mut </span>basic_dict.grammar);
         }
 
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">dic</span> <span class="op">=</span> <span class="ident">JapaneseDictionary</span> {
-            <span class="ident">storage</span>,
-            <span class="ident">plugins</span>,
-            <span class="ident">_grammar</span>: <span class="ident">basic_dict</span>.<span class="ident">grammar</span>,
-            <span class="ident">_lexicon</span>: <span class="ident">basic_dict</span>.<span class="ident">lexicon_set</span>,
+        <span class="kw">let </span><span class="kw-2">mut </span>dic = JapaneseDictionary {
+            storage,
+            plugins,
+            _grammar: basic_dict.grammar,
+            _lexicon: basic_dict.lexicon_set,
         };
 
-        <span class="comment">// this Vec is needed to prevent double borrowing of dic</span>
-        <span class="kw">let</span> <span class="ident">user_dicts</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">dic</span>.<span class="ident">storage</span>.<span class="ident">user_static_slice</span>();
-        <span class="kw">for</span> <span class="ident">udic</span> <span class="kw">in</span> <span class="ident">user_dicts</span> {
-            <span class="ident">dic</span> <span class="op">=</span> <span class="ident">dic</span>.<span class="ident">merge_user_dictionary</span>(<span class="ident">udic</span>)<span class="question-mark">?</span>;
+        <span class="comment">// this Vec is needed to prevent double borrowing of dic
+        </span><span class="kw">let </span>user_dicts: Vec&lt;<span class="kw">_</span>&gt; = dic.storage.user_static_slice();
+        <span class="kw">for </span>udic <span class="kw">in </span>user_dicts {
+            dic = dic.merge_user_dictionary(udic)<span class="question-mark">?</span>;
         }
 
-        <span class="prelude-val">Ok</span>(<span class="ident">dic</span>)
+        <span class="prelude-val">Ok</span>(dic)
     }
 
-    <span class="doccomment">/// Returns grammar with the correct lifetime</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">grammar</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="ident">Grammar</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
-        <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">_grammar</span>
+    <span class="doccomment">/// Returns grammar with the correct lifetime
+    </span><span class="kw">pub fn </span>grammar&lt;<span class="lifetime">&#39;a</span>&gt;(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>Grammar&lt;<span class="lifetime">&#39;a</span>&gt; {
+        <span class="kw-2">&amp;</span><span class="self">self</span>._grammar
     }
 
-    <span class="doccomment">/// Returns lexicon with the correct lifetime</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">lexicon</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="ident">LexiconSet</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
-        <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">_lexicon</span>
+    <span class="doccomment">/// Returns lexicon with the correct lifetime
+    </span><span class="kw">pub fn </span>lexicon&lt;<span class="lifetime">&#39;a</span>&gt;(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>LexiconSet&lt;<span class="lifetime">&#39;a</span>&gt; {
+        <span class="kw-2">&amp;</span><span class="self">self</span>._lexicon
     }
 
-    <span class="kw">fn</span> <span class="ident">merge_user_dictionary</span>(<span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">dictionary_bytes</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> [<span class="ident">u8</span>]) -&gt; <span class="ident">SudachiResult</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span> {
-        <span class="kw">let</span> <span class="ident">user_dict</span> <span class="op">=</span> <span class="ident">DictionaryLoader::read_user_dictionary</span>(<span class="ident">dictionary_bytes</span>)<span class="question-mark">?</span>;
+    <span class="kw">fn </span>merge_user_dictionary(<span class="kw-2">mut </span><span class="self">self</span>, dictionary_bytes: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>[u8]) -&gt; SudachiResult&lt;<span class="self">Self</span>&gt; {
+        <span class="kw">let </span>user_dict = DictionaryLoader::read_user_dictionary(dictionary_bytes)<span class="question-mark">?</span>;
 
-        <span class="comment">// we need to update lexicon first, since it needs the current number of pos</span>
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">user_lexicon</span> <span class="op">=</span> <span class="ident">user_dict</span>.<span class="ident">lexicon</span>;
-        <span class="ident">user_lexicon</span>.<span class="ident">update_cost</span>(<span class="kw-2">&amp;</span><span class="self">self</span>)<span class="question-mark">?</span>;
+        <span class="comment">// we need to update lexicon first, since it needs the current number of pos
+        </span><span class="kw">let </span><span class="kw-2">mut </span>user_lexicon = user_dict.lexicon;
+        user_lexicon.update_cost(<span class="kw-2">&amp;</span><span class="self">self</span>)<span class="question-mark">?</span>;
 
-        <span class="self">self</span>.<span class="ident">_lexicon</span>
-            .<span class="ident">append</span>(<span class="ident">user_lexicon</span>, <span class="self">self</span>.<span class="ident">_grammar</span>.<span class="ident">pos_list</span>.<span class="ident">len</span>())<span class="question-mark">?</span>;
+        <span class="self">self</span>._lexicon
+            .append(user_lexicon, <span class="self">self</span>._grammar.pos_list.len())<span class="question-mark">?</span>;
 
-        <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">g</span>) <span class="op">=</span> <span class="ident">user_dict</span>.<span class="ident">grammar</span> {
-            <span class="self">self</span>.<span class="ident">_grammar</span>.<span class="ident">merge</span>(<span class="ident">g</span>);
+        <span class="kw">if let </span><span class="prelude-val">Some</span>(g) = user_dict.grammar {
+            <span class="self">self</span>._grammar.merge(g);
         }
 
         <span class="prelude-val">Ok</span>(<span class="self">self</span>)
     }
 }
 
-<span class="kw">impl</span> <span class="ident">DictionaryAccess</span> <span class="kw">for</span> <span class="ident">JapaneseDictionary</span> {
-    <span class="kw">fn</span> <span class="ident">grammar</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="ident">Grammar</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span> {
-        <span class="self">self</span>.<span class="ident">grammar</span>()
+<span class="kw">impl </span>DictionaryAccess <span class="kw">for </span>JapaneseDictionary {
+    <span class="kw">fn </span>grammar(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>Grammar&lt;<span class="lifetime">&#39;_</span>&gt; {
+        <span class="self">self</span>.grammar()
     }
 
-    <span class="kw">fn</span> <span class="ident">lexicon</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="ident">LexiconSet</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span> {
-        <span class="self">self</span>.<span class="ident">lexicon</span>()
+    <span class="kw">fn </span>lexicon(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>LexiconSet&lt;<span class="lifetime">&#39;_</span>&gt; {
+        <span class="self">self</span>.lexicon()
     }
 
-    <span class="kw">fn</span> <span class="ident">input_text_plugins</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>[<span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">InputTextPlugin</span> <span class="op">+</span> <span class="ident">Sync</span> <span class="op">+</span> <span class="ident">Send</span><span class="op">&gt;</span>] {
-        <span class="self">self</span>.<span class="ident">plugins</span>.<span class="ident">input_text</span>.<span class="ident">plugins</span>()
+    <span class="kw">fn </span>input_text_plugins(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>[Box&lt;<span class="kw">dyn </span>InputTextPlugin + Sync + Send&gt;] {
+        <span class="self">self</span>.plugins.input_text.plugins()
     }
 
-    <span class="kw">fn</span> <span class="ident">oov_provider_plugins</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>[<span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">OovProviderPlugin</span> <span class="op">+</span> <span class="ident">Sync</span> <span class="op">+</span> <span class="ident">Send</span><span class="op">&gt;</span>] {
-        <span class="self">self</span>.<span class="ident">plugins</span>.<span class="ident">oov</span>.<span class="ident">plugins</span>()
+    <span class="kw">fn </span>oov_provider_plugins(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>[Box&lt;<span class="kw">dyn </span>OovProviderPlugin + Sync + Send&gt;] {
+        <span class="self">self</span>.plugins.oov.plugins()
     }
 
-    <span class="kw">fn</span> <span class="ident">path_rewrite_plugins</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>[<span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">PathRewritePlugin</span> <span class="op">+</span> <span class="ident">Sync</span> <span class="op">+</span> <span class="ident">Send</span><span class="op">&gt;</span>] {
-        <span class="self">self</span>.<span class="ident">plugins</span>.<span class="ident">path_rewrite</span>.<span class="ident">plugins</span>()
+    <span class="kw">fn </span>path_rewrite_plugins(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>[Box&lt;<span class="kw">dyn </span>PathRewritePlugin + Sync + Send&gt;] {
+        <span class="self">self</span>.plugins.path_rewrite.plugins()
     }
 }
 </code></pre></div>
-</section><section id="search" class="content hidden"></section><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="sudachi" data-search-index-js="../../../search-index.js" data-search-js="../../../search.js"></div>
-</body></html>
+</section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="sudachi" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0 (897e37553 2022-11-02)" ></div></body></html>

@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>sudachipy.morpheme package &mdash; SudachiPy 0.6.4-a1 documentation</title>
+  <title>sudachipy.morpheme package &mdash; SudachiPy 0.6.7-a1 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -14,7 +14,9 @@
         <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../_static/doctools.js"></script>
+        <script src="../_static/sphinx_highlight.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -50,7 +52,26 @@
 <li class="toctree-l1"><a class="reference internal" href="sudachipy.morphemelist.html">sudachipy.morphemelist package</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">sudachipy.morpheme package</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#note">Note</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#module-sudachipy.morpheme">Module contents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-sudachipy.morpheme">Module contents</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#sudachipy.morpheme.Morpheme"><code class="docutils literal notranslate"><span class="pre">Morpheme</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#sudachipy.morpheme.Morpheme.begin"><code class="docutils literal notranslate"><span class="pre">Morpheme.begin()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#sudachipy.morpheme.Morpheme.dictionary_form"><code class="docutils literal notranslate"><span class="pre">Morpheme.dictionary_form()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#sudachipy.morpheme.Morpheme.dictionary_id"><code class="docutils literal notranslate"><span class="pre">Morpheme.dictionary_id()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#sudachipy.morpheme.Morpheme.end"><code class="docutils literal notranslate"><span class="pre">Morpheme.end()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#sudachipy.morpheme.Morpheme.get_word_info"><code class="docutils literal notranslate"><span class="pre">Morpheme.get_word_info()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#sudachipy.morpheme.Morpheme.is_oov"><code class="docutils literal notranslate"><span class="pre">Morpheme.is_oov()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#sudachipy.morpheme.Morpheme.normalized_form"><code class="docutils literal notranslate"><span class="pre">Morpheme.normalized_form()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#sudachipy.morpheme.Morpheme.part_of_speech"><code class="docutils literal notranslate"><span class="pre">Morpheme.part_of_speech()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#sudachipy.morpheme.Morpheme.part_of_speech_id"><code class="docutils literal notranslate"><span class="pre">Morpheme.part_of_speech_id()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#sudachipy.morpheme.Morpheme.reading_form"><code class="docutils literal notranslate"><span class="pre">Morpheme.reading_form()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#sudachipy.morpheme.Morpheme.split"><code class="docutils literal notranslate"><span class="pre">Morpheme.split()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#sudachipy.morpheme.Morpheme.surface"><code class="docutils literal notranslate"><span class="pre">Morpheme.surface()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#sudachipy.morpheme.Morpheme.synonym_group_ids"><code class="docutils literal notranslate"><span class="pre">Morpheme.synonym_group_ids()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#sudachipy.morpheme.Morpheme.word_id"><code class="docutils literal notranslate"><span class="pre">Morpheme.word_id()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -68,8 +89,8 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
-      <li>sudachipy.morpheme package</li>
+      <li><a href="../index.html" class="icon icon-home"></a></li>
+      <li class="breadcrumb-item active">sudachipy.morpheme package</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../_sources/api/sudachipy.morpheme.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -80,9 +101,9 @@
            <div itemprop="articleBody">
              
   <section id="sudachipy-morpheme-package">
-<h1>sudachipy.morpheme package<a class="headerlink" href="#sudachipy-morpheme-package" title="Permalink to this headline"></a></h1>
+<h1>sudachipy.morpheme package<a class="headerlink" href="#sudachipy-morpheme-package" title="Permalink to this heading"></a></h1>
 <section id="note">
-<h2>Note<a class="headerlink" href="#note" title="Permalink to this headline"></a></h2>
+<h2>Note<a class="headerlink" href="#note" title="Permalink to this heading"></a></h2>
 <ul class="simple">
 <li><dl class="simple">
 <dt>Import from <code class="docutils literal notranslate"><span class="pre">sudachipy.morpheme</span></code> is deprecated.</dt><dd><ul>
@@ -95,7 +116,7 @@
 </ul>
 </section>
 <section id="module-sudachipy.morpheme">
-<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-sudachipy.morpheme" title="Permalink to this headline"></a></h2>
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-sudachipy.morpheme" title="Permalink to this heading"></a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="sudachipy.morpheme.Morpheme">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">sudachipy.morpheme.</span></span><span class="sig-name descname"><span class="pre">Morpheme</span></span><a class="headerlink" href="#sudachipy.morpheme.Morpheme" title="Permalink to this definition"></a></dt>

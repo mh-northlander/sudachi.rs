@@ -1,103 +1,102 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `sudachi&#x2F;src&#x2F;dic&#x2F;grammar.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>grammar.rs - source</title><link rel="stylesheet" type="text/css" href="../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../../ayu.css" disabled ><script id="default-settings" ></script><script src="../../../storage.js"></script><script src="../../../crates.js"></script><script defer src="../../../main.js"></script><script defer src="../../../source-script.js"></script><script defer src="../../../source-files.js"></script>
-    <noscript><link rel="stylesheet" href="../../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../../favicon.svg"><style type="text/css">#crate-search{background-image:url("../../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu" role="button">&#9776;</div><a href='../../../sudachi/index.html'><div class='logo-container rust-logo'><img src='../../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu" title="themes"><img width="18" height="18" alt="Pick another theme!" src="../../../brush.svg"></button><div id="theme-choices" role="menu"></div></div><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" id="help-button" title="help">?</button><a id="settings-menu" href="../../../settings.html" title="settings"><img width="18" height="18" alt="Change settings" src="../../../wheel.svg"></a></div></form></nav><section id="main" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">  1</span>
-<span id="2">  2</span>
-<span id="3">  3</span>
-<span id="4">  4</span>
-<span id="5">  5</span>
-<span id="6">  6</span>
-<span id="7">  7</span>
-<span id="8">  8</span>
-<span id="9">  9</span>
-<span id="10"> 10</span>
-<span id="11"> 11</span>
-<span id="12"> 12</span>
-<span id="13"> 13</span>
-<span id="14"> 14</span>
-<span id="15"> 15</span>
-<span id="16"> 16</span>
-<span id="17"> 17</span>
-<span id="18"> 18</span>
-<span id="19"> 19</span>
-<span id="20"> 20</span>
-<span id="21"> 21</span>
-<span id="22"> 22</span>
-<span id="23"> 23</span>
-<span id="24"> 24</span>
-<span id="25"> 25</span>
-<span id="26"> 26</span>
-<span id="27"> 27</span>
-<span id="28"> 28</span>
-<span id="29"> 29</span>
-<span id="30"> 30</span>
-<span id="31"> 31</span>
-<span id="32"> 32</span>
-<span id="33"> 33</span>
-<span id="34"> 34</span>
-<span id="35"> 35</span>
-<span id="36"> 36</span>
-<span id="37"> 37</span>
-<span id="38"> 38</span>
-<span id="39"> 39</span>
-<span id="40"> 40</span>
-<span id="41"> 41</span>
-<span id="42"> 42</span>
-<span id="43"> 43</span>
-<span id="44"> 44</span>
-<span id="45"> 45</span>
-<span id="46"> 46</span>
-<span id="47"> 47</span>
-<span id="48"> 48</span>
-<span id="49"> 49</span>
-<span id="50"> 50</span>
-<span id="51"> 51</span>
-<span id="52"> 52</span>
-<span id="53"> 53</span>
-<span id="54"> 54</span>
-<span id="55"> 55</span>
-<span id="56"> 56</span>
-<span id="57"> 57</span>
-<span id="58"> 58</span>
-<span id="59"> 59</span>
-<span id="60"> 60</span>
-<span id="61"> 61</span>
-<span id="62"> 62</span>
-<span id="63"> 63</span>
-<span id="64"> 64</span>
-<span id="65"> 65</span>
-<span id="66"> 66</span>
-<span id="67"> 67</span>
-<span id="68"> 68</span>
-<span id="69"> 69</span>
-<span id="70"> 70</span>
-<span id="71"> 71</span>
-<span id="72"> 72</span>
-<span id="73"> 73</span>
-<span id="74"> 74</span>
-<span id="75"> 75</span>
-<span id="76"> 76</span>
-<span id="77"> 77</span>
-<span id="78"> 78</span>
-<span id="79"> 79</span>
-<span id="80"> 80</span>
-<span id="81"> 81</span>
-<span id="82"> 82</span>
-<span id="83"> 83</span>
-<span id="84"> 84</span>
-<span id="85"> 85</span>
-<span id="86"> 86</span>
-<span id="87"> 87</span>
-<span id="88"> 88</span>
-<span id="89"> 89</span>
-<span id="90"> 90</span>
-<span id="91"> 91</span>
-<span id="92"> 92</span>
-<span id="93"> 93</span>
-<span id="94"> 94</span>
-<span id="95"> 95</span>
-<span id="96"> 96</span>
-<span id="97"> 97</span>
-<span id="98"> 98</span>
-<span id="99"> 99</span>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `sudachi/src/dic/grammar.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>grammar.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" href="../../../normalize.css"><link rel="stylesheet" href="../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" href="../../../ayu.css" disabled><link rel="stylesheet" href="../../../dark.css" disabled><link rel="stylesheet" href="../../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../../storage.js"></script><script defer src="../../../source-script.js"></script><script defer src="../../../source-files.js"></script><script defer src="../../../main.js"></script><noscript><link rel="stylesheet" href="../../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../../favicon.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="sidebar-logo" href="../../../sudachi/index.html"><div class="logo-container"><img class="rust-logo" src="../../../rust-logo.svg" alt="logo"></div></a><h2 class="location"></h2></nav><nav class="sidebar"><a class="sidebar-logo" href="../../../sudachi/index.html"><div class="logo-container"><img class="rust-logo" src="../../../rust-logo.svg" alt="logo"></div></a></nav><main><div class="width-limiter"><div class="sub-container"><a class="sub-logo-container" href="../../../sudachi/index.html"><img class="rust-logo" src="../../../rust-logo.svg" alt="logo"></a><nav class="sub"><form class="search-form"><div class="search-container"><span></span><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><button type="button">?</button></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../wheel.svg"></a></div></div></form></nav></div><section id="main-content" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">1</span>
+<span id="2">2</span>
+<span id="3">3</span>
+<span id="4">4</span>
+<span id="5">5</span>
+<span id="6">6</span>
+<span id="7">7</span>
+<span id="8">8</span>
+<span id="9">9</span>
+<span id="10">10</span>
+<span id="11">11</span>
+<span id="12">12</span>
+<span id="13">13</span>
+<span id="14">14</span>
+<span id="15">15</span>
+<span id="16">16</span>
+<span id="17">17</span>
+<span id="18">18</span>
+<span id="19">19</span>
+<span id="20">20</span>
+<span id="21">21</span>
+<span id="22">22</span>
+<span id="23">23</span>
+<span id="24">24</span>
+<span id="25">25</span>
+<span id="26">26</span>
+<span id="27">27</span>
+<span id="28">28</span>
+<span id="29">29</span>
+<span id="30">30</span>
+<span id="31">31</span>
+<span id="32">32</span>
+<span id="33">33</span>
+<span id="34">34</span>
+<span id="35">35</span>
+<span id="36">36</span>
+<span id="37">37</span>
+<span id="38">38</span>
+<span id="39">39</span>
+<span id="40">40</span>
+<span id="41">41</span>
+<span id="42">42</span>
+<span id="43">43</span>
+<span id="44">44</span>
+<span id="45">45</span>
+<span id="46">46</span>
+<span id="47">47</span>
+<span id="48">48</span>
+<span id="49">49</span>
+<span id="50">50</span>
+<span id="51">51</span>
+<span id="52">52</span>
+<span id="53">53</span>
+<span id="54">54</span>
+<span id="55">55</span>
+<span id="56">56</span>
+<span id="57">57</span>
+<span id="58">58</span>
+<span id="59">59</span>
+<span id="60">60</span>
+<span id="61">61</span>
+<span id="62">62</span>
+<span id="63">63</span>
+<span id="64">64</span>
+<span id="65">65</span>
+<span id="66">66</span>
+<span id="67">67</span>
+<span id="68">68</span>
+<span id="69">69</span>
+<span id="70">70</span>
+<span id="71">71</span>
+<span id="72">72</span>
+<span id="73">73</span>
+<span id="74">74</span>
+<span id="75">75</span>
+<span id="76">76</span>
+<span id="77">77</span>
+<span id="78">78</span>
+<span id="79">79</span>
+<span id="80">80</span>
+<span id="81">81</span>
+<span id="82">82</span>
+<span id="83">83</span>
+<span id="84">84</span>
+<span id="85">85</span>
+<span id="86">86</span>
+<span id="87">87</span>
+<span id="88">88</span>
+<span id="89">89</span>
+<span id="90">90</span>
+<span id="91">91</span>
+<span id="92">92</span>
+<span id="93">93</span>
+<span id="94">94</span>
+<span id="95">95</span>
+<span id="96">96</span>
+<span id="97">97</span>
+<span id="98">98</span>
+<span id="99">99</span>
 <span id="100">100</span>
 <span id="101">101</span>
 <span id="102">102</span>
@@ -265,6 +264,46 @@
 <span id="264">264</span>
 <span id="265">265</span>
 <span id="266">266</span>
+<span id="267">267</span>
+<span id="268">268</span>
+<span id="269">269</span>
+<span id="270">270</span>
+<span id="271">271</span>
+<span id="272">272</span>
+<span id="273">273</span>
+<span id="274">274</span>
+<span id="275">275</span>
+<span id="276">276</span>
+<span id="277">277</span>
+<span id="278">278</span>
+<span id="279">279</span>
+<span id="280">280</span>
+<span id="281">281</span>
+<span id="282">282</span>
+<span id="283">283</span>
+<span id="284">284</span>
+<span id="285">285</span>
+<span id="286">286</span>
+<span id="287">287</span>
+<span id="288">288</span>
+<span id="289">289</span>
+<span id="290">290</span>
+<span id="291">291</span>
+<span id="292">292</span>
+<span id="293">293</span>
+<span id="294">294</span>
+<span id="295">295</span>
+<span id="296">296</span>
+<span id="297">297</span>
+<span id="298">298</span>
+<span id="299">299</span>
+<span id="300">300</span>
+<span id="301">301</span>
+<span id="302">302</span>
+<span id="303">303</span>
+<span id="304">304</span>
+<span id="305">305</span>
+<span id="306">306</span>
 </pre><pre class="rust"><code><span class="comment">/*
  * Copyright (c) 2021 Works Applications Co., Ltd.
  *
@@ -279,258 +318,297 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- */</span>
+ */
 
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::dic::character_category::CharacterCategory</span>;
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::dic::connect::ConnectionMatrix</span>;
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::dic::read::u16str::utf16_string_parser</span>;
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::dic::POS_DEPTH</span>;
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::error::SudachiNomResult</span>;
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::prelude</span>::<span class="kw-2">*</span>;
-<span class="kw">use</span> <span class="ident">nom</span>::{
-    <span class="ident">bytes::complete::take</span>,
-    <span class="ident">number::complete</span>::{<span class="ident">le_i16</span>, <span class="ident">le_u16</span>},
+</span><span class="kw">use </span><span class="kw">crate</span>::dic::character_category::CharacterCategory;
+<span class="kw">use </span><span class="kw">crate</span>::dic::connect::ConnectionMatrix;
+<span class="kw">use </span><span class="kw">crate</span>::dic::read::u16str::utf16_string_parser;
+<span class="kw">use </span><span class="kw">crate</span>::dic::POS_DEPTH;
+<span class="kw">use </span><span class="kw">crate</span>::error::SudachiNomResult;
+<span class="kw">use </span><span class="kw">crate</span>::prelude::<span class="kw-2">*</span>;
+<span class="kw">use </span>itertools::Itertools;
+<span class="kw">use </span>nom::{
+    bytes::complete::take,
+    number::complete::{le_i16, le_u16},
 };
-<span class="kw">use</span> <span class="ident">std::ops::Index</span>;
+<span class="kw">use </span>std::ops::Index;
 
-<span class="doccomment">/// Dictionary grammar</span>
-<span class="doccomment">///</span>
-<span class="doccomment">/// Contains part_of_speech list and connection cost map.</span>
-<span class="doccomment">/// It also holds character category.</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Grammar</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
-    <span class="ident">_bytes</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> [<span class="ident">u8</span>],
-    <span class="kw">pub</span> <span class="ident">pos_list</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span><span class="op">&gt;</span>,
-    <span class="kw">pub</span> <span class="ident">storage_size</span>: <span class="ident">usize</span>,
+<span class="doccomment">/// Dictionary grammar
+///
+/// Contains part_of_speech list and connection cost map.
+/// It also holds character category.
+</span><span class="kw">pub struct </span>Grammar&lt;<span class="lifetime">&#39;a</span>&gt; {
+    _bytes: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>[u8],
+    <span class="kw">pub </span>pos_list: Vec&lt;Vec&lt;String&gt;&gt;,
+    <span class="kw">pub </span>storage_size: usize,
 
-    <span class="doccomment">/// The mapping to overload cost table</span>
-    <span class="ident">connection</span>: <span class="ident">ConnectionMatrix</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>,
+    <span class="doccomment">/// The mapping to overload cost table
+    </span>connection: ConnectionMatrix&lt;<span class="lifetime">&#39;a</span>&gt;,
 
-    <span class="doccomment">/// The mapping from character to character_category_type</span>
-    <span class="kw">pub</span> <span class="ident">character_category</span>: <span class="ident">CharacterCategory</span>,
+    <span class="doccomment">/// The mapping from character to character_category_type
+    </span><span class="kw">pub </span>character_category: CharacterCategory,
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="ident">Grammar</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
-    <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">INHIBITED_CONNECTION</span>: <span class="ident">i16</span> <span class="op">=</span> <span class="ident">i16::MAX</span>;
+<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; Grammar&lt;<span class="lifetime">&#39;a</span>&gt; {
+    <span class="kw">pub const </span>INHIBITED_CONNECTION: i16 = i16::MAX;
 
-    <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">BOS_PARAMETER</span>: (<span class="ident">i16</span>, <span class="ident">i16</span>, <span class="ident">i16</span>) <span class="op">=</span> (<span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>); <span class="comment">// left_id, right_id, cost</span>
-    <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">EOS_PARAMETER</span>: (<span class="ident">i16</span>, <span class="ident">i16</span>, <span class="ident">i16</span>) <span class="op">=</span> (<span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>); <span class="comment">// left_id, right_id, cost</span>
+    <span class="kw">pub const </span>BOS_PARAMETER: (i16, i16, i16) = (<span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>); <span class="comment">// left_id, right_id, cost
+    </span><span class="kw">pub const </span>EOS_PARAMETER: (i16, i16, i16) = (<span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>); <span class="comment">// left_id, right_id, cost
 
-    <span class="doccomment">/// Creates a Grammar from dictionary bytes</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// buf: reference to the dictionary bytes</span>
-    <span class="doccomment">/// offset: offset to the grammar section in the buf</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">parse</span>(<span class="ident">buf</span>: <span class="kw-2">&amp;</span>[<span class="ident">u8</span>], <span class="ident">offset</span>: <span class="ident">usize</span>) -&gt; <span class="ident">SudachiResult</span><span class="op">&lt;</span><span class="ident">Grammar</span><span class="op">&gt;</span> {
-        <span class="kw">let</span> (<span class="ident">rest</span>, (<span class="ident">pos_list</span>, <span class="ident">left_id_size</span>, <span class="ident">right_id_size</span>)) <span class="op">=</span> <span class="ident">grammar_parser</span>(<span class="ident">buf</span>, <span class="ident">offset</span>)
-            .<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">e</span><span class="op">|</span> <span class="ident">SudachiError::InvalidDictionaryGrammar</span>.<span class="ident">with_context</span>(<span class="ident">e</span>.<span class="ident">to_string</span>()))<span class="question-mark">?</span>;
+    </span><span class="doccomment">/// Creates a Grammar from dictionary bytes
+    ///
+    /// buf: reference to the dictionary bytes
+    /// offset: offset to the grammar section in the buf
+    </span><span class="kw">pub fn </span>parse(buf: <span class="kw-2">&amp;</span>[u8], offset: usize) -&gt; SudachiResult&lt;Grammar&gt; {
+        <span class="kw">let </span>(rest, (pos_list, left_id_size, right_id_size)) = grammar_parser(buf, offset)
+            .map_err(|e| SudachiError::InvalidDictionaryGrammar.with_context(e.to_string()))<span class="question-mark">?</span>;
 
-        <span class="kw">let</span> <span class="ident">connect_table_offset</span> <span class="op">=</span> <span class="ident">buf</span>.<span class="ident">len</span>() <span class="op">-</span> <span class="ident">rest</span>.<span class="ident">len</span>();
-        <span class="kw">let</span> <span class="ident">storage_size</span> <span class="op">=</span>
-            (<span class="ident">connect_table_offset</span> <span class="op">-</span> <span class="ident">offset</span>) <span class="op">+</span> <span class="number">2</span> <span class="op">*</span> <span class="ident">left_id_size</span> <span class="kw">as</span> <span class="ident">usize</span> <span class="op">*</span> <span class="ident">right_id_size</span> <span class="kw">as</span> <span class="ident">usize</span>;
+        <span class="kw">let </span>connect_table_offset = buf.len() - rest.len();
+        <span class="kw">let </span>storage_size =
+            (connect_table_offset - offset) + <span class="number">2 </span>* left_id_size <span class="kw">as </span>usize * right_id_size <span class="kw">as </span>usize;
 
-        <span class="kw">let</span> <span class="ident">conn</span> <span class="op">=</span> <span class="ident">ConnectionMatrix::from_offset_size</span>(
-            <span class="ident">buf</span>,
-            <span class="ident">connect_table_offset</span>,
-            <span class="ident">left_id_size</span> <span class="kw">as</span> <span class="ident">usize</span>,
-            <span class="ident">right_id_size</span> <span class="kw">as</span> <span class="ident">usize</span>,
+        <span class="kw">let </span>conn = ConnectionMatrix::from_offset_size(
+            buf,
+            connect_table_offset,
+            left_id_size <span class="kw">as </span>usize,
+            right_id_size <span class="kw">as </span>usize,
         )<span class="question-mark">?</span>;
 
-        <span class="prelude-val">Ok</span>(<span class="ident">Grammar</span> {
-            <span class="ident">_bytes</span>: <span class="ident">buf</span>,
-            <span class="ident">pos_list</span>,
-            <span class="ident">connection</span>: <span class="ident">conn</span>,
-            <span class="ident">storage_size</span>,
-            <span class="ident">character_category</span>: <span class="ident">CharacterCategory::default</span>(),
+        <span class="prelude-val">Ok</span>(Grammar {
+            _bytes: buf,
+            pos_list,
+            connection: conn,
+            storage_size,
+            character_category: CharacterCategory::default(),
         })
     }
 
-    <span class="doccomment">/// Returns connection cost of nodes</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// left_id: right_id of left node</span>
-    <span class="doccomment">/// right_id: left_if of right node</span>
-    <span class="attribute">#[<span class="ident">inline</span>(<span class="ident">always</span>)]</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">connect_cost</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">left_id</span>: <span class="ident">i16</span>, <span class="ident">right_id</span>: <span class="ident">i16</span>) -&gt; <span class="ident">i16</span> {
-        <span class="self">self</span>.<span class="ident">connection</span>.<span class="ident">cost</span>(<span class="ident">left_id</span> <span class="kw">as</span> <span class="ident">u16</span>, <span class="ident">right_id</span> <span class="kw">as</span> <span class="ident">u16</span>)
+    <span class="doccomment">/// Returns connection cost of nodes
+    ///
+    /// left_id: right_id of left node
+    /// right_id: left_if of right node
+    </span><span class="attribute">#[inline(always)]
+    </span><span class="kw">pub fn </span>connect_cost(<span class="kw-2">&amp;</span><span class="self">self</span>, left_id: i16, right_id: i16) -&gt; i16 {
+        <span class="self">self</span>.connection.cost(left_id <span class="kw">as </span>u16, right_id <span class="kw">as </span>u16)
     }
 
-    <span class="attribute">#[<span class="ident">inline</span>]</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">conn_matrix</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="ident">ConnectionMatrix</span> {
-        <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">connection</span>
+    <span class="attribute">#[inline]
+    </span><span class="kw">pub fn </span>conn_matrix(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>ConnectionMatrix {
+        <span class="kw-2">&amp;</span><span class="self">self</span>.connection
     }
 
-    <span class="doccomment">/// Sets character category</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// This is the only way to set character category.</span>
-    <span class="doccomment">/// Character category will be a empty map by default.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">set_character_category</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">character_category</span>: <span class="ident">CharacterCategory</span>) {
-        <span class="self">self</span>.<span class="ident">character_category</span> <span class="op">=</span> <span class="ident">character_category</span>;
+    <span class="doccomment">/// Sets character category
+    ///
+    /// This is the only way to set character category.
+    /// Character category will be a empty map by default.
+    </span><span class="kw">pub fn </span>set_character_category(<span class="kw-2">&amp;mut </span><span class="self">self</span>, character_category: CharacterCategory) {
+        <span class="self">self</span>.character_category = character_category;
     }
 
-    <span class="doccomment">/// Sets connect cost for a specific pair of ids</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// left_id: right_id of left node</span>
-    <span class="doccomment">/// right_id: left_if of right node</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">set_connect_cost</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">left_id</span>: <span class="ident">i16</span>, <span class="ident">right_id</span>: <span class="ident">i16</span>, <span class="ident">cost</span>: <span class="ident">i16</span>) {
-        <span class="comment">// for edit connection cost plugin</span>
-        <span class="self">self</span>.<span class="ident">connection</span>
-            .<span class="ident">update</span>(<span class="ident">left_id</span> <span class="kw">as</span> <span class="ident">u16</span>, <span class="ident">right_id</span> <span class="kw">as</span> <span class="ident">u16</span>, <span class="ident">cost</span>);
+    <span class="doccomment">/// Sets connect cost for a specific pair of ids
+    ///
+    /// left_id: right_id of left node
+    /// right_id: left_if of right node
+    </span><span class="kw">pub fn </span>set_connect_cost(<span class="kw-2">&amp;mut </span><span class="self">self</span>, left_id: i16, right_id: i16, cost: i16) {
+        <span class="comment">// for edit connection cost plugin
+        </span><span class="self">self</span>.connection
+            .update(left_id <span class="kw">as </span>u16, right_id <span class="kw">as </span>u16, cost);
     }
 
-    <span class="doccomment">/// Returns a pos_id of given pos in the grammar</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">get_part_of_speech_id</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">pos1</span>: <span class="kw-2">&amp;</span>[<span class="kw-2">&amp;</span><span class="ident">str</span>]) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">u16</span><span class="op">&gt;</span> {
-        <span class="kw">for</span> (<span class="ident">i</span>, <span class="ident">pos2</span>) <span class="kw">in</span> <span class="self">self</span>.<span class="ident">pos_list</span>.<span class="ident">iter</span>().<span class="ident">enumerate</span>() {
-            <span class="kw">if</span> <span class="ident">pos1</span>.<span class="ident">len</span>() <span class="op">==</span> <span class="ident">pos2</span>.<span class="ident">len</span>() <span class="op">&amp;&amp;</span> <span class="ident">pos1</span>.<span class="ident">iter</span>().<span class="ident">zip</span>(<span class="ident">pos2</span>).<span class="ident">all</span>(<span class="op">|</span>(<span class="ident">a</span>, <span class="ident">b</span>)<span class="op">|</span> <span class="ident">a</span> <span class="op">==</span> <span class="ident">b</span>) {
-                <span class="kw">return</span> <span class="prelude-val">Some</span>(<span class="ident">i</span> <span class="kw">as</span> <span class="ident">u16</span>);
+    <span class="doccomment">/// Returns a pos_id of given pos in the grammar
+    </span><span class="kw">pub fn </span>get_part_of_speech_id&lt;S&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, pos1: <span class="kw-2">&amp;</span>[S]) -&gt; <span class="prelude-ty">Option</span>&lt;u16&gt;
+    <span class="kw">where
+        </span>S: AsRef&lt;str&gt;,
+    {
+        <span class="kw">if </span>pos1.len() != POS_DEPTH {
+            <span class="kw">return </span><span class="prelude-val">None</span>;
+        }
+        <span class="kw">for </span>(i, pos2) <span class="kw">in </span><span class="self">self</span>.pos_list.iter().enumerate() {
+            <span class="kw">if </span>pos1.iter().zip(pos2).all(|(a, b)| a.as_ref() == b) {
+                <span class="kw">return </span><span class="prelude-val">Some</span>(i <span class="kw">as </span>u16);
             }
         }
-        <span class="prelude-val">None</span>
+        <span class="prelude-val">None
+    </span>}
+
+    <span class="kw">pub fn </span>register_pos&lt;S&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, pos: <span class="kw-2">&amp;</span>[S]) -&gt; SudachiResult&lt;u16&gt;
+    <span class="kw">where
+        </span>S: AsRef&lt;str&gt; + ToString,
+    {
+        <span class="kw">if </span>pos.len() != POS_DEPTH {
+            <span class="kw">let </span>pos_string = pos.iter().map(|x| x.as_ref()).join(<span class="string">&quot;,&quot;</span>);
+            <span class="kw">return </span><span class="prelude-val">Err</span>(SudachiError::InvalidPartOfSpeech(pos_string));
+        }
+        <span class="kw">match </span><span class="self">self</span>.get_part_of_speech_id(pos) {
+            <span class="prelude-val">Some</span>(id) =&gt; <span class="prelude-val">Ok</span>(id),
+            <span class="prelude-val">None </span>=&gt; {
+                <span class="kw">let </span>new_id = <span class="self">self</span>.pos_list.len();
+                <span class="kw">if </span>new_id &gt; u16::MAX <span class="kw">as </span>usize {
+                    <span class="kw">return </span><span class="prelude-val">Err</span>(SudachiError::InvalidPartOfSpeech(
+                        <span class="string">&quot;Too much POS tags registered&quot;</span>.to_owned(),
+                    ));
+                }
+                <span class="kw">let </span>components = pos.iter().map(|x| x.to_string()).collect();
+                <span class="self">self</span>.pos_list.push(components);
+                <span class="prelude-val">Ok</span>(new_id <span class="kw">as </span>u16)
+            }
+        }
     }
 
-    <span class="doccomment">/// Gets POS components for POS ID.</span>
-    <span class="doccomment">/// Panics if out of bounds.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">pos_components</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">pos_id</span>: <span class="ident">u16</span>) -&gt; <span class="kw-2">&amp;</span>[<span class="ident">String</span>] {
-        <span class="self">self</span>.<span class="ident">pos_list</span>.<span class="ident">index</span>(<span class="ident">pos_id</span> <span class="kw">as</span> <span class="ident">usize</span>)
+    <span class="doccomment">/// Gets POS components for POS ID.
+    /// Panics if out of bounds.
+    </span><span class="kw">pub fn </span>pos_components(<span class="kw-2">&amp;</span><span class="self">self</span>, pos_id: u16) -&gt; <span class="kw-2">&amp;</span>[String] {
+        <span class="self">self</span>.pos_list.index(pos_id <span class="kw">as </span>usize)
     }
 
-    <span class="doccomment">/// Merge a another grammar into this grammar</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// Only pos_list is merged</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">merge</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">other</span>: <span class="ident">Grammar</span>) {
-        <span class="self">self</span>.<span class="ident">pos_list</span>.<span class="ident">extend</span>(<span class="ident">other</span>.<span class="ident">pos_list</span>);
+    <span class="doccomment">/// Merge a another grammar into this grammar
+    ///
+    /// Only pos_list is merged
+    </span><span class="kw">pub fn </span>merge(<span class="kw-2">&amp;mut </span><span class="self">self</span>, other: Grammar) {
+        <span class="self">self</span>.pos_list.extend(other.pos_list);
     }
 }
 
-<span class="kw">fn</span> <span class="ident">pos_list_parser</span>(<span class="ident">input</span>: <span class="kw-2">&amp;</span>[<span class="ident">u8</span>]) -&gt; <span class="ident">SudachiNomResult</span><span class="op">&lt;</span><span class="kw-2">&amp;</span>[<span class="ident">u8</span>], <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span> {
-    <span class="kw">let</span> (<span class="ident">rest</span>, <span class="ident">pos_size</span>) <span class="op">=</span> <span class="ident">le_u16</span>(<span class="ident">input</span>)<span class="question-mark">?</span>;
-    <span class="ident">nom::multi::count</span>(
-        <span class="ident">nom::multi::count</span>(<span class="ident">utf16_string_parser</span>, <span class="ident">POS_DEPTH</span>),
-        <span class="ident">pos_size</span> <span class="kw">as</span> <span class="ident">usize</span>,
-    )(<span class="ident">rest</span>)
+<span class="kw">fn </span>pos_list_parser(input: <span class="kw-2">&amp;</span>[u8]) -&gt; SudachiNomResult&lt;<span class="kw-2">&amp;</span>[u8], Vec&lt;Vec&lt;String&gt;&gt;&gt; {
+    <span class="kw">let </span>(rest, pos_size) = le_u16(input)<span class="question-mark">?</span>;
+    nom::multi::count(
+        nom::multi::count(utf16_string_parser, POS_DEPTH),
+        pos_size <span class="kw">as </span>usize,
+    )(rest)
 }
 
-<span class="kw">fn</span> <span class="ident">grammar_parser</span>(
-    <span class="ident">input</span>: <span class="kw-2">&amp;</span>[<span class="ident">u8</span>],
-    <span class="ident">offset</span>: <span class="ident">usize</span>,
-) -&gt; <span class="ident">SudachiNomResult</span><span class="op">&lt;</span><span class="kw-2">&amp;</span>[<span class="ident">u8</span>], (<span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span><span class="op">&gt;</span>, <span class="ident">i16</span>, <span class="ident">i16</span>)<span class="op">&gt;</span> {
-    <span class="ident">nom::sequence::preceded</span>(
-        <span class="ident">take</span>(<span class="ident">offset</span>),
-        <span class="ident">nom::sequence::tuple</span>((<span class="ident">pos_list_parser</span>, <span class="ident">le_i16</span>, <span class="ident">le_i16</span>)),
-    )(<span class="ident">input</span>)
+<span class="kw">fn </span>grammar_parser(
+    input: <span class="kw-2">&amp;</span>[u8],
+    offset: usize,
+) -&gt; SudachiNomResult&lt;<span class="kw-2">&amp;</span>[u8], (Vec&lt;Vec&lt;String&gt;&gt;, i16, i16)&gt; {
+    nom::sequence::preceded(
+        take(offset),
+        nom::sequence::tuple((pos_list_parser, le_i16, le_i16)),
+    )(input)
 }
 
-<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">test</span>)]</span>
-<span class="kw">mod</span> <span class="ident">tests</span> {
-    <span class="kw">use</span> <span class="kw">super</span>::<span class="kw-2">*</span>;
+<span class="attribute">#[cfg(test)]
+</span><span class="kw">mod </span>tests {
+    <span class="kw">use super</span>::<span class="kw-2">*</span>;
 
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">storage_size</span>() {
-        <span class="kw">let</span> <span class="ident">bytes</span> <span class="op">=</span> <span class="ident">setup_bytes</span>();
-        <span class="kw">let</span> <span class="ident">grammar</span> <span class="op">=</span> <span class="ident">Grammar::parse</span>(<span class="kw-2">&amp;</span><span class="ident">bytes</span>, <span class="number">0</span>).<span class="ident">expect</span>(<span class="string">&quot;failed to create grammar&quot;</span>);
-        <span class="macro">assert_eq!</span>(<span class="ident">bytes</span>.<span class="ident">len</span>(), <span class="ident">grammar</span>.<span class="ident">storage_size</span>);
+    <span class="attribute">#[test]
+    </span><span class="kw">fn </span>storage_size() {
+        <span class="kw">let </span>bytes = setup_bytes();
+        <span class="kw">let </span>grammar = Grammar::parse(<span class="kw-2">&amp;</span>bytes, <span class="number">0</span>).expect(<span class="string">&quot;failed to create grammar&quot;</span>);
+        <span class="macro">assert_eq!</span>(bytes.len(), grammar.storage_size);
     }
 
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">partofspeech_string</span>() {
-        <span class="kw">let</span> <span class="ident">bytes</span> <span class="op">=</span> <span class="ident">setup_bytes</span>();
-        <span class="kw">let</span> <span class="ident">grammar</span> <span class="op">=</span> <span class="ident">Grammar::parse</span>(<span class="kw-2">&amp;</span><span class="ident">bytes</span>, <span class="number">0</span>).<span class="ident">expect</span>(<span class="string">&quot;failed to create grammar&quot;</span>);
-        <span class="macro">assert_eq!</span>(<span class="number">6</span>, <span class="ident">grammar</span>.<span class="ident">pos_list</span>[<span class="number">0</span>].<span class="ident">len</span>());
-        <span class="macro">assert_eq!</span>(<span class="string">&quot;BOS/EOS&quot;</span>, <span class="ident">grammar</span>.<span class="ident">pos_list</span>[<span class="number">0</span>][<span class="number">0</span>]);
-        <span class="macro">assert_eq!</span>(<span class="string">&quot;*&quot;</span>, <span class="ident">grammar</span>.<span class="ident">pos_list</span>[<span class="number">0</span>][<span class="number">5</span>]);
+    <span class="attribute">#[test]
+    </span><span class="kw">fn </span>partofspeech_string() {
+        <span class="kw">let </span>bytes = setup_bytes();
+        <span class="kw">let </span>grammar = Grammar::parse(<span class="kw-2">&amp;</span>bytes, <span class="number">0</span>).expect(<span class="string">&quot;failed to create grammar&quot;</span>);
+        <span class="macro">assert_eq!</span>(<span class="number">6</span>, grammar.pos_list[<span class="number">0</span>].len());
+        <span class="macro">assert_eq!</span>(<span class="string">&quot;BOS/EOS&quot;</span>, grammar.pos_list[<span class="number">0</span>][<span class="number">0</span>]);
+        <span class="macro">assert_eq!</span>(<span class="string">&quot;*&quot;</span>, grammar.pos_list[<span class="number">0</span>][<span class="number">5</span>]);
 
-        <span class="macro">assert_eq!</span>(<span class="string">&quot;一般&quot;</span>, <span class="ident">grammar</span>.<span class="ident">pos_list</span>[<span class="number">1</span>][<span class="number">1</span>]);
-        <span class="macro">assert_eq!</span>(<span class="string">&quot;*&quot;</span>, <span class="ident">grammar</span>.<span class="ident">pos_list</span>[<span class="number">1</span>][<span class="number">5</span>]);
+        <span class="macro">assert_eq!</span>(<span class="string">&quot;一般&quot;</span>, grammar.pos_list[<span class="number">1</span>][<span class="number">1</span>]);
+        <span class="macro">assert_eq!</span>(<span class="string">&quot;*&quot;</span>, grammar.pos_list[<span class="number">1</span>][<span class="number">5</span>]);
 
-        <span class="macro">assert_eq!</span>(<span class="string">&quot;五段-サ行&quot;</span>, <span class="ident">grammar</span>.<span class="ident">pos_list</span>[<span class="number">2</span>][<span class="number">4</span>]);
-        <span class="macro">assert_eq!</span>(<span class="string">&quot;終止形-一般&quot;</span>, <span class="ident">grammar</span>.<span class="ident">pos_list</span>[<span class="number">2</span>][<span class="number">5</span>]);
+        <span class="macro">assert_eq!</span>(<span class="string">&quot;五段-サ行&quot;</span>, grammar.pos_list[<span class="number">2</span>][<span class="number">4</span>]);
+        <span class="macro">assert_eq!</span>(<span class="string">&quot;終止形-一般&quot;</span>, grammar.pos_list[<span class="number">2</span>][<span class="number">5</span>]);
     }
 
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">get_connect_cost</span>() {
-        <span class="kw">let</span> <span class="ident">bytes</span> <span class="op">=</span> <span class="ident">setup_bytes</span>();
-        <span class="kw">let</span> <span class="ident">grammar</span> <span class="op">=</span> <span class="ident">Grammar::parse</span>(<span class="kw-2">&amp;</span><span class="ident">bytes</span>, <span class="number">0</span>).<span class="ident">expect</span>(<span class="string">&quot;failed to create grammar&quot;</span>);
-        <span class="macro">assert_eq!</span>(<span class="number">0</span>, <span class="ident">grammar</span>.<span class="ident">connect_cost</span>(<span class="number">0</span>, <span class="number">0</span>));
-        <span class="macro">assert_eq!</span>(<span class="op">-</span><span class="number">100</span>, <span class="ident">grammar</span>.<span class="ident">connect_cost</span>(<span class="number">2</span>, <span class="number">1</span>));
-        <span class="macro">assert_eq!</span>(<span class="number">200</span>, <span class="ident">grammar</span>.<span class="ident">connect_cost</span>(<span class="number">1</span>, <span class="number">2</span>));
+    <span class="attribute">#[test]
+    </span><span class="kw">fn </span>get_connect_cost() {
+        <span class="kw">let </span>bytes = setup_bytes();
+        <span class="kw">let </span>grammar = Grammar::parse(<span class="kw-2">&amp;</span>bytes, <span class="number">0</span>).expect(<span class="string">&quot;failed to create grammar&quot;</span>);
+        <span class="macro">assert_eq!</span>(<span class="number">0</span>, grammar.connect_cost(<span class="number">0</span>, <span class="number">0</span>));
+        <span class="macro">assert_eq!</span>(-<span class="number">100</span>, grammar.connect_cost(<span class="number">2</span>, <span class="number">1</span>));
+        <span class="macro">assert_eq!</span>(<span class="number">200</span>, grammar.connect_cost(<span class="number">1</span>, <span class="number">2</span>));
     }
 
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">set_connect_cost</span>() {
-        <span class="kw">let</span> <span class="ident">bytes</span> <span class="op">=</span> <span class="ident">setup_bytes</span>();
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">grammar</span> <span class="op">=</span> <span class="ident">Grammar::parse</span>(<span class="kw-2">&amp;</span><span class="ident">bytes</span>, <span class="number">0</span>).<span class="ident">expect</span>(<span class="string">&quot;failed to create grammar&quot;</span>);
-        <span class="ident">grammar</span>.<span class="ident">set_connect_cost</span>(<span class="number">0</span>, <span class="number">0</span>, <span class="number">300</span>);
-        <span class="macro">assert_eq!</span>(<span class="number">300</span>, <span class="ident">grammar</span>.<span class="ident">connect_cost</span>(<span class="number">0</span>, <span class="number">0</span>));
+    <span class="attribute">#[test]
+    </span><span class="kw">fn </span>set_connect_cost() {
+        <span class="kw">let </span>bytes = setup_bytes();
+        <span class="kw">let </span><span class="kw-2">mut </span>grammar = Grammar::parse(<span class="kw-2">&amp;</span>bytes, <span class="number">0</span>).expect(<span class="string">&quot;failed to create grammar&quot;</span>);
+        grammar.set_connect_cost(<span class="number">0</span>, <span class="number">0</span>, <span class="number">300</span>);
+        <span class="macro">assert_eq!</span>(<span class="number">300</span>, grammar.connect_cost(<span class="number">0</span>, <span class="number">0</span>));
     }
 
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">bos_parameter</span>() {
-        <span class="macro">assert_eq!</span>(<span class="number">0</span>, <span class="ident">Grammar::BOS_PARAMETER</span>.<span class="number">0</span>);
-        <span class="macro">assert_eq!</span>(<span class="number">0</span>, <span class="ident">Grammar::BOS_PARAMETER</span>.<span class="number">1</span>);
-        <span class="macro">assert_eq!</span>(<span class="number">0</span>, <span class="ident">Grammar::BOS_PARAMETER</span>.<span class="number">2</span>);
+    <span class="attribute">#[test]
+    </span><span class="kw">fn </span>register_pos() {
+        <span class="kw">let </span>bytes = setup_bytes();
+        <span class="kw">let </span><span class="kw-2">mut </span>grammar = Grammar::parse(<span class="kw-2">&amp;</span>bytes, <span class="number">0</span>).expect(<span class="string">&quot;failed to create grammar&quot;</span>);
+
+        <span class="kw">let </span>id1 = grammar
+            .register_pos([<span class="string">&quot;a&quot;</span>, <span class="string">&quot;b&quot;</span>, <span class="string">&quot;c&quot;</span>, <span class="string">&quot;d&quot;</span>, <span class="string">&quot;e&quot;</span>, <span class="string">&quot;f&quot;</span>].as_slice())
+            .expect(<span class="string">&quot;failed&quot;</span>);
+        <span class="kw">let </span>id2 = grammar
+            .register_pos([<span class="string">&quot;a&quot;</span>, <span class="string">&quot;b&quot;</span>, <span class="string">&quot;c&quot;</span>, <span class="string">&quot;d&quot;</span>, <span class="string">&quot;e&quot;</span>, <span class="string">&quot;f&quot;</span>].as_slice())
+            .expect(<span class="string">&quot;failed&quot;</span>);
+        <span class="macro">assert_eq!</span>(id1, id2);
     }
 
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">eos_parameter</span>() {
-        <span class="macro">assert_eq!</span>(<span class="number">0</span>, <span class="ident">Grammar::EOS_PARAMETER</span>.<span class="number">0</span>);
-        <span class="macro">assert_eq!</span>(<span class="number">0</span>, <span class="ident">Grammar::EOS_PARAMETER</span>.<span class="number">1</span>);
-        <span class="macro">assert_eq!</span>(<span class="number">0</span>, <span class="ident">Grammar::EOS_PARAMETER</span>.<span class="number">2</span>);
+    <span class="attribute">#[test]
+    </span><span class="kw">fn </span>bos_parameter() {
+        <span class="macro">assert_eq!</span>(<span class="number">0</span>, Grammar::BOS_PARAMETER.<span class="number">0</span>);
+        <span class="macro">assert_eq!</span>(<span class="number">0</span>, Grammar::BOS_PARAMETER.<span class="number">1</span>);
+        <span class="macro">assert_eq!</span>(<span class="number">0</span>, Grammar::BOS_PARAMETER.<span class="number">2</span>);
     }
 
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">read_from_file</span>() {
-        <span class="comment">// todo: after tidying up dictionary management</span>
+    <span class="attribute">#[test]
+    </span><span class="kw">fn </span>eos_parameter() {
+        <span class="macro">assert_eq!</span>(<span class="number">0</span>, Grammar::EOS_PARAMETER.<span class="number">0</span>);
+        <span class="macro">assert_eq!</span>(<span class="number">0</span>, Grammar::EOS_PARAMETER.<span class="number">1</span>);
+        <span class="macro">assert_eq!</span>(<span class="number">0</span>, Grammar::EOS_PARAMETER.<span class="number">2</span>);
     }
 
-    <span class="kw">fn</span> <span class="ident">setup_bytes</span>() -&gt; <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span> {
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">storage</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">Vec::new</span>();
-        <span class="ident">build_partofspeech</span>(<span class="kw-2">&amp;mut</span> <span class="ident">storage</span>);
-        <span class="ident">build_connect_table</span>(<span class="kw-2">&amp;mut</span> <span class="ident">storage</span>);
-        <span class="ident">storage</span>
+    <span class="kw">fn </span>setup_bytes() -&gt; Vec&lt;u8&gt; {
+        <span class="kw">let </span><span class="kw-2">mut </span>storage: Vec&lt;u8&gt; = Vec::new();
+        build_partofspeech(<span class="kw-2">&amp;mut </span>storage);
+        build_connect_table(<span class="kw-2">&amp;mut </span>storage);
+        storage
     }
-    <span class="kw">fn</span> <span class="ident">string_to_bytes</span>(<span class="ident">s</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) -&gt; <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span> {
-        <span class="ident">s</span>.<span class="ident">encode_utf16</span>()
-            .<span class="ident">map</span>(<span class="op">|</span><span class="ident">c</span><span class="op">|</span> <span class="ident">c</span>.<span class="ident">to_le_bytes</span>())
-            .<span class="ident">flatten</span>()
-            .<span class="ident">collect</span>()
+    <span class="kw">fn </span>string_to_bytes(s: <span class="kw-2">&amp;</span>str) -&gt; Vec&lt;u8&gt; {
+        s.encode_utf16()
+            .map(|c| c.to_le_bytes())
+            .flatten()
+            .collect()
     }
-    <span class="kw">fn</span> <span class="ident">build_partofspeech</span>(<span class="ident">storage</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span>) -&gt; () {
-        <span class="comment">// number of part of speech</span>
-        <span class="ident">storage</span>.<span class="ident">extend</span>(<span class="kw-2">&amp;</span>(<span class="number">3</span> <span class="kw">as</span> <span class="ident">i16</span>).<span class="ident">to_le_bytes</span>());
+    <span class="kw">fn </span>build_partofspeech(storage: <span class="kw-2">&amp;mut </span>Vec&lt;u8&gt;) -&gt; () {
+        <span class="comment">// number of part of speech
+        </span>storage.extend(<span class="kw-2">&amp;</span>(<span class="number">3 </span><span class="kw">as </span>i16).to_le_bytes());
 
-        <span class="ident">storage</span>.<span class="ident">extend</span>(
+        storage.extend(
             <span class="string">b&quot;\x07B\x00O\x00S\x00/\x00E\x00O\x00S\x00\x01*\x00\x01*\x00\x01*\x00\x01*\x00\x01*\x00&quot;</span>,
         );
 
-        <span class="ident">storage</span>.<span class="ident">extend</span>(<span class="string">b&quot;\x02&quot;</span>);
-        <span class="ident">storage</span>.<span class="ident">extend</span>(<span class="ident">string_to_bytes</span>(<span class="string">&quot;名刺&quot;</span>));
-        <span class="ident">storage</span>.<span class="ident">extend</span>(<span class="string">b&quot;\x02&quot;</span>);
-        <span class="ident">storage</span>.<span class="ident">extend</span>(<span class="ident">string_to_bytes</span>(<span class="string">&quot;一般&quot;</span>));
-        <span class="ident">storage</span>.<span class="ident">extend</span>(<span class="string">b&quot;\x01*\x00\x01*\x00\x01*\x00\x01*\x00&quot;</span>);
+        storage.extend(<span class="string">b&quot;\x02&quot;</span>);
+        storage.extend(string_to_bytes(<span class="string">&quot;名刺&quot;</span>));
+        storage.extend(<span class="string">b&quot;\x02&quot;</span>);
+        storage.extend(string_to_bytes(<span class="string">&quot;一般&quot;</span>));
+        storage.extend(<span class="string">b&quot;\x01*\x00\x01*\x00\x01*\x00\x01*\x00&quot;</span>);
 
-        <span class="ident">storage</span>.<span class="ident">extend</span>(<span class="string">b&quot;\x02&quot;</span>);
-        <span class="ident">storage</span>.<span class="ident">extend</span>(<span class="ident">string_to_bytes</span>(<span class="string">&quot;動詞&quot;</span>));
-        <span class="ident">storage</span>.<span class="ident">extend</span>(<span class="string">b&quot;\x02&quot;</span>);
-        <span class="ident">storage</span>.<span class="ident">extend</span>(<span class="ident">string_to_bytes</span>(<span class="string">&quot;一般&quot;</span>));
-        <span class="ident">storage</span>.<span class="ident">extend</span>(<span class="string">b&quot;\x01*\x00\x01*\x00\x05&quot;</span>);
-        <span class="ident">storage</span>.<span class="ident">extend</span>(<span class="ident">string_to_bytes</span>(<span class="string">&quot;五段-サ行&quot;</span>));
-        <span class="ident">storage</span>.<span class="ident">extend</span>(<span class="string">b&quot;\x06&quot;</span>);
-        <span class="ident">storage</span>.<span class="ident">extend</span>(<span class="ident">string_to_bytes</span>(<span class="string">&quot;終止形-一般&quot;</span>));
+        storage.extend(<span class="string">b&quot;\x02&quot;</span>);
+        storage.extend(string_to_bytes(<span class="string">&quot;動詞&quot;</span>));
+        storage.extend(<span class="string">b&quot;\x02&quot;</span>);
+        storage.extend(string_to_bytes(<span class="string">&quot;一般&quot;</span>));
+        storage.extend(<span class="string">b&quot;\x01*\x00\x01*\x00\x05&quot;</span>);
+        storage.extend(string_to_bytes(<span class="string">&quot;五段-サ行&quot;</span>));
+        storage.extend(<span class="string">b&quot;\x06&quot;</span>);
+        storage.extend(string_to_bytes(<span class="string">&quot;終止形-一般&quot;</span>));
     }
-    <span class="kw">fn</span> <span class="ident">build_connect_table</span>(<span class="ident">storage</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span>) -&gt; () {
-        <span class="ident">storage</span>.<span class="ident">extend</span>(<span class="kw-2">&amp;</span>(<span class="number">3</span> <span class="kw">as</span> <span class="ident">i16</span>).<span class="ident">to_le_bytes</span>());
-        <span class="ident">storage</span>.<span class="ident">extend</span>(<span class="kw-2">&amp;</span>(<span class="number">3</span> <span class="kw">as</span> <span class="ident">i16</span>).<span class="ident">to_le_bytes</span>());
+    <span class="kw">fn </span>build_connect_table(storage: <span class="kw-2">&amp;mut </span>Vec&lt;u8&gt;) -&gt; () {
+        storage.extend(<span class="kw-2">&amp;</span>(<span class="number">3 </span><span class="kw">as </span>i16).to_le_bytes());
+        storage.extend(<span class="kw-2">&amp;</span>(<span class="number">3 </span><span class="kw">as </span>i16).to_le_bytes());
 
-        <span class="ident">storage</span>.<span class="ident">extend</span>(<span class="kw-2">&amp;</span>(<span class="number">0</span> <span class="kw">as</span> <span class="ident">i16</span>).<span class="ident">to_le_bytes</span>());
-        <span class="ident">storage</span>.<span class="ident">extend</span>(<span class="kw-2">&amp;</span>(<span class="op">-</span><span class="number">300</span> <span class="kw">as</span> <span class="ident">i16</span>).<span class="ident">to_le_bytes</span>());
-        <span class="ident">storage</span>.<span class="ident">extend</span>(<span class="kw-2">&amp;</span>(<span class="number">300</span> <span class="kw">as</span> <span class="ident">i16</span>).<span class="ident">to_le_bytes</span>());
+        storage.extend(<span class="kw-2">&amp;</span>(<span class="number">0 </span><span class="kw">as </span>i16).to_le_bytes());
+        storage.extend(<span class="kw-2">&amp;</span>(-<span class="number">300 </span><span class="kw">as </span>i16).to_le_bytes());
+        storage.extend(<span class="kw-2">&amp;</span>(<span class="number">300 </span><span class="kw">as </span>i16).to_le_bytes());
 
-        <span class="ident">storage</span>.<span class="ident">extend</span>(<span class="kw-2">&amp;</span>(<span class="number">300</span> <span class="kw">as</span> <span class="ident">i16</span>).<span class="ident">to_le_bytes</span>());
-        <span class="ident">storage</span>.<span class="ident">extend</span>(<span class="kw-2">&amp;</span>(<span class="op">-</span><span class="number">500</span> <span class="kw">as</span> <span class="ident">i16</span>).<span class="ident">to_le_bytes</span>());
-        <span class="ident">storage</span>.<span class="ident">extend</span>(<span class="kw-2">&amp;</span>(<span class="op">-</span><span class="number">100</span> <span class="kw">as</span> <span class="ident">i16</span>).<span class="ident">to_le_bytes</span>());
+        storage.extend(<span class="kw-2">&amp;</span>(<span class="number">300 </span><span class="kw">as </span>i16).to_le_bytes());
+        storage.extend(<span class="kw-2">&amp;</span>(-<span class="number">500 </span><span class="kw">as </span>i16).to_le_bytes());
+        storage.extend(<span class="kw-2">&amp;</span>(-<span class="number">100 </span><span class="kw">as </span>i16).to_le_bytes());
 
-        <span class="ident">storage</span>.<span class="ident">extend</span>(<span class="kw-2">&amp;</span>(<span class="op">-</span><span class="number">3000</span> <span class="kw">as</span> <span class="ident">i16</span>).<span class="ident">to_le_bytes</span>());
-        <span class="ident">storage</span>.<span class="ident">extend</span>(<span class="kw-2">&amp;</span>(<span class="number">200</span> <span class="kw">as</span> <span class="ident">i16</span>).<span class="ident">to_le_bytes</span>());
-        <span class="ident">storage</span>.<span class="ident">extend</span>(<span class="kw-2">&amp;</span>(<span class="number">2000</span> <span class="kw">as</span> <span class="ident">i16</span>).<span class="ident">to_le_bytes</span>());
+        storage.extend(<span class="kw-2">&amp;</span>(-<span class="number">3000 </span><span class="kw">as </span>i16).to_le_bytes());
+        storage.extend(<span class="kw-2">&amp;</span>(<span class="number">200 </span><span class="kw">as </span>i16).to_le_bytes());
+        storage.extend(<span class="kw-2">&amp;</span>(<span class="number">2000 </span><span class="kw">as </span>i16).to_le_bytes());
     }
 }
 </code></pre></div>
-</section><section id="search" class="content hidden"></section><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="sudachi" data-search-index-js="../../../search-index.js" data-search-js="../../../search.js"></div>
-</body></html>
+</section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="sudachi" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0 (897e37553 2022-11-02)" ></div></body></html>

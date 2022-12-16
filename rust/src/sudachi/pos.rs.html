@@ -1,13 +1,12 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `sudachi&#x2F;src&#x2F;pos.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>pos.rs - source</title><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../ayu.css" disabled ><script id="default-settings" ></script><script src="../../storage.js"></script><script src="../../crates.js"></script><script defer src="../../main.js"></script><script defer src="../../source-script.js"></script><script defer src="../../source-files.js"></script>
-    <noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../favicon.svg"><style type="text/css">#crate-search{background-image:url("../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu" role="button">&#9776;</div><a href='../../sudachi/index.html'><div class='logo-container rust-logo'><img src='../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu" title="themes"><img width="18" height="18" alt="Pick another theme!" src="../../brush.svg"></button><div id="theme-choices" role="menu"></div></div><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" id="help-button" title="help">?</button><a id="settings-menu" href="../../settings.html" title="settings"><img width="18" height="18" alt="Change settings" src="../../wheel.svg"></a></div></form></nav><section id="main" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1"> 1</span>
-<span id="2"> 2</span>
-<span id="3"> 3</span>
-<span id="4"> 4</span>
-<span id="5"> 5</span>
-<span id="6"> 6</span>
-<span id="7"> 7</span>
-<span id="8"> 8</span>
-<span id="9"> 9</span>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `sudachi/src/pos.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>pos.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" href="../../normalize.css"><link rel="stylesheet" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" href="../../ayu.css" disabled><link rel="stylesheet" href="../../dark.css" disabled><link rel="stylesheet" href="../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../storage.js"></script><script defer src="../../source-script.js"></script><script defer src="../../source-files.js"></script><script defer src="../../main.js"></script><noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../favicon.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="sidebar-logo" href="../../sudachi/index.html"><div class="logo-container"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></div></a><h2 class="location"></h2></nav><nav class="sidebar"><a class="sidebar-logo" href="../../sudachi/index.html"><div class="logo-container"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></div></a></nav><main><div class="width-limiter"><div class="sub-container"><a class="sub-logo-container" href="../../sudachi/index.html"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></a><nav class="sub"><form class="search-form"><div class="search-container"><span></span><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><button type="button">?</button></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../wheel.svg"></a></div></div></form></nav></div><section id="main-content" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">1</span>
+<span id="2">2</span>
+<span id="3">3</span>
+<span id="4">4</span>
+<span id="5">5</span>
+<span id="6">6</span>
+<span id="7">7</span>
+<span id="8">8</span>
+<span id="9">9</span>
 <span id="10">10</span>
 <span id="11">11</span>
 <span id="12">12</span>
@@ -77,56 +76,55 @@
  *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
- */</span>
+ */
 
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::util::fxhash::FxBuildHasher</span>;
-<span class="kw">use</span> <span class="ident">std::collections::HashSet</span>;
+</span><span class="kw">use </span><span class="kw">crate</span>::util::fxhash::FxBuildHasher;
+<span class="kw">use </span>std::collections::HashSet;
 
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">PosMatcher</span> {
-    <span class="ident">ids</span>: <span class="ident">HashSet</span><span class="op">&lt;</span><span class="ident">u16</span>, <span class="ident">FxBuildHasher</span><span class="op">&gt;</span>,
+<span class="kw">pub struct </span>PosMatcher {
+    ids: HashSet&lt;u16, FxBuildHasher&gt;,
 }
 
-<span class="kw">impl</span> <span class="ident">PosMatcher</span> {
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span><span class="op">&lt;</span><span class="ident">I</span>: <span class="ident">IntoIterator</span><span class="op">&lt;</span><span class="ident">Item</span> <span class="op">=</span> <span class="ident">u16</span><span class="op">&gt;</span><span class="op">&gt;</span>(<span class="ident">pos</span>: <span class="ident">I</span>) -&gt; <span class="self">Self</span> {
-        <span class="kw">let</span> <span class="ident">iter</span> <span class="op">=</span> <span class="ident">pos</span>.<span class="ident">into_iter</span>();
-        <span class="kw">let</span> (<span class="ident">min_size</span>, <span class="ident">max_size</span>) <span class="op">=</span> <span class="ident">iter</span>.<span class="ident">size_hint</span>();
-        <span class="kw">let</span> <span class="ident">size</span> <span class="op">=</span> <span class="ident">max_size</span>.<span class="ident">unwrap_or</span>(<span class="ident">min_size</span>);
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">ids</span> <span class="op">=</span> <span class="ident">HashSet::with_capacity_and_hasher</span>(<span class="ident">size</span>, <span class="ident">FxBuildHasher::default</span>());
-        <span class="ident">ids</span>.<span class="ident">extend</span>(<span class="ident">iter</span>);
-        <span class="self">Self</span> { <span class="ident">ids</span> }
+<span class="kw">impl </span>PosMatcher {
+    <span class="kw">pub fn </span>new&lt;I: IntoIterator&lt;Item = u16&gt;&gt;(pos: I) -&gt; <span class="self">Self </span>{
+        <span class="kw">let </span>iter = pos.into_iter();
+        <span class="kw">let </span>(min_size, max_size) = iter.size_hint();
+        <span class="kw">let </span>size = max_size.unwrap_or(min_size);
+        <span class="kw">let </span><span class="kw-2">mut </span>ids = HashSet::with_capacity_and_hasher(size, FxBuildHasher::default());
+        ids.extend(iter);
+        <span class="self">Self </span>{ ids }
     }
 
-    <span class="attribute">#[<span class="ident">inline</span>]</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">matches_id</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">pos_id</span>: <span class="ident">u16</span>) -&gt; <span class="ident">bool</span> {
-        <span class="self">self</span>.<span class="ident">ids</span>.<span class="ident">contains</span>(<span class="kw-2">&amp;</span><span class="ident">pos_id</span>)
+    <span class="attribute">#[inline]
+    </span><span class="kw">pub fn </span>matches_id(<span class="kw-2">&amp;</span><span class="self">self</span>, pos_id: u16) -&gt; bool {
+        <span class="self">self</span>.ids.contains(<span class="kw-2">&amp;</span>pos_id)
     }
 
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">num_entries</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">usize</span> {
-        <span class="self">self</span>.<span class="ident">ids</span>.<span class="ident">len</span>()
+    <span class="kw">pub fn </span>num_entries(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; usize {
+        <span class="self">self</span>.ids.len()
     }
 
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">entries</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw">impl</span> <span class="ident">Iterator</span><span class="op">&lt;</span><span class="ident">Item</span> <span class="op">=</span> <span class="ident">u16</span><span class="op">&gt;</span> <span class="op">+</span> <span class="lifetime">&#39;_</span> {
-        <span class="self">self</span>.<span class="ident">ids</span>.<span class="ident">iter</span>().<span class="ident">cloned</span>()
+    <span class="kw">pub fn </span>entries(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw">impl </span>Iterator&lt;Item = u16&gt; + <span class="lifetime">&#39;_ </span>{
+        <span class="self">self</span>.ids.iter().cloned()
     }
 
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">union</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">other</span>: <span class="kw-2">&amp;</span><span class="ident">PosMatcher</span>) -&gt; <span class="ident">PosMatcher</span> {
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">ids</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">ids</span>.<span class="ident">clone</span>();
-        <span class="ident">ids</span>.<span class="ident">extend</span>(<span class="ident">other</span>.<span class="ident">ids</span>.<span class="ident">iter</span>());
-        <span class="ident">PosMatcher</span> { <span class="ident">ids</span> }
+    <span class="kw">pub fn </span>union(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span>PosMatcher) -&gt; PosMatcher {
+        <span class="kw">let </span><span class="kw-2">mut </span>ids = <span class="self">self</span>.ids.clone();
+        ids.extend(other.ids.iter());
+        PosMatcher { ids }
     }
 
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">intersection</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">other</span>: <span class="kw-2">&amp;</span><span class="ident">PosMatcher</span>) -&gt; <span class="ident">PosMatcher</span> {
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">ids</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">ids</span>.<span class="ident">clone</span>();
-        <span class="ident">ids</span>.<span class="ident">retain</span>(<span class="op">|</span><span class="ident">id</span><span class="op">|</span> <span class="ident">other</span>.<span class="ident">ids</span>.<span class="ident">contains</span>(<span class="ident">id</span>));
-        <span class="ident">PosMatcher</span> { <span class="ident">ids</span> }
+    <span class="kw">pub fn </span>intersection(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span>PosMatcher) -&gt; PosMatcher {
+        <span class="kw">let </span><span class="kw-2">mut </span>ids = <span class="self">self</span>.ids.clone();
+        ids.retain(|id| other.ids.contains(id));
+        PosMatcher { ids }
     }
 
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">difference</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">other</span>: <span class="kw-2">&amp;</span><span class="ident">PosMatcher</span>) -&gt; <span class="ident">PosMatcher</span> {
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">ids</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">ids</span>.<span class="ident">clone</span>();
-        <span class="ident">ids</span>.<span class="ident">retain</span>(<span class="op">|</span><span class="ident">id</span><span class="op">|</span> <span class="op">!</span><span class="ident">other</span>.<span class="ident">ids</span>.<span class="ident">contains</span>(<span class="ident">id</span>));
-        <span class="ident">PosMatcher</span> { <span class="ident">ids</span> }
+    <span class="kw">pub fn </span>difference(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span>PosMatcher) -&gt; PosMatcher {
+        <span class="kw">let </span><span class="kw-2">mut </span>ids = <span class="self">self</span>.ids.clone();
+        ids.retain(|id| !other.ids.contains(id));
+        PosMatcher { ids }
     }
 }
 </code></pre></div>
-</section><section id="search" class="content hidden"></section><div id="rustdoc-vars" data-root-path="../../" data-current-crate="sudachi" data-search-index-js="../../search-index.js" data-search-js="../../search.js"></div>
-</body></html>
+</section></div></main><div id="rustdoc-vars" data-root-path="../../" data-current-crate="sudachi" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0 (897e37553 2022-11-02)" ></div></body></html>

@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>sudachipy.dictionary package &mdash; SudachiPy 0.6.4-a1 documentation</title>
+  <title>sudachipy.dictionary package &mdash; SudachiPy 0.6.7-a1 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -14,7 +14,9 @@
         <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../_static/doctools.js"></script>
+        <script src="../_static/sphinx_highlight.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -48,7 +50,18 @@
 <li class="toctree-l1"><a class="reference internal" href="sudachipy.html">sudachipy package</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">sudachipy.dictionary package</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#note">Note</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#module-sudachipy.dictionary">Module contents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-sudachipy.dictionary">Module contents</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#sudachipy.dictionary.Dictionary"><code class="docutils literal notranslate"><span class="pre">Dictionary</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#sudachipy.dictionary.Dictionary.close"><code class="docutils literal notranslate"><span class="pre">Dictionary.close()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#sudachipy.dictionary.Dictionary.create"><code class="docutils literal notranslate"><span class="pre">Dictionary.create()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#sudachipy.dictionary.Dictionary.lookup"><code class="docutils literal notranslate"><span class="pre">Dictionary.lookup()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#sudachipy.dictionary.Dictionary.pos_matcher"><code class="docutils literal notranslate"><span class="pre">Dictionary.pos_matcher()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#sudachipy.dictionary.Dictionary.pos_of"><code class="docutils literal notranslate"><span class="pre">Dictionary.pos_of()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#sudachipy.dictionary.Dictionary.pre_tokenizer"><code class="docutils literal notranslate"><span class="pre">Dictionary.pre_tokenizer()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="sudachipy.tokenizer.html">sudachipy.tokenizer package</a></li>
@@ -69,8 +82,8 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
-      <li>sudachipy.dictionary package</li>
+      <li><a href="../index.html" class="icon icon-home"></a></li>
+      <li class="breadcrumb-item active">sudachipy.dictionary package</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../_sources/api/sudachipy.dictionary.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -81,9 +94,9 @@
            <div itemprop="articleBody">
              
   <section id="sudachipy-dictionary-package">
-<h1>sudachipy.dictionary package<a class="headerlink" href="#sudachipy-dictionary-package" title="Permalink to this headline"></a></h1>
+<h1>sudachipy.dictionary package<a class="headerlink" href="#sudachipy-dictionary-package" title="Permalink to this heading"></a></h1>
 <section id="note">
-<h2>Note<a class="headerlink" href="#note" title="Permalink to this headline"></a></h2>
+<h2>Note<a class="headerlink" href="#note" title="Permalink to this heading"></a></h2>
 <ul class="simple">
 <li><dl class="simple">
 <dt>Import from <code class="docutils literal notranslate"><span class="pre">sudachipy.dictionary</span></code> is deprecated.</dt><dd><ul>
@@ -96,7 +109,7 @@
 </ul>
 </section>
 <section id="module-sudachipy.dictionary">
-<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-sudachipy.dictionary" title="Permalink to this headline"></a></h2>
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-sudachipy.dictionary" title="Permalink to this heading"></a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="sudachipy.dictionary.Dictionary">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">sudachipy.dictionary.</span></span><span class="sig-name descname"><span class="pre">Dictionary</span></span><a class="headerlink" href="#sudachipy.dictionary.Dictionary" title="Permalink to this definition"></a></dt>
@@ -121,6 +134,27 @@ See <a class="reference external" href="https://worksapplications.github.io/suda
 </ul>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="sudachipy.dictionary.Dictionary.lookup">
+<span class="sig-name descname"><span class="pre">lookup</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">$self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">surface</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out</span> <span class="pre">=</span> <span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="sudachipy.html#sudachipy.MorphemeList" title="sudachipy.MorphemeList"><span class="pre">sudachipy.MorphemeList</span></a></span></span><a class="headerlink" href="#sudachipy.dictionary.Dictionary.lookup" title="Permalink to this definition"></a></dt>
+<dd><p>–</p>
+<p>Look up morphemes in the binary dictionary without performing the analysis.
+All morphemes from the dictionary with the given surface string are returned,
+with the last user dictionary searched first and the system dictionary searched last.
+Inside a dictionary, morphemes are outputted in-binary-dictionary order.
+Morphemes which are not indexed are not returned.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>surface</strong> (<em>str</em>) – find all morphemes with the given surface</p></li>
+<li><p><strong>out</strong> – if passed, reuse the given morpheme list instead of creating a new one.
+See <a class="reference external" href="https://worksapplications.github.io/sudachi.rs/python/topics/out_param.html">https://worksapplications.github.io/sudachi.rs/python/topics/out_param.html</a> for details.</p></li>
+</ul>
+</dd>
+</dl>
+<p>type: out: sudachipy.MorphemeList</p>
 </dd></dl>
 
 <dl class="py method">

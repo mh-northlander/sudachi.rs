@@ -1,103 +1,102 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `sudachi&#x2F;src&#x2F;dic&#x2F;build&#x2F;mod.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>mod.rs - source</title><link rel="stylesheet" type="text/css" href="../../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../../../ayu.css" disabled ><script id="default-settings" ></script><script src="../../../../storage.js"></script><script src="../../../../crates.js"></script><script defer src="../../../../main.js"></script><script defer src="../../../../source-script.js"></script><script defer src="../../../../source-files.js"></script>
-    <noscript><link rel="stylesheet" href="../../../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../../../favicon.svg"><style type="text/css">#crate-search{background-image:url("../../../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu" role="button">&#9776;</div><a href='../../../../sudachi/index.html'><div class='logo-container rust-logo'><img src='../../../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu" title="themes"><img width="18" height="18" alt="Pick another theme!" src="../../../../brush.svg"></button><div id="theme-choices" role="menu"></div></div><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" id="help-button" title="help">?</button><a id="settings-menu" href="../../../../settings.html" title="settings"><img width="18" height="18" alt="Change settings" src="../../../../wheel.svg"></a></div></form></nav><section id="main" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">  1</span>
-<span id="2">  2</span>
-<span id="3">  3</span>
-<span id="4">  4</span>
-<span id="5">  5</span>
-<span id="6">  6</span>
-<span id="7">  7</span>
-<span id="8">  8</span>
-<span id="9">  9</span>
-<span id="10"> 10</span>
-<span id="11"> 11</span>
-<span id="12"> 12</span>
-<span id="13"> 13</span>
-<span id="14"> 14</span>
-<span id="15"> 15</span>
-<span id="16"> 16</span>
-<span id="17"> 17</span>
-<span id="18"> 18</span>
-<span id="19"> 19</span>
-<span id="20"> 20</span>
-<span id="21"> 21</span>
-<span id="22"> 22</span>
-<span id="23"> 23</span>
-<span id="24"> 24</span>
-<span id="25"> 25</span>
-<span id="26"> 26</span>
-<span id="27"> 27</span>
-<span id="28"> 28</span>
-<span id="29"> 29</span>
-<span id="30"> 30</span>
-<span id="31"> 31</span>
-<span id="32"> 32</span>
-<span id="33"> 33</span>
-<span id="34"> 34</span>
-<span id="35"> 35</span>
-<span id="36"> 36</span>
-<span id="37"> 37</span>
-<span id="38"> 38</span>
-<span id="39"> 39</span>
-<span id="40"> 40</span>
-<span id="41"> 41</span>
-<span id="42"> 42</span>
-<span id="43"> 43</span>
-<span id="44"> 44</span>
-<span id="45"> 45</span>
-<span id="46"> 46</span>
-<span id="47"> 47</span>
-<span id="48"> 48</span>
-<span id="49"> 49</span>
-<span id="50"> 50</span>
-<span id="51"> 51</span>
-<span id="52"> 52</span>
-<span id="53"> 53</span>
-<span id="54"> 54</span>
-<span id="55"> 55</span>
-<span id="56"> 56</span>
-<span id="57"> 57</span>
-<span id="58"> 58</span>
-<span id="59"> 59</span>
-<span id="60"> 60</span>
-<span id="61"> 61</span>
-<span id="62"> 62</span>
-<span id="63"> 63</span>
-<span id="64"> 64</span>
-<span id="65"> 65</span>
-<span id="66"> 66</span>
-<span id="67"> 67</span>
-<span id="68"> 68</span>
-<span id="69"> 69</span>
-<span id="70"> 70</span>
-<span id="71"> 71</span>
-<span id="72"> 72</span>
-<span id="73"> 73</span>
-<span id="74"> 74</span>
-<span id="75"> 75</span>
-<span id="76"> 76</span>
-<span id="77"> 77</span>
-<span id="78"> 78</span>
-<span id="79"> 79</span>
-<span id="80"> 80</span>
-<span id="81"> 81</span>
-<span id="82"> 82</span>
-<span id="83"> 83</span>
-<span id="84"> 84</span>
-<span id="85"> 85</span>
-<span id="86"> 86</span>
-<span id="87"> 87</span>
-<span id="88"> 88</span>
-<span id="89"> 89</span>
-<span id="90"> 90</span>
-<span id="91"> 91</span>
-<span id="92"> 92</span>
-<span id="93"> 93</span>
-<span id="94"> 94</span>
-<span id="95"> 95</span>
-<span id="96"> 96</span>
-<span id="97"> 97</span>
-<span id="98"> 98</span>
-<span id="99"> 99</span>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `sudachi/src/dic/build/mod.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>mod.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" href="../../../../normalize.css"><link rel="stylesheet" href="../../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" href="../../../../ayu.css" disabled><link rel="stylesheet" href="../../../../dark.css" disabled><link rel="stylesheet" href="../../../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../../../storage.js"></script><script defer src="../../../../source-script.js"></script><script defer src="../../../../source-files.js"></script><script defer src="../../../../main.js"></script><noscript><link rel="stylesheet" href="../../../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../../../favicon.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="sidebar-logo" href="../../../../sudachi/index.html"><div class="logo-container"><img class="rust-logo" src="../../../../rust-logo.svg" alt="logo"></div></a><h2 class="location"></h2></nav><nav class="sidebar"><a class="sidebar-logo" href="../../../../sudachi/index.html"><div class="logo-container"><img class="rust-logo" src="../../../../rust-logo.svg" alt="logo"></div></a></nav><main><div class="width-limiter"><div class="sub-container"><a class="sub-logo-container" href="../../../../sudachi/index.html"><img class="rust-logo" src="../../../../rust-logo.svg" alt="logo"></a><nav class="sub"><form class="search-form"><div class="search-container"><span></span><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><button type="button">?</button></div><div id="settings-menu" tabindex="-1"><a href="../../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../../wheel.svg"></a></div></div></form></nav></div><section id="main-content" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">1</span>
+<span id="2">2</span>
+<span id="3">3</span>
+<span id="4">4</span>
+<span id="5">5</span>
+<span id="6">6</span>
+<span id="7">7</span>
+<span id="8">8</span>
+<span id="9">9</span>
+<span id="10">10</span>
+<span id="11">11</span>
+<span id="12">12</span>
+<span id="13">13</span>
+<span id="14">14</span>
+<span id="15">15</span>
+<span id="16">16</span>
+<span id="17">17</span>
+<span id="18">18</span>
+<span id="19">19</span>
+<span id="20">20</span>
+<span id="21">21</span>
+<span id="22">22</span>
+<span id="23">23</span>
+<span id="24">24</span>
+<span id="25">25</span>
+<span id="26">26</span>
+<span id="27">27</span>
+<span id="28">28</span>
+<span id="29">29</span>
+<span id="30">30</span>
+<span id="31">31</span>
+<span id="32">32</span>
+<span id="33">33</span>
+<span id="34">34</span>
+<span id="35">35</span>
+<span id="36">36</span>
+<span id="37">37</span>
+<span id="38">38</span>
+<span id="39">39</span>
+<span id="40">40</span>
+<span id="41">41</span>
+<span id="42">42</span>
+<span id="43">43</span>
+<span id="44">44</span>
+<span id="45">45</span>
+<span id="46">46</span>
+<span id="47">47</span>
+<span id="48">48</span>
+<span id="49">49</span>
+<span id="50">50</span>
+<span id="51">51</span>
+<span id="52">52</span>
+<span id="53">53</span>
+<span id="54">54</span>
+<span id="55">55</span>
+<span id="56">56</span>
+<span id="57">57</span>
+<span id="58">58</span>
+<span id="59">59</span>
+<span id="60">60</span>
+<span id="61">61</span>
+<span id="62">62</span>
+<span id="63">63</span>
+<span id="64">64</span>
+<span id="65">65</span>
+<span id="66">66</span>
+<span id="67">67</span>
+<span id="68">68</span>
+<span id="69">69</span>
+<span id="70">70</span>
+<span id="71">71</span>
+<span id="72">72</span>
+<span id="73">73</span>
+<span id="74">74</span>
+<span id="75">75</span>
+<span id="76">76</span>
+<span id="77">77</span>
+<span id="78">78</span>
+<span id="79">79</span>
+<span id="80">80</span>
+<span id="81">81</span>
+<span id="82">82</span>
+<span id="83">83</span>
+<span id="84">84</span>
+<span id="85">85</span>
+<span id="86">86</span>
+<span id="87">87</span>
+<span id="88">88</span>
+<span id="89">89</span>
+<span id="90">90</span>
+<span id="91">91</span>
+<span id="92">92</span>
+<span id="93">93</span>
+<span id="94">94</span>
+<span id="95">95</span>
+<span id="96">96</span>
+<span id="97">97</span>
+<span id="98">98</span>
+<span id="99">99</span>
 <span id="100">100</span>
 <span id="101">101</span>
 <span id="102">102</span>
@@ -359,338 +358,337 @@
  *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
- */</span>
+ */
 
-<span class="kw">use</span> <span class="ident">std::io::Write</span>;
-<span class="kw">use</span> <span class="ident">std::path::Path</span>;
+</span><span class="kw">use </span>std::io::Write;
+<span class="kw">use </span>std::path::Path;
 
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::analysis::stateless_tokenizer::DictionaryAccess</span>;
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::dic::build::error</span>::{<span class="ident">BuildFailure</span>, <span class="ident">DicBuildError</span>, <span class="ident">DicCompilationCtx</span>};
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::dic::build::index::IndexBuilder</span>;
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::dic::build::lexicon::LexiconWriter</span>;
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::dic::build::report</span>::{<span class="ident">DictPartReport</span>, <span class="ident">ReportBuilder</span>, <span class="ident">Reporter</span>};
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::dic::build::resolve</span>::{<span class="ident">BinDictResolver</span>, <span class="ident">ChainedResolver</span>, <span class="ident">RawDictResolver</span>};
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::dic::grammar::Grammar</span>;
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::dic::header</span>::{<span class="ident">Header</span>, <span class="ident">HeaderVersion</span>, <span class="ident">SystemDictVersion</span>, <span class="ident">UserDictVersion</span>};
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::dic::lexicon_set::LexiconSet</span>;
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::dic::word_id::WordId</span>;
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::error::SudachiResult</span>;
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::plugin::input_text::InputTextPlugin</span>;
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::plugin::oov::OovProviderPlugin</span>;
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::plugin::path_rewrite::PathRewritePlugin</span>;
+<span class="kw">use </span><span class="kw">crate</span>::analysis::stateless_tokenizer::DictionaryAccess;
+<span class="kw">use </span><span class="kw">crate</span>::dic::build::error::{BuildFailure, DicBuildError, DicCompilationCtx};
+<span class="kw">use </span><span class="kw">crate</span>::dic::build::index::IndexBuilder;
+<span class="kw">use </span><span class="kw">crate</span>::dic::build::lexicon::LexiconWriter;
+<span class="kw">use </span><span class="kw">crate</span>::dic::build::report::{DictPartReport, ReportBuilder, Reporter};
+<span class="kw">use </span><span class="kw">crate</span>::dic::build::resolve::{BinDictResolver, ChainedResolver, RawDictResolver};
+<span class="kw">use </span><span class="kw">crate</span>::dic::grammar::Grammar;
+<span class="kw">use </span><span class="kw">crate</span>::dic::header::{Header, HeaderVersion, SystemDictVersion, UserDictVersion};
+<span class="kw">use </span><span class="kw">crate</span>::dic::lexicon_set::LexiconSet;
+<span class="kw">use </span><span class="kw">crate</span>::dic::word_id::WordId;
+<span class="kw">use </span><span class="kw">crate</span>::error::SudachiResult;
+<span class="kw">use </span><span class="kw">crate</span>::plugin::input_text::InputTextPlugin;
+<span class="kw">use </span><span class="kw">crate</span>::plugin::oov::OovProviderPlugin;
+<span class="kw">use </span><span class="kw">crate</span>::plugin::path_rewrite::PathRewritePlugin;
 
-<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">mod</span> <span class="ident">conn</span>;
-<span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">error</span>;
-<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">mod</span> <span class="ident">index</span>;
-<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">mod</span> <span class="ident">lexicon</span>;
-<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">mod</span> <span class="ident">parse</span>;
-<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">mod</span> <span class="ident">primitives</span>;
-<span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">report</span>;
-<span class="kw">mod</span> <span class="ident">resolve</span>;
-<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">test</span>)]</span>
-<span class="kw">mod</span> <span class="ident">test</span>;
+<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">mod </span>conn;
+<span class="kw">pub mod </span>error;
+<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">mod </span>index;
+<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">mod </span>lexicon;
+<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">mod </span>parse;
+<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">mod </span>primitives;
+<span class="kw">pub mod </span>report;
+<span class="kw">mod </span>resolve;
+<span class="attribute">#[cfg(test)]
+</span><span class="kw">mod </span>test;
 
-<span class="kw">const</span> <span class="ident">MAX_POS_IDS</span>: <span class="ident">usize</span> <span class="op">=</span> <span class="ident">i16::MAX</span> <span class="kw">as</span> <span class="ident">usize</span>;
-<span class="kw">const</span> <span class="ident">MAX_DIC_STRING_LEN</span>: <span class="ident">usize</span> <span class="op">=</span> <span class="ident">MAX_POS_IDS</span>;
-<span class="kw">const</span> <span class="ident">MAX_ARRAY_LEN</span>: <span class="ident">usize</span> <span class="op">=</span> <span class="ident">i8::MAX</span> <span class="kw">as</span> <span class="ident">usize</span>;
+<span class="kw">const </span>MAX_POS_IDS: usize = i16::MAX <span class="kw">as </span>usize;
+<span class="kw">const </span>MAX_DIC_STRING_LEN: usize = MAX_POS_IDS;
+<span class="kw">const </span>MAX_ARRAY_LEN: usize = i8::MAX <span class="kw">as </span>usize;
 
-<span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">DataSource</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
-    <span class="ident">File</span>(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">Path</span>),
-    <span class="ident">Data</span>(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> [<span class="ident">u8</span>]),
+<span class="kw">pub enum </span>DataSource&lt;<span class="lifetime">&#39;a</span>&gt; {
+    File(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>Path),
+    Data(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>[u8]),
 }
 
-<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">AsDataSource</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
-    <span class="kw">fn</span> <span class="ident">convert</span>(<span class="self">self</span>) -&gt; <span class="ident">DataSource</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>;
-    <span class="kw">fn</span> <span class="ident">name</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">String</span>;
+<span class="kw">pub trait </span>AsDataSource&lt;<span class="lifetime">&#39;a</span>&gt; {
+    <span class="kw">fn </span>convert(<span class="self">self</span>) -&gt; DataSource&lt;<span class="lifetime">&#39;a</span>&gt;;
+    <span class="kw">fn </span>name(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; String;
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="ident">AsDataSource</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">DataSource</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
-    <span class="kw">fn</span> <span class="ident">convert</span>(<span class="self">self</span>) -&gt; <span class="ident">DataSource</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
-        <span class="self">self</span>
-    }
+<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; AsDataSource&lt;<span class="lifetime">&#39;a</span>&gt; <span class="kw">for </span>DataSource&lt;<span class="lifetime">&#39;a</span>&gt; {
+    <span class="kw">fn </span>convert(<span class="self">self</span>) -&gt; DataSource&lt;<span class="lifetime">&#39;a</span>&gt; {
+        <span class="self">self
+    </span>}
 
-    <span class="kw">fn</span> <span class="ident">name</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">String</span> {
-        <span class="kw">match</span> <span class="self">self</span> {
-            <span class="ident">DataSource::File</span>(<span class="ident">p</span>) =&gt; <span class="ident">p</span>.<span class="ident">to_str</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">s</span><span class="op">|</span> <span class="ident">s</span>.<span class="ident">to_owned</span>()).<span class="ident">unwrap_or_default</span>(),
-            <span class="ident">DataSource::Data</span>(<span class="ident">d</span>) =&gt; <span class="macro">format!</span>(<span class="string">&quot;memory ({} bytes)&quot;</span>, <span class="ident">d</span>.<span class="ident">len</span>()),
+    <span class="kw">fn </span>name(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; String {
+        <span class="kw">match </span><span class="self">self </span>{
+            DataSource::File(p) =&gt; p.to_str().map(|s| s.to_owned()).unwrap_or_default(),
+            DataSource::Data(d) =&gt; <span class="macro">format!</span>(<span class="string">&quot;memory ({} bytes)&quot;</span>, d.len()),
         }
     }
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="ident">AsDataSource</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">Path</span> {
-    <span class="kw">fn</span> <span class="ident">convert</span>(<span class="self">self</span>) -&gt; <span class="ident">DataSource</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
-        <span class="ident">DataSource::File</span>(<span class="self">self</span>)
+<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; AsDataSource&lt;<span class="lifetime">&#39;a</span>&gt; <span class="kw">for </span><span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>Path {
+    <span class="kw">fn </span>convert(<span class="self">self</span>) -&gt; DataSource&lt;<span class="lifetime">&#39;a</span>&gt; {
+        DataSource::File(<span class="self">self</span>)
     }
-    <span class="kw">fn</span> <span class="ident">name</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">String</span> {
-        <span class="self">self</span>.<span class="ident">to_str</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">s</span><span class="op">|</span> <span class="ident">s</span>.<span class="ident">to_owned</span>()).<span class="ident">unwrap_or_default</span>()
-    }
-}
-
-<span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="ident">AsDataSource</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> [<span class="ident">u8</span>] {
-    <span class="kw">fn</span> <span class="ident">convert</span>(<span class="self">self</span>) -&gt; <span class="ident">DataSource</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
-        <span class="ident">DataSource::Data</span>(<span class="self">self</span>)
-    }
-    <span class="kw">fn</span> <span class="ident">name</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">String</span> {
-        <span class="macro">format!</span>(<span class="string">&quot;memory ({} bytes)&quot;</span>, <span class="self">self</span>.<span class="ident">len</span>())
+    <span class="kw">fn </span>name(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; String {
+        <span class="self">self</span>.to_str().map(|s| s.to_owned()).unwrap_or_default()
     }
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="kw">const</span> <span class="ident">N</span>: <span class="ident">usize</span><span class="op">&gt;</span> <span class="ident">AsDataSource</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> [<span class="ident">u8</span>; <span class="ident">N</span>] {
-    <span class="kw">fn</span> <span class="ident">convert</span>(<span class="self">self</span>) -&gt; <span class="ident">DataSource</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
-        <span class="ident">DataSource::Data</span>(<span class="kw-2">&amp;</span><span class="self">self</span>[..])
+<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; AsDataSource&lt;<span class="lifetime">&#39;a</span>&gt; <span class="kw">for </span><span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>[u8] {
+    <span class="kw">fn </span>convert(<span class="self">self</span>) -&gt; DataSource&lt;<span class="lifetime">&#39;a</span>&gt; {
+        DataSource::Data(<span class="self">self</span>)
     }
-    <span class="kw">fn</span> <span class="ident">name</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">String</span> {
-        <span class="macro">format!</span>(<span class="string">&quot;memory ({} bytes)&quot;</span>, <span class="self">self</span>.<span class="ident">len</span>())
+    <span class="kw">fn </span>name(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; String {
+        <span class="macro">format!</span>(<span class="string">&quot;memory ({} bytes)&quot;</span>, <span class="self">self</span>.len())
     }
 }
 
-<span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">NoDic</span> {}
+<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>, <span class="kw">const </span>N: usize&gt; AsDataSource&lt;<span class="lifetime">&#39;a</span>&gt; <span class="kw">for </span><span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>[u8; N] {
+    <span class="kw">fn </span>convert(<span class="self">self</span>) -&gt; DataSource&lt;<span class="lifetime">&#39;a</span>&gt; {
+        DataSource::Data(<span class="kw-2">&amp;</span><span class="self">self</span>[..])
+    }
+    <span class="kw">fn </span>name(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; String {
+        <span class="macro">format!</span>(<span class="string">&quot;memory ({} bytes)&quot;</span>, <span class="self">self</span>.len())
+    }
+}
 
-<span class="kw">impl</span> <span class="ident">DictionaryAccess</span> <span class="kw">for</span> <span class="ident">NoDic</span> {
-    <span class="kw">fn</span> <span class="ident">grammar</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="ident">Grammar</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span> {
+<span class="kw">pub enum </span>NoDic {}
+
+<span class="kw">impl </span>DictionaryAccess <span class="kw">for </span>NoDic {
+    <span class="kw">fn </span>grammar(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>Grammar&lt;<span class="lifetime">&#39;_</span>&gt; {
         <span class="macro">panic!</span>(<span class="string">&quot;there is no grammar here&quot;</span>)
     }
 
-    <span class="kw">fn</span> <span class="ident">lexicon</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="ident">LexiconSet</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span> {
+    <span class="kw">fn </span>lexicon(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>LexiconSet&lt;<span class="lifetime">&#39;_</span>&gt; {
         <span class="macro">panic!</span>(<span class="string">&quot;there is no lexicon here&quot;</span>)
     }
 
-    <span class="kw">fn</span> <span class="ident">input_text_plugins</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>[<span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">InputTextPlugin</span> <span class="op">+</span> <span class="ident">Sync</span> <span class="op">+</span> <span class="ident">Send</span><span class="op">&gt;</span>] {
-        <span class="kw">return</span> <span class="kw-2">&amp;</span>[];
+    <span class="kw">fn </span>input_text_plugins(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>[Box&lt;<span class="kw">dyn </span>InputTextPlugin + Sync + Send&gt;] {
+        <span class="kw">return </span><span class="kw-2">&amp;</span>[];
     }
 
-    <span class="kw">fn</span> <span class="ident">oov_provider_plugins</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>[<span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">OovProviderPlugin</span> <span class="op">+</span> <span class="ident">Sync</span> <span class="op">+</span> <span class="ident">Send</span><span class="op">&gt;</span>] {
-        <span class="kw">return</span> <span class="kw-2">&amp;</span>[];
+    <span class="kw">fn </span>oov_provider_plugins(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>[Box&lt;<span class="kw">dyn </span>OovProviderPlugin + Sync + Send&gt;] {
+        <span class="kw">return </span><span class="kw-2">&amp;</span>[];
     }
 
-    <span class="kw">fn</span> <span class="ident">path_rewrite_plugins</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>[<span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">PathRewritePlugin</span> <span class="op">+</span> <span class="ident">Sync</span> <span class="op">+</span> <span class="ident">Send</span><span class="op">&gt;</span>] {
-        <span class="kw">return</span> <span class="kw-2">&amp;</span>[];
-    }
-}
-
-<span class="doccomment">/// Builds a binary dictionary from csv lexicon and connection matrix (optional)</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">DictBuilder</span><span class="op">&lt;</span><span class="ident">D</span><span class="op">&gt;</span> {
-    <span class="ident">user</span>: <span class="ident">bool</span>,
-    <span class="ident">lexicon</span>: <span class="ident">lexicon::LexiconReader</span>,
-    <span class="ident">conn</span>: <span class="ident">conn::ConnBuffer</span>,
-    <span class="ident">ctx</span>: <span class="ident">DicCompilationCtx</span>,
-    <span class="ident">header</span>: <span class="ident">Header</span>,
-    <span class="ident">resolved</span>: <span class="ident">bool</span>,
-    <span class="ident">prebuilt</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">D</span><span class="op">&gt;</span>,
-    <span class="ident">reporter</span>: <span class="ident">Reporter</span>,
-}
-
-<span class="kw">impl</span> <span class="ident">DictBuilder</span><span class="op">&lt;</span><span class="ident">NoDic</span><span class="op">&gt;</span> {
-    <span class="doccomment">/// Creates a new builder for system dictionary</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new_system</span>() -&gt; <span class="self">Self</span> {
-        <span class="ident"><span class="self">Self</span>::new_empty</span>()
+    <span class="kw">fn </span>path_rewrite_plugins(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>[Box&lt;<span class="kw">dyn </span>PathRewritePlugin + Sync + Send&gt;] {
+        <span class="kw">return </span><span class="kw-2">&amp;</span>[];
     }
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">D</span>: <span class="ident">DictionaryAccess</span><span class="op">&gt;</span> <span class="ident">DictBuilder</span><span class="op">&lt;</span><span class="ident">D</span><span class="op">&gt;</span> {
-    <span class="kw">fn</span> <span class="ident">new_empty</span>() -&gt; <span class="self">Self</span> {
-        <span class="self">Self</span> {
-            <span class="ident">user</span>: <span class="bool-val">false</span>,
-            <span class="ident">lexicon</span>: <span class="ident">lexicon::LexiconReader::new</span>(),
-            <span class="ident">conn</span>: <span class="ident">conn::ConnBuffer::new</span>(),
-            <span class="ident">ctx</span>: <span class="ident">DicCompilationCtx::default</span>(),
-            <span class="ident">header</span>: <span class="ident">Header::new</span>(),
-            <span class="ident">resolved</span>: <span class="bool-val">false</span>,
-            <span class="ident">prebuilt</span>: <span class="prelude-val">None</span>,
-            <span class="ident">reporter</span>: <span class="ident">Reporter::new</span>(),
+<span class="doccomment">/// Builds a binary dictionary from csv lexicon and connection matrix (optional)
+</span><span class="kw">pub struct </span>DictBuilder&lt;D&gt; {
+    user: bool,
+    lexicon: lexicon::LexiconReader,
+    conn: conn::ConnBuffer,
+    ctx: DicCompilationCtx,
+    header: Header,
+    resolved: bool,
+    prebuilt: <span class="prelude-ty">Option</span>&lt;D&gt;,
+    reporter: Reporter,
+}
+
+<span class="kw">impl </span>DictBuilder&lt;NoDic&gt; {
+    <span class="doccomment">/// Creates a new builder for system dictionary
+    </span><span class="kw">pub fn </span>new_system() -&gt; <span class="self">Self </span>{
+        <span class="self">Self</span>::new_empty()
+    }
+}
+
+<span class="kw">impl</span>&lt;D: DictionaryAccess&gt; DictBuilder&lt;D&gt; {
+    <span class="kw">fn </span>new_empty() -&gt; <span class="self">Self </span>{
+        <span class="self">Self </span>{
+            user: <span class="bool-val">false</span>,
+            lexicon: lexicon::LexiconReader::new(),
+            conn: conn::ConnBuffer::new(),
+            ctx: DicCompilationCtx::default(),
+            header: Header::new(),
+            resolved: <span class="bool-val">false</span>,
+            prebuilt: <span class="prelude-val">None</span>,
+            reporter: Reporter::new(),
         }
     }
 
-    <span class="doccomment">/// Creates a new builder for user dictionary</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new_user</span>(<span class="ident">system</span>: <span class="ident">D</span>) -&gt; <span class="self">Self</span> {
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">bldr</span> <span class="op">=</span> <span class="ident"><span class="self">Self</span>::new_empty</span>();
-        <span class="ident">bldr</span>.<span class="ident">set_user</span>(<span class="bool-val">true</span>);
-        <span class="ident">bldr</span>.<span class="ident">lexicon</span>.<span class="ident">preload_pos</span>(<span class="ident">system</span>.<span class="ident">grammar</span>());
-        <span class="kw">let</span> <span class="ident">cm</span> <span class="op">=</span> <span class="ident">system</span>.<span class="ident">grammar</span>().<span class="ident">conn_matrix</span>();
-        <span class="ident">bldr</span>.<span class="ident">lexicon</span>
-            .<span class="ident">set_max_conn_sizes</span>(<span class="ident">cm</span>.<span class="ident">num_left</span>() <span class="kw">as</span> <span class="kw">_</span>, <span class="ident">cm</span>.<span class="ident">num_right</span>() <span class="kw">as</span> <span class="kw">_</span>);
-        <span class="ident">bldr</span>.<span class="ident">lexicon</span>
-            .<span class="ident">set_num_system_words</span>(<span class="ident">system</span>.<span class="ident">lexicon</span>().<span class="ident">size</span>() <span class="kw">as</span> <span class="ident">usize</span>);
-        <span class="ident">bldr</span>.<span class="ident">prebuilt</span> <span class="op">=</span> <span class="prelude-val">Some</span>(<span class="ident">system</span>);
-        <span class="ident">bldr</span>
+    <span class="doccomment">/// Creates a new builder for user dictionary
+    </span><span class="kw">pub fn </span>new_user(system: D) -&gt; <span class="self">Self </span>{
+        <span class="kw">let </span><span class="kw-2">mut </span>bldr = <span class="self">Self</span>::new_empty();
+        bldr.set_user(<span class="bool-val">true</span>);
+        bldr.lexicon.preload_pos(system.grammar());
+        <span class="kw">let </span>cm = system.grammar().conn_matrix();
+        bldr.lexicon
+            .set_max_conn_sizes(cm.num_left() <span class="kw">as _</span>, cm.num_right() <span class="kw">as _</span>);
+        bldr.lexicon
+            .set_num_system_words(system.lexicon().size() <span class="kw">as </span>usize);
+        bldr.prebuilt = <span class="prelude-val">Some</span>(system);
+        bldr
     }
 
-    <span class="doccomment">/// Set the dictionary compile time to the specified time</span>
-    <span class="doccomment">/// instead of current time</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">set_compile_time</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Into</span><span class="op">&lt;</span><span class="ident">std::time::SystemTime</span><span class="op">&gt;</span><span class="op">&gt;</span>(
-        <span class="kw-2">&amp;mut</span> <span class="self">self</span>,
-        <span class="ident">time</span>: <span class="ident">T</span>,
-    ) -&gt; <span class="ident">std::time::SystemTime</span> {
-        <span class="self">self</span>.<span class="ident">header</span>.<span class="ident">set_time</span>(<span class="ident">time</span>.<span class="ident">into</span>())
+    <span class="doccomment">/// Set the dictionary compile time to the specified time
+    /// instead of current time
+    </span><span class="kw">pub fn </span>set_compile_time&lt;T: Into&lt;std::time::SystemTime&gt;&gt;(
+        <span class="kw-2">&amp;mut </span><span class="self">self</span>,
+        time: T,
+    ) -&gt; std::time::SystemTime {
+        <span class="self">self</span>.header.set_time(time.into())
     }
 
-    <span class="doccomment">/// Set the dictionary description</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">set_description</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Into</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span><span class="op">&gt;</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">description</span>: <span class="ident">T</span>) {
-        <span class="self">self</span>.<span class="ident">header</span>.<span class="ident">description</span> <span class="op">=</span> <span class="ident">description</span>.<span class="ident">into</span>()
+    <span class="doccomment">/// Set the dictionary description
+    </span><span class="kw">pub fn </span>set_description&lt;T: Into&lt;String&gt;&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, description: T) {
+        <span class="self">self</span>.header.description = description.into()
     }
 
-    <span class="doccomment">/// Read the csv lexicon from either a file or an in-memory buffer</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">read_lexicon</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">T</span>: <span class="ident">AsDataSource</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="op">+</span> <span class="lifetime">&#39;a</span><span class="op">&gt;</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">data</span>: <span class="ident">T</span>) -&gt; <span class="ident">SudachiResult</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span> {
-        <span class="kw">let</span> <span class="ident">report</span> <span class="op">=</span> <span class="ident">ReportBuilder::new</span>(<span class="ident">data</span>.<span class="ident">name</span>()).<span class="ident">read</span>();
-        <span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">data</span>.<span class="ident">convert</span>() {
-            <span class="ident">DataSource::File</span>(<span class="ident">p</span>) =&gt; <span class="self">self</span>.<span class="ident">lexicon</span>.<span class="ident">read_file</span>(<span class="ident">p</span>),
-            <span class="ident">DataSource::Data</span>(<span class="ident">d</span>) =&gt; <span class="self">self</span>.<span class="ident">lexicon</span>.<span class="ident">read_bytes</span>(<span class="ident">d</span>),
+    <span class="doccomment">/// Read the csv lexicon from either a file or an in-memory buffer
+    </span><span class="kw">pub fn </span>read_lexicon&lt;<span class="lifetime">&#39;a</span>, T: AsDataSource&lt;<span class="lifetime">&#39;a</span>&gt; + <span class="lifetime">&#39;a</span>&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, data: T) -&gt; SudachiResult&lt;usize&gt; {
+        <span class="kw">let </span>report = ReportBuilder::new(data.name()).read();
+        <span class="kw">let </span>result = <span class="kw">match </span>data.convert() {
+            DataSource::File(p) =&gt; <span class="self">self</span>.lexicon.read_file(p),
+            DataSource::Data(d) =&gt; <span class="self">self</span>.lexicon.read_bytes(d),
         };
-        <span class="self">self</span>.<span class="ident">reporter</span>.<span class="ident">collect_r</span>(<span class="ident">result</span>, <span class="ident">report</span>)
+        <span class="self">self</span>.reporter.collect_r(result, report)
     }
 
-    <span class="doccomment">/// Read the connection matrix from either a file or an in-memory buffer</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">read_conn</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">T</span>: <span class="ident">AsDataSource</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="op">+</span> <span class="lifetime">&#39;a</span><span class="op">&gt;</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">data</span>: <span class="ident">T</span>) -&gt; <span class="ident">SudachiResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
-        <span class="kw">let</span> <span class="ident">report</span> <span class="op">=</span> <span class="ident">ReportBuilder::new</span>(<span class="ident">data</span>.<span class="ident">name</span>()).<span class="ident">read</span>();
-        <span class="kw">match</span> <span class="ident">data</span>.<span class="ident">convert</span>() {
-            <span class="ident">DataSource::File</span>(<span class="ident">p</span>) =&gt; <span class="self">self</span>.<span class="ident">conn</span>.<span class="ident">read_file</span>(<span class="ident">p</span>),
-            <span class="ident">DataSource::Data</span>(<span class="ident">d</span>) =&gt; <span class="self">self</span>.<span class="ident">conn</span>.<span class="ident">read</span>(<span class="ident">d</span>),
+    <span class="doccomment">/// Read the connection matrix from either a file or an in-memory buffer
+    </span><span class="kw">pub fn </span>read_conn&lt;<span class="lifetime">&#39;a</span>, T: AsDataSource&lt;<span class="lifetime">&#39;a</span>&gt; + <span class="lifetime">&#39;a</span>&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, data: T) -&gt; SudachiResult&lt;()&gt; {
+        <span class="kw">let </span>report = ReportBuilder::new(data.name()).read();
+        <span class="kw">match </span>data.convert() {
+            DataSource::File(p) =&gt; <span class="self">self</span>.conn.read_file(p),
+            DataSource::Data(d) =&gt; <span class="self">self</span>.conn.read(d),
         }<span class="question-mark">?</span>;
-        <span class="self">self</span>.<span class="ident">lexicon</span>
-            .<span class="ident">set_max_conn_sizes</span>(<span class="self">self</span>.<span class="ident">conn</span>.<span class="ident">left</span>(), <span class="self">self</span>.<span class="ident">conn</span>.<span class="ident">right</span>());
-        <span class="self">self</span>.<span class="ident">reporter</span>.<span class="ident">collect</span>(
-            <span class="self">self</span>.<span class="ident">conn</span>.<span class="ident">left</span>() <span class="kw">as</span> <span class="ident">usize</span> <span class="op">*</span> <span class="self">self</span>.<span class="ident">conn</span>.<span class="ident">right</span>() <span class="kw">as</span> <span class="ident">usize</span>,
-            <span class="ident">report</span>,
+        <span class="self">self</span>.lexicon
+            .set_max_conn_sizes(<span class="self">self</span>.conn.left(), <span class="self">self</span>.conn.right());
+        <span class="self">self</span>.reporter.collect(
+            <span class="self">self</span>.conn.left() <span class="kw">as </span>usize * <span class="self">self</span>.conn.right() <span class="kw">as </span>usize,
+            report,
         );
         <span class="prelude-val">Ok</span>(())
     }
 
-    <span class="doccomment">/// Compile the binary dictionary and write it to the specified sink</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">compile</span><span class="op">&lt;</span><span class="ident">W</span>: <span class="ident">Write</span><span class="op">&gt;</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">w</span>: <span class="kw-2">&amp;mut</span> <span class="ident">W</span>) -&gt; <span class="ident">SudachiResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
-        <span class="self">self</span>.<span class="ident">check_if_resolved</span>()<span class="question-mark">?</span>;
-        <span class="kw">let</span> <span class="ident">report</span> <span class="op">=</span> <span class="ident">ReportBuilder::new</span>(<span class="string">&quot;validate&quot;</span>).<span class="ident">read</span>();
-        <span class="self">self</span>.<span class="ident">lexicon</span>.<span class="ident">validate_entries</span>()<span class="question-mark">?</span>;
-        <span class="self">self</span>.<span class="ident">reporter</span>.<span class="ident">collect</span>(<span class="self">self</span>.<span class="ident">lexicon</span>.<span class="ident">entries</span>().<span class="ident">len</span>(), <span class="ident">report</span>);
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">written</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">header</span>.<span class="ident">write_to</span>(<span class="ident">w</span>)<span class="question-mark">?</span>;
-        <span class="ident">written</span> <span class="op">+</span><span class="op">=</span> <span class="self">self</span>.<span class="ident">write_grammar</span>(<span class="ident">w</span>)<span class="question-mark">?</span>;
-        <span class="self">self</span>.<span class="ident">write_lexicon</span>(<span class="ident">w</span>, <span class="ident">written</span>)<span class="question-mark">?</span>;
+    <span class="doccomment">/// Compile the binary dictionary and write it to the specified sink
+    </span><span class="kw">pub fn </span>compile&lt;W: Write&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, w: <span class="kw-2">&amp;mut </span>W) -&gt; SudachiResult&lt;()&gt; {
+        <span class="self">self</span>.check_if_resolved()<span class="question-mark">?</span>;
+        <span class="kw">let </span>report = ReportBuilder::new(<span class="string">&quot;validate&quot;</span>).read();
+        <span class="self">self</span>.lexicon.validate_entries()<span class="question-mark">?</span>;
+        <span class="self">self</span>.reporter.collect(<span class="self">self</span>.lexicon.entries().len(), report);
+        <span class="kw">let </span><span class="kw-2">mut </span>written = <span class="self">self</span>.header.write_to(w)<span class="question-mark">?</span>;
+        written += <span class="self">self</span>.write_grammar(w)<span class="question-mark">?</span>;
+        <span class="self">self</span>.write_lexicon(w, written)<span class="question-mark">?</span>;
         <span class="prelude-val">Ok</span>(())
     }
 
-    <span class="doccomment">/// Resolve the dictionary references.</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// Returns the number of resolved entries</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">resolve</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>) -&gt; <span class="ident">SudachiResult</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span> {
-        <span class="self">self</span>.<span class="ident">resolve_impl</span>()
+    <span class="doccomment">/// Resolve the dictionary references.
+    ///
+    /// Returns the number of resolved entries
+    </span><span class="kw">pub fn </span>resolve(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; SudachiResult&lt;usize&gt; {
+        <span class="self">self</span>.resolve_impl()
     }
 
-    <span class="doccomment">/// Return dictionary build report</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">report</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>[<span class="ident">DictPartReport</span>] {
-        <span class="self">self</span>.<span class="ident">reporter</span>.<span class="ident">reports</span>()
+    <span class="doccomment">/// Return dictionary build report
+    </span><span class="kw">pub fn </span>report(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>[DictPartReport] {
+        <span class="self">self</span>.reporter.reports()
     }
 }
 
-<span class="comment">// private functions</span>
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">D</span>: <span class="ident">DictionaryAccess</span><span class="op">&gt;</span> <span class="ident">DictBuilder</span><span class="op">&lt;</span><span class="ident">D</span><span class="op">&gt;</span> {
-    <span class="kw">fn</span> <span class="ident">set_user</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">user</span>: <span class="ident">bool</span>) {
-        <span class="kw">if</span> <span class="ident">user</span> {
-            <span class="self">self</span>.<span class="ident">header</span>.<span class="ident">version</span> <span class="op">=</span> <span class="ident">HeaderVersion::UserDict</span>(<span class="ident">UserDictVersion::Version3</span>)
-        } <span class="kw">else</span> {
-            <span class="self">self</span>.<span class="ident">header</span>.<span class="ident">version</span> <span class="op">=</span> <span class="ident">HeaderVersion::SystemDict</span>(<span class="ident">SystemDictVersion::Version2</span>)
+<span class="comment">// private functions
+</span><span class="kw">impl</span>&lt;D: DictionaryAccess&gt; DictBuilder&lt;D&gt; {
+    <span class="kw">fn </span>set_user(<span class="kw-2">&amp;mut </span><span class="self">self</span>, user: bool) {
+        <span class="kw">if </span>user {
+            <span class="self">self</span>.header.version = HeaderVersion::UserDict(UserDictVersion::Version3)
+        } <span class="kw">else </span>{
+            <span class="self">self</span>.header.version = HeaderVersion::SystemDict(SystemDictVersion::Version2)
         }
-        <span class="self">self</span>.<span class="ident">user</span> <span class="op">=</span> <span class="ident">user</span>;
+        <span class="self">self</span>.user = user;
     }
 
-    <span class="kw">fn</span> <span class="ident">write_grammar</span><span class="op">&lt;</span><span class="ident">W</span>: <span class="ident">Write</span><span class="op">&gt;</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">w</span>: <span class="kw-2">&amp;mut</span> <span class="ident">W</span>) -&gt; <span class="ident">SudachiResult</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span> {
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">size</span> <span class="op">=</span> <span class="number">0</span>;
-        <span class="kw">let</span> <span class="ident">r1</span> <span class="op">=</span> <span class="ident">ReportBuilder::new</span>(<span class="string">&quot;pos_table&quot;</span>);
-        <span class="ident">size</span> <span class="op">+</span><span class="op">=</span> <span class="self">self</span>.<span class="ident">lexicon</span>.<span class="ident">write_pos_table</span>(<span class="ident">w</span>)<span class="question-mark">?</span>;
-        <span class="self">self</span>.<span class="ident">reporter</span>.<span class="ident">collect</span>(<span class="ident">size</span>, <span class="ident">r1</span>);
-        <span class="kw">let</span> <span class="ident">r2</span> <span class="op">=</span> <span class="ident">ReportBuilder::new</span>(<span class="string">&quot;conn_matrix&quot;</span>);
-        <span class="ident">size</span> <span class="op">+</span><span class="op">=</span> <span class="self">self</span>.<span class="ident">conn</span>.<span class="ident">write_to</span>(<span class="ident">w</span>)<span class="question-mark">?</span>;
-        <span class="self">self</span>.<span class="ident">reporter</span>.<span class="ident">collect</span>(<span class="ident">size</span>, <span class="ident">r2</span>);
-        <span class="prelude-val">Ok</span>(<span class="ident">size</span>)
+    <span class="kw">fn </span>write_grammar&lt;W: Write&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, w: <span class="kw-2">&amp;mut </span>W) -&gt; SudachiResult&lt;usize&gt; {
+        <span class="kw">let </span><span class="kw-2">mut </span>size = <span class="number">0</span>;
+        <span class="kw">let </span>r1 = ReportBuilder::new(<span class="string">&quot;pos_table&quot;</span>);
+        size += <span class="self">self</span>.lexicon.write_pos_table(w)<span class="question-mark">?</span>;
+        <span class="self">self</span>.reporter.collect(size, r1);
+        <span class="kw">let </span>r2 = ReportBuilder::new(<span class="string">&quot;conn_matrix&quot;</span>);
+        size += <span class="self">self</span>.conn.write_to(w)<span class="question-mark">?</span>;
+        <span class="self">self</span>.reporter.collect(size, r2);
+        <span class="prelude-val">Ok</span>(size)
     }
 
-    <span class="kw">fn</span> <span class="ident">write_index</span><span class="op">&lt;</span><span class="ident">W</span>: <span class="ident">Write</span><span class="op">&gt;</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">w</span>: <span class="kw-2">&amp;mut</span> <span class="ident">W</span>) -&gt; <span class="ident">SudachiResult</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span> {
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">size</span> <span class="op">=</span> <span class="number">0</span>;
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">index</span> <span class="op">=</span> <span class="ident">IndexBuilder::new</span>();
-        <span class="kw">for</span> (<span class="ident">i</span>, <span class="ident">e</span>) <span class="kw">in</span> <span class="self">self</span>.<span class="ident">lexicon</span>.<span class="ident">entries</span>().<span class="ident">iter</span>().<span class="ident">enumerate</span>() {
-            <span class="kw">if</span> <span class="ident">e</span>.<span class="ident">should_index</span>() {
-                <span class="kw">let</span> <span class="ident">wid</span> <span class="op">=</span> <span class="ident">WordId::checked</span>(<span class="number">0</span>, <span class="ident">i</span> <span class="kw">as</span> <span class="ident">u32</span>)<span class="question-mark">?</span>;
-                <span class="ident">index</span>.<span class="ident">add</span>(<span class="ident">e</span>.<span class="ident">surface</span>(), <span class="ident">wid</span>);
+    <span class="kw">fn </span>write_index&lt;W: Write&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, w: <span class="kw-2">&amp;mut </span>W) -&gt; SudachiResult&lt;usize&gt; {
+        <span class="kw">let </span><span class="kw-2">mut </span>size = <span class="number">0</span>;
+        <span class="kw">let </span><span class="kw-2">mut </span>index = IndexBuilder::new();
+        <span class="kw">for </span>(i, e) <span class="kw">in </span><span class="self">self</span>.lexicon.entries().iter().enumerate() {
+            <span class="kw">if </span>e.should_index() {
+                <span class="kw">let </span>wid = WordId::checked(<span class="number">0</span>, i <span class="kw">as </span>u32)<span class="question-mark">?</span>;
+                index.add(e.surface(), wid);
             }
         }
 
-        <span class="kw">let</span> <span class="ident">report</span> <span class="op">=</span> <span class="ident">ReportBuilder::new</span>(<span class="string">&quot;trie&quot;</span>);
-        <span class="kw">let</span> <span class="ident">word_id_table</span> <span class="op">=</span> <span class="ident">index</span>.<span class="ident">build_word_id_table</span>()<span class="question-mark">?</span>;
-        <span class="kw">let</span> <span class="ident">trie</span> <span class="op">=</span> <span class="ident">index</span>.<span class="ident">build_trie</span>()<span class="question-mark">?</span>;
+        <span class="kw">let </span>report = ReportBuilder::new(<span class="string">&quot;trie&quot;</span>);
+        <span class="kw">let </span>word_id_table = index.build_word_id_table()<span class="question-mark">?</span>;
+        <span class="kw">let </span>trie = index.build_trie()<span class="question-mark">?</span>;
 
-        <span class="kw">let</span> <span class="ident">trie_size</span> <span class="op">=</span> <span class="ident">trie</span>.<span class="ident">len</span>() <span class="op">/</span> <span class="number">4</span>;
-        <span class="ident">w</span>.<span class="ident">write_all</span>(<span class="kw-2">&amp;</span>(<span class="ident">trie_size</span> <span class="kw">as</span> <span class="ident">u32</span>).<span class="ident">to_le_bytes</span>())<span class="question-mark">?</span>;
-        <span class="ident">size</span> <span class="op">+</span><span class="op">=</span> <span class="number">4</span>;
-        <span class="ident">w</span>.<span class="ident">write_all</span>(<span class="kw-2">&amp;</span><span class="ident">trie</span>)<span class="question-mark">?</span>;
-        <span class="ident">size</span> <span class="op">+</span><span class="op">=</span> <span class="ident">trie</span>.<span class="ident">len</span>();
-        <span class="ident">std::mem::drop</span>(<span class="ident">trie</span>); <span class="comment">//can be big, so drop explicitly</span>
-        <span class="self">self</span>.<span class="ident">reporter</span>.<span class="ident">collect</span>(<span class="ident">size</span>, <span class="ident">report</span>);
-        <span class="kw">let</span> <span class="ident">cur_size</span> <span class="op">=</span> <span class="ident">size</span>;
+        <span class="kw">let </span>trie_size = trie.len() / <span class="number">4</span>;
+        w.write_all(<span class="kw-2">&amp;</span>(trie_size <span class="kw">as </span>u32).to_le_bytes())<span class="question-mark">?</span>;
+        size += <span class="number">4</span>;
+        w.write_all(<span class="kw-2">&amp;</span>trie)<span class="question-mark">?</span>;
+        size += trie.len();
+        std::mem::drop(trie); <span class="comment">//can be big, so drop explicitly
+        </span><span class="self">self</span>.reporter.collect(size, report);
+        <span class="kw">let </span>cur_size = size;
 
-        <span class="kw">let</span> <span class="ident">report</span> <span class="op">=</span> <span class="ident">ReportBuilder::new</span>(<span class="string">&quot;word_id table&quot;</span>);
-        <span class="ident">w</span>.<span class="ident">write_all</span>(<span class="kw-2">&amp;</span>(<span class="ident">word_id_table</span>.<span class="ident">len</span>() <span class="kw">as</span> <span class="ident">u32</span>).<span class="ident">to_le_bytes</span>())<span class="question-mark">?</span>;
-        <span class="ident">size</span> <span class="op">+</span><span class="op">=</span> <span class="number">4</span>;
-        <span class="ident">w</span>.<span class="ident">write_all</span>(<span class="kw-2">&amp;</span><span class="ident">word_id_table</span>)<span class="question-mark">?</span>;
-        <span class="ident">size</span> <span class="op">+</span><span class="op">=</span> <span class="ident">word_id_table</span>.<span class="ident">len</span>();
-        <span class="self">self</span>.<span class="ident">reporter</span>.<span class="ident">collect</span>(<span class="ident">size</span> <span class="op">-</span> <span class="ident">cur_size</span>, <span class="ident">report</span>);
+        <span class="kw">let </span>report = ReportBuilder::new(<span class="string">&quot;word_id table&quot;</span>);
+        w.write_all(<span class="kw-2">&amp;</span>(word_id_table.len() <span class="kw">as </span>u32).to_le_bytes())<span class="question-mark">?</span>;
+        size += <span class="number">4</span>;
+        w.write_all(<span class="kw-2">&amp;</span>word_id_table)<span class="question-mark">?</span>;
+        size += word_id_table.len();
+        <span class="self">self</span>.reporter.collect(size - cur_size, report);
 
-        <span class="prelude-val">Ok</span>(<span class="ident">size</span>)
+        <span class="prelude-val">Ok</span>(size)
     }
 
-    <span class="kw">fn</span> <span class="ident">write_lexicon</span><span class="op">&lt;</span><span class="ident">W</span>: <span class="ident">Write</span><span class="op">&gt;</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">w</span>: <span class="kw-2">&amp;mut</span> <span class="ident">W</span>, <span class="ident">offset</span>: <span class="ident">usize</span>) -&gt; <span class="ident">SudachiResult</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span> {
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">size</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">write_index</span>(<span class="ident">w</span>)<span class="question-mark">?</span>;
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">writer</span> <span class="op">=</span>
-            <span class="ident">LexiconWriter::new</span>(<span class="self">self</span>.<span class="ident">lexicon</span>.<span class="ident">entries</span>(), <span class="ident">offset</span> <span class="op">+</span> <span class="ident">size</span>, <span class="kw-2">&amp;mut</span> <span class="self">self</span>.<span class="ident">reporter</span>);
-        <span class="ident">size</span> <span class="op">+</span><span class="op">=</span> <span class="ident">writer</span>.<span class="ident">write</span>(<span class="ident">w</span>)<span class="question-mark">?</span>;
-        <span class="prelude-val">Ok</span>(<span class="ident">size</span>)
+    <span class="kw">fn </span>write_lexicon&lt;W: Write&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, w: <span class="kw-2">&amp;mut </span>W, offset: usize) -&gt; SudachiResult&lt;usize&gt; {
+        <span class="kw">let </span><span class="kw-2">mut </span>size = <span class="self">self</span>.write_index(w)<span class="question-mark">?</span>;
+        <span class="kw">let </span><span class="kw-2">mut </span>writer =
+            LexiconWriter::new(<span class="self">self</span>.lexicon.entries(), offset + size, <span class="kw-2">&amp;mut </span><span class="self">self</span>.reporter);
+        size += writer.write(w)<span class="question-mark">?</span>;
+        <span class="prelude-val">Ok</span>(size)
     }
 
-    <span class="kw">fn</span> <span class="ident">check_if_resolved</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">SudachiResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
-        <span class="kw">if</span> <span class="self">self</span>.<span class="ident">lexicon</span>.<span class="ident">needs_split_resolution</span>() <span class="op">&amp;&amp;</span> <span class="op">!</span><span class="self">self</span>.<span class="ident">resolved</span> {
-            <span class="kw">return</span> <span class="self">self</span>.<span class="ident">ctx</span>.<span class="ident">err</span>(<span class="ident">BuildFailure::UnresolvedSplits</span>);
+    <span class="kw">fn </span>check_if_resolved(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; SudachiResult&lt;()&gt; {
+        <span class="kw">if </span><span class="self">self</span>.lexicon.needs_split_resolution() &amp;&amp; !<span class="self">self</span>.resolved {
+            <span class="kw">return </span><span class="self">self</span>.ctx.err(BuildFailure::UnresolvedSplits);
         }
 
         <span class="prelude-val">Ok</span>(())
     }
 
-    <span class="doccomment">/// this function must only be used in resolve_impl</span>
-    <span class="kw">fn</span> <span class="ident">unsafe_make_resolver</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="self">self</span>) -&gt; <span class="ident">RawDictResolver</span><span class="op">&lt;</span><span class="lifetime">&#39;b</span><span class="op">&gt;</span> {
-        <span class="kw">let</span> <span class="ident">resolver</span> <span class="op">=</span> <span class="ident">RawDictResolver::new</span>(<span class="self">self</span>.<span class="ident">lexicon</span>.<span class="ident">entries</span>(), <span class="self">self</span>.<span class="ident">user</span>);
-        <span class="comment">// resolver borrows parts of entries, but it does not touch splits</span>
-        <span class="comment">// resolve function only modifies splits</span>
-        <span class="kw">unsafe</span> { <span class="ident">std::mem::transmute</span>(<span class="ident">resolver</span>) }
+    <span class="doccomment">/// this function must only be used in resolve_impl
+    </span><span class="kw">fn </span>unsafe_make_resolver&lt;<span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span>&gt;(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="self">self</span>) -&gt; RawDictResolver&lt;<span class="lifetime">&#39;b</span>&gt; {
+        <span class="kw">let </span>resolver = RawDictResolver::new(<span class="self">self</span>.lexicon.entries(), <span class="self">self</span>.user);
+        <span class="comment">// resolver borrows parts of entries, but it does not touch splits
+        // resolve function only modifies splits
+        </span><span class="kw">unsafe </span>{ std::mem::transmute(resolver) }
     }
 
-    <span class="kw">fn</span> <span class="ident">resolve_impl</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>) -&gt; <span class="ident">SudachiResult</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span> {
-        <span class="kw">if</span> <span class="op">!</span><span class="self">self</span>.<span class="ident">lexicon</span>.<span class="ident">needs_split_resolution</span>() {
-            <span class="self">self</span>.<span class="ident">resolved</span> <span class="op">=</span> <span class="bool-val">true</span>;
-            <span class="kw">return</span> <span class="prelude-val">Ok</span>(<span class="number">0</span>);
+    <span class="kw">fn </span>resolve_impl(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; SudachiResult&lt;usize&gt; {
+        <span class="kw">if </span>!<span class="self">self</span>.lexicon.needs_split_resolution() {
+            <span class="self">self</span>.resolved = <span class="bool-val">true</span>;
+            <span class="kw">return </span><span class="prelude-val">Ok</span>(<span class="number">0</span>);
         }
 
-        <span class="kw">let</span> <span class="ident">this_resolver</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">unsafe_make_resolver</span>();
-        <span class="kw">let</span> <span class="ident">report</span> <span class="op">=</span> <span class="ident">ReportBuilder::new</span>(<span class="string">&quot;resolve&quot;</span>);
+        <span class="kw">let </span>this_resolver = <span class="self">self</span>.unsafe_make_resolver();
+        <span class="kw">let </span>report = ReportBuilder::new(<span class="string">&quot;resolve&quot;</span>);
 
-        <span class="kw">let</span> <span class="ident">cnt</span> <span class="op">=</span> <span class="kw">match</span> <span class="self">self</span>.<span class="ident">prebuilt</span>.<span class="ident">as_ref</span>() {
-            <span class="prelude-val">Some</span>(<span class="ident">d</span>) =&gt; {
-                <span class="kw">let</span> <span class="ident">built_resolver</span> <span class="op">=</span> <span class="ident">BinDictResolver::new</span>(<span class="ident">d</span>)<span class="question-mark">?</span>;
-                <span class="kw">let</span> <span class="ident">chained</span> <span class="op">=</span> <span class="ident">ChainedResolver::new</span>(<span class="ident">this_resolver</span>, <span class="ident">built_resolver</span>);
-                <span class="self">self</span>.<span class="ident">lexicon</span>.<span class="ident">resolve_splits</span>(<span class="kw-2">&amp;</span><span class="ident">chained</span>)
+        <span class="kw">let </span>cnt = <span class="kw">match </span><span class="self">self</span>.prebuilt.as_ref() {
+            <span class="prelude-val">Some</span>(d) =&gt; {
+                <span class="kw">let </span>built_resolver = BinDictResolver::new(d)<span class="question-mark">?</span>;
+                <span class="kw">let </span>chained = ChainedResolver::new(this_resolver, built_resolver);
+                <span class="self">self</span>.lexicon.resolve_splits(<span class="kw-2">&amp;</span>chained)
             }
-            <span class="prelude-val">None</span> =&gt; <span class="self">self</span>.<span class="ident">lexicon</span>.<span class="ident">resolve_splits</span>(<span class="kw-2">&amp;</span><span class="ident">this_resolver</span>),
+            <span class="prelude-val">None </span>=&gt; <span class="self">self</span>.lexicon.resolve_splits(<span class="kw-2">&amp;</span>this_resolver),
         };
-        <span class="kw">let</span> <span class="ident">cnt</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">reporter</span>.<span class="ident">collect_r</span>(<span class="ident">cnt</span>, <span class="ident">report</span>);
-        <span class="kw">match</span> <span class="ident">cnt</span> {
-            <span class="prelude-val">Ok</span>(<span class="ident">cnt</span>) =&gt; {
-                <span class="self">self</span>.<span class="ident">resolved</span> <span class="op">=</span> <span class="bool-val">true</span>;
-                <span class="prelude-val">Ok</span>(<span class="ident">cnt</span>)
+        <span class="kw">let </span>cnt = <span class="self">self</span>.reporter.collect_r(cnt, report);
+        <span class="kw">match </span>cnt {
+            <span class="prelude-val">Ok</span>(cnt) =&gt; {
+                <span class="self">self</span>.resolved = <span class="bool-val">true</span>;
+                <span class="prelude-val">Ok</span>(cnt)
             }
-            <span class="prelude-val">Err</span>((<span class="ident">split_info</span>, <span class="ident">line</span>)) =&gt; <span class="prelude-val">Err</span>(<span class="ident">DicBuildError</span> {
-                <span class="ident">file</span>: <span class="string">&quot;&lt;entries&gt;&quot;</span>.<span class="ident">to_owned</span>(),
-                <span class="ident">line</span>,
-                <span class="ident">cause</span>: <span class="ident">BuildFailure::InvalidSplitWordReference</span>(<span class="ident">split_info</span>),
+            <span class="prelude-val">Err</span>((split_info, line)) =&gt; <span class="prelude-val">Err</span>(DicBuildError {
+                file: <span class="string">&quot;&lt;entries&gt;&quot;</span>.to_owned(),
+                line,
+                cause: BuildFailure::InvalidSplitWordReference(split_info),
             }
-            .<span class="ident">into</span>()),
+            .into()),
         }
     }
 }
 </code></pre></div>
-</section><section id="search" class="content hidden"></section><div id="rustdoc-vars" data-root-path="../../../../" data-current-crate="sudachi" data-search-index-js="../../../../search-index.js" data-search-js="../../../../search.js"></div>
-</body></html>
+</section></div></main><div id="rustdoc-vars" data-root-path="../../../../" data-current-crate="sudachi" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0 (897e37553 2022-11-02)" ></div></body></html>

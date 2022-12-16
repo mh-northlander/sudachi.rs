@@ -1,103 +1,102 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `sudachi&#x2F;src&#x2F;analysis&#x2F;lattice.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>lattice.rs - source</title><link rel="stylesheet" type="text/css" href="../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../../ayu.css" disabled ><script id="default-settings" ></script><script src="../../../storage.js"></script><script src="../../../crates.js"></script><script defer src="../../../main.js"></script><script defer src="../../../source-script.js"></script><script defer src="../../../source-files.js"></script>
-    <noscript><link rel="stylesheet" href="../../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../../favicon.svg"><style type="text/css">#crate-search{background-image:url("../../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu" role="button">&#9776;</div><a href='../../../sudachi/index.html'><div class='logo-container rust-logo'><img src='../../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu" title="themes"><img width="18" height="18" alt="Pick another theme!" src="../../../brush.svg"></button><div id="theme-choices" role="menu"></div></div><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" id="help-button" title="help">?</button><a id="settings-menu" href="../../../settings.html" title="settings"><img width="18" height="18" alt="Change settings" src="../../../wheel.svg"></a></div></form></nav><section id="main" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">  1</span>
-<span id="2">  2</span>
-<span id="3">  3</span>
-<span id="4">  4</span>
-<span id="5">  5</span>
-<span id="6">  6</span>
-<span id="7">  7</span>
-<span id="8">  8</span>
-<span id="9">  9</span>
-<span id="10"> 10</span>
-<span id="11"> 11</span>
-<span id="12"> 12</span>
-<span id="13"> 13</span>
-<span id="14"> 14</span>
-<span id="15"> 15</span>
-<span id="16"> 16</span>
-<span id="17"> 17</span>
-<span id="18"> 18</span>
-<span id="19"> 19</span>
-<span id="20"> 20</span>
-<span id="21"> 21</span>
-<span id="22"> 22</span>
-<span id="23"> 23</span>
-<span id="24"> 24</span>
-<span id="25"> 25</span>
-<span id="26"> 26</span>
-<span id="27"> 27</span>
-<span id="28"> 28</span>
-<span id="29"> 29</span>
-<span id="30"> 30</span>
-<span id="31"> 31</span>
-<span id="32"> 32</span>
-<span id="33"> 33</span>
-<span id="34"> 34</span>
-<span id="35"> 35</span>
-<span id="36"> 36</span>
-<span id="37"> 37</span>
-<span id="38"> 38</span>
-<span id="39"> 39</span>
-<span id="40"> 40</span>
-<span id="41"> 41</span>
-<span id="42"> 42</span>
-<span id="43"> 43</span>
-<span id="44"> 44</span>
-<span id="45"> 45</span>
-<span id="46"> 46</span>
-<span id="47"> 47</span>
-<span id="48"> 48</span>
-<span id="49"> 49</span>
-<span id="50"> 50</span>
-<span id="51"> 51</span>
-<span id="52"> 52</span>
-<span id="53"> 53</span>
-<span id="54"> 54</span>
-<span id="55"> 55</span>
-<span id="56"> 56</span>
-<span id="57"> 57</span>
-<span id="58"> 58</span>
-<span id="59"> 59</span>
-<span id="60"> 60</span>
-<span id="61"> 61</span>
-<span id="62"> 62</span>
-<span id="63"> 63</span>
-<span id="64"> 64</span>
-<span id="65"> 65</span>
-<span id="66"> 66</span>
-<span id="67"> 67</span>
-<span id="68"> 68</span>
-<span id="69"> 69</span>
-<span id="70"> 70</span>
-<span id="71"> 71</span>
-<span id="72"> 72</span>
-<span id="73"> 73</span>
-<span id="74"> 74</span>
-<span id="75"> 75</span>
-<span id="76"> 76</span>
-<span id="77"> 77</span>
-<span id="78"> 78</span>
-<span id="79"> 79</span>
-<span id="80"> 80</span>
-<span id="81"> 81</span>
-<span id="82"> 82</span>
-<span id="83"> 83</span>
-<span id="84"> 84</span>
-<span id="85"> 85</span>
-<span id="86"> 86</span>
-<span id="87"> 87</span>
-<span id="88"> 88</span>
-<span id="89"> 89</span>
-<span id="90"> 90</span>
-<span id="91"> 91</span>
-<span id="92"> 92</span>
-<span id="93"> 93</span>
-<span id="94"> 94</span>
-<span id="95"> 95</span>
-<span id="96"> 96</span>
-<span id="97"> 97</span>
-<span id="98"> 98</span>
-<span id="99"> 99</span>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `sudachi/src/analysis/lattice.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>lattice.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" href="../../../normalize.css"><link rel="stylesheet" href="../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" href="../../../ayu.css" disabled><link rel="stylesheet" href="../../../dark.css" disabled><link rel="stylesheet" href="../../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../../storage.js"></script><script defer src="../../../source-script.js"></script><script defer src="../../../source-files.js"></script><script defer src="../../../main.js"></script><noscript><link rel="stylesheet" href="../../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../../favicon.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="sidebar-logo" href="../../../sudachi/index.html"><div class="logo-container"><img class="rust-logo" src="../../../rust-logo.svg" alt="logo"></div></a><h2 class="location"></h2></nav><nav class="sidebar"><a class="sidebar-logo" href="../../../sudachi/index.html"><div class="logo-container"><img class="rust-logo" src="../../../rust-logo.svg" alt="logo"></div></a></nav><main><div class="width-limiter"><div class="sub-container"><a class="sub-logo-container" href="../../../sudachi/index.html"><img class="rust-logo" src="../../../rust-logo.svg" alt="logo"></a><nav class="sub"><form class="search-form"><div class="search-container"><span></span><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><button type="button">?</button></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../wheel.svg"></a></div></div></form></nav></div><section id="main-content" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">1</span>
+<span id="2">2</span>
+<span id="3">3</span>
+<span id="4">4</span>
+<span id="5">5</span>
+<span id="6">6</span>
+<span id="7">7</span>
+<span id="8">8</span>
+<span id="9">9</span>
+<span id="10">10</span>
+<span id="11">11</span>
+<span id="12">12</span>
+<span id="13">13</span>
+<span id="14">14</span>
+<span id="15">15</span>
+<span id="16">16</span>
+<span id="17">17</span>
+<span id="18">18</span>
+<span id="19">19</span>
+<span id="20">20</span>
+<span id="21">21</span>
+<span id="22">22</span>
+<span id="23">23</span>
+<span id="24">24</span>
+<span id="25">25</span>
+<span id="26">26</span>
+<span id="27">27</span>
+<span id="28">28</span>
+<span id="29">29</span>
+<span id="30">30</span>
+<span id="31">31</span>
+<span id="32">32</span>
+<span id="33">33</span>
+<span id="34">34</span>
+<span id="35">35</span>
+<span id="36">36</span>
+<span id="37">37</span>
+<span id="38">38</span>
+<span id="39">39</span>
+<span id="40">40</span>
+<span id="41">41</span>
+<span id="42">42</span>
+<span id="43">43</span>
+<span id="44">44</span>
+<span id="45">45</span>
+<span id="46">46</span>
+<span id="47">47</span>
+<span id="48">48</span>
+<span id="49">49</span>
+<span id="50">50</span>
+<span id="51">51</span>
+<span id="52">52</span>
+<span id="53">53</span>
+<span id="54">54</span>
+<span id="55">55</span>
+<span id="56">56</span>
+<span id="57">57</span>
+<span id="58">58</span>
+<span id="59">59</span>
+<span id="60">60</span>
+<span id="61">61</span>
+<span id="62">62</span>
+<span id="63">63</span>
+<span id="64">64</span>
+<span id="65">65</span>
+<span id="66">66</span>
+<span id="67">67</span>
+<span id="68">68</span>
+<span id="69">69</span>
+<span id="70">70</span>
+<span id="71">71</span>
+<span id="72">72</span>
+<span id="73">73</span>
+<span id="74">74</span>
+<span id="75">75</span>
+<span id="76">76</span>
+<span id="77">77</span>
+<span id="78">78</span>
+<span id="79">79</span>
+<span id="80">80</span>
+<span id="81">81</span>
+<span id="82">82</span>
+<span id="83">83</span>
+<span id="84">84</span>
+<span id="85">85</span>
+<span id="86">86</span>
+<span id="87">87</span>
+<span id="88">88</span>
+<span id="89">89</span>
+<span id="90">90</span>
+<span id="91">91</span>
+<span id="92">92</span>
+<span id="93">93</span>
+<span id="94">94</span>
+<span id="95">95</span>
+<span id="96">96</span>
+<span id="97">97</span>
+<span id="98">98</span>
+<span id="99">99</span>
 <span id="100">100</span>
 <span id="101">101</span>
 <span id="102">102</span>
@@ -305,223 +304,223 @@
  *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
- */</span>
+ */
 
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::analysis::inner</span>::{<span class="ident">Node</span>, <span class="ident">NodeIdx</span>};
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::analysis::node</span>::{<span class="ident">LatticeNode</span>, <span class="ident">PathCost</span>, <span class="ident">RightId</span>};
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::dic::connect::ConnectionMatrix</span>;
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::dic::grammar::Grammar</span>;
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::dic::lexicon_set::LexiconSet</span>;
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::dic::subset::InfoSubset</span>;
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::dic::word_id::WordId</span>;
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::error::SudachiResult</span>;
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::input_text::InputBuffer</span>;
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::prelude::SudachiError</span>;
-<span class="kw">use</span> <span class="ident">std::fmt</span>::{<span class="ident">Display</span>, <span class="ident">Formatter</span>};
-<span class="kw">use</span> <span class="ident">std::io::Write</span>;
+</span><span class="kw">use </span><span class="kw">crate</span>::analysis::inner::{Node, NodeIdx};
+<span class="kw">use </span><span class="kw">crate</span>::analysis::node::{LatticeNode, PathCost, RightId};
+<span class="kw">use </span><span class="kw">crate</span>::dic::connect::ConnectionMatrix;
+<span class="kw">use </span><span class="kw">crate</span>::dic::grammar::Grammar;
+<span class="kw">use </span><span class="kw">crate</span>::dic::lexicon_set::LexiconSet;
+<span class="kw">use </span><span class="kw">crate</span>::dic::subset::InfoSubset;
+<span class="kw">use </span><span class="kw">crate</span>::dic::word_id::WordId;
+<span class="kw">use </span><span class="kw">crate</span>::error::SudachiResult;
+<span class="kw">use </span><span class="kw">crate</span>::input_text::InputBuffer;
+<span class="kw">use </span><span class="kw">crate</span>::prelude::SudachiError;
+<span class="kw">use </span>std::fmt::{Display, Formatter};
+<span class="kw">use </span>std::io::Write;
 
-<span class="doccomment">/// Lattice Node for Viterbi Search.</span>
-<span class="doccomment">/// Extremely small for better cache locality.</span>
-<span class="doccomment">/// Current implementation has 25% efficiency loss because of padding :(</span>
-<span class="doccomment">/// Maybe we should use array-of-structs layout instead, but I want to try to measure the</span>
-<span class="doccomment">/// efficiency of that without the effects of the current rewrite.</span>
-<span class="kw">struct</span> <span class="ident">VNode</span> {
-    <span class="ident">total_cost</span>: <span class="ident">i32</span>,
-    <span class="ident">right_id</span>: <span class="ident">u16</span>,
+<span class="doccomment">/// Lattice Node for Viterbi Search.
+/// Extremely small for better cache locality.
+/// Current implementation has 25% efficiency loss because of padding :(
+/// Maybe we should use array-of-structs layout instead, but I want to try to measure the
+/// efficiency of that without the effects of the current rewrite.
+</span><span class="kw">struct </span>VNode {
+    total_cost: i32,
+    right_id: u16,
 }
 
-<span class="kw">impl</span> <span class="ident">RightId</span> <span class="kw">for</span> <span class="ident">VNode</span> {
-    <span class="attribute">#[<span class="ident">inline</span>]</span>
-    <span class="kw">fn</span> <span class="ident">right_id</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">u16</span> {
-        <span class="self">self</span>.<span class="ident">right_id</span>
+<span class="kw">impl </span>RightId <span class="kw">for </span>VNode {
+    <span class="attribute">#[inline]
+    </span><span class="kw">fn </span>right_id(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; u16 {
+        <span class="self">self</span>.right_id
     }
 }
 
-<span class="kw">impl</span> <span class="ident">PathCost</span> <span class="kw">for</span> <span class="ident">VNode</span> {
-    <span class="attribute">#[<span class="ident">inline</span>]</span>
-    <span class="kw">fn</span> <span class="ident">total_cost</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">i32</span> {
-        <span class="self">self</span>.<span class="ident">total_cost</span>
+<span class="kw">impl </span>PathCost <span class="kw">for </span>VNode {
+    <span class="attribute">#[inline]
+    </span><span class="kw">fn </span>total_cost(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; i32 {
+        <span class="self">self</span>.total_cost
     }
 }
 
-<span class="kw">impl</span> <span class="ident">VNode</span> {
-    <span class="attribute">#[<span class="ident">inline</span>]</span>
-    <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">right_id</span>: <span class="ident">u16</span>, <span class="ident">total_cost</span>: <span class="ident">i32</span>) -&gt; <span class="ident">VNode</span> {
-        <span class="ident">VNode</span> {
-            <span class="ident">right_id</span>,
-            <span class="ident">total_cost</span>,
+<span class="kw">impl </span>VNode {
+    <span class="attribute">#[inline]
+    </span><span class="kw">fn </span>new(right_id: u16, total_cost: i32) -&gt; VNode {
+        VNode {
+            right_id,
+            total_cost,
         }
     }
 }
 
-<span class="doccomment">/// Lattice which is constructed for performing the Viterbi search.</span>
-<span class="doccomment">/// Contain several parallel arrays.</span>
-<span class="doccomment">/// First level of parallel arrays is indexed by end word boundary.</span>
-<span class="doccomment">/// Word boundaries are always aligned to codepoint boundaries, not to byte boundaries.</span>
-<span class="doccomment">///</span>
-<span class="doccomment">/// During the successive analysis, we do not drop inner vectors, so</span>
-<span class="doccomment">/// the size of vectors never shrink.</span>
-<span class="doccomment">/// You must use the size parameter to check the current size and never</span>
-<span class="doccomment">/// access vectors after the end.</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Lattice</span> {
-    <span class="ident">ends</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">VNode</span><span class="op">&gt;</span><span class="op">&gt;</span>,
-    <span class="ident">ends_full</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Node</span><span class="op">&gt;</span><span class="op">&gt;</span>,
-    <span class="ident">indices</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">NodeIdx</span><span class="op">&gt;</span><span class="op">&gt;</span>,
-    <span class="ident">eos</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span>(<span class="ident">NodeIdx</span>, <span class="ident">i32</span>)<span class="op">&gt;</span>,
-    <span class="ident">size</span>: <span class="ident">usize</span>,
+<span class="doccomment">/// Lattice which is constructed for performing the Viterbi search.
+/// Contain several parallel arrays.
+/// First level of parallel arrays is indexed by end word boundary.
+/// Word boundaries are always aligned to codepoint boundaries, not to byte boundaries.
+///
+/// During the successive analysis, we do not drop inner vectors, so
+/// the size of vectors never shrink.
+/// You must use the size parameter to check the current size and never
+/// access vectors after the end.
+</span><span class="kw">pub struct </span>Lattice {
+    ends: Vec&lt;Vec&lt;VNode&gt;&gt;,
+    ends_full: Vec&lt;Vec&lt;Node&gt;&gt;,
+    indices: Vec&lt;Vec&lt;NodeIdx&gt;&gt;,
+    eos: <span class="prelude-ty">Option</span>&lt;(NodeIdx, i32)&gt;,
+    size: usize,
 }
 
-<span class="kw">impl</span> <span class="ident">Default</span> <span class="kw">for</span> <span class="ident">Lattice</span> {
-    <span class="kw">fn</span> <span class="ident">default</span>() -&gt; <span class="self">Self</span> {
-        <span class="ident">Lattice</span> {
-            <span class="ident">ends</span>: <span class="ident">Vec::new</span>(),
-            <span class="ident">ends_full</span>: <span class="ident">Vec::new</span>(),
-            <span class="ident">indices</span>: <span class="ident">Vec::new</span>(),
-            <span class="ident">eos</span>: <span class="prelude-val">None</span>,
-            <span class="ident">size</span>: <span class="number">0</span>,
+<span class="kw">impl </span>Default <span class="kw">for </span>Lattice {
+    <span class="kw">fn </span>default() -&gt; <span class="self">Self </span>{
+        Lattice {
+            ends: Vec::new(),
+            ends_full: Vec::new(),
+            indices: Vec::new(),
+            eos: <span class="prelude-val">None</span>,
+            size: <span class="number">0</span>,
         }
     }
 }
 
-<span class="kw">impl</span> <span class="ident">Lattice</span> {
-    <span class="kw">fn</span> <span class="ident">reset_vec</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="ident">data</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span>, <span class="ident">target</span>: <span class="ident">usize</span>) {
-        <span class="kw">for</span> <span class="ident">v</span> <span class="kw">in</span> <span class="ident">data</span>.<span class="ident">iter_mut</span>() {
-            <span class="ident">v</span>.<span class="ident">clear</span>();
+<span class="kw">impl </span>Lattice {
+    <span class="kw">fn </span>reset_vec&lt;T&gt;(data: <span class="kw-2">&amp;mut </span>Vec&lt;Vec&lt;T&gt;&gt;, target: usize) {
+        <span class="kw">for </span>v <span class="kw">in </span>data.iter_mut() {
+            v.clear();
         }
-        <span class="kw">let</span> <span class="ident">cur_len</span> <span class="op">=</span> <span class="ident">data</span>.<span class="ident">len</span>();
-        <span class="kw">if</span> <span class="ident">cur_len</span> <span class="op">&lt;</span><span class="op">=</span> <span class="ident">target</span> {
-            <span class="ident">data</span>.<span class="ident">reserve</span>(<span class="ident">target</span> <span class="op">-</span> <span class="ident">cur_len</span>);
-            <span class="kw">for</span> <span class="kw">_</span> <span class="kw">in</span> <span class="ident">cur_len</span>..<span class="ident">target</span> {
-                <span class="ident">data</span>.<span class="ident">push</span>(<span class="ident">Vec::with_capacity</span>(<span class="number">16</span>))
+        <span class="kw">let </span>cur_len = data.len();
+        <span class="kw">if </span>cur_len &lt;= target {
+            data.reserve(target - cur_len);
+            <span class="kw">for _ in </span>cur_len..target {
+                data.push(Vec::with_capacity(<span class="number">16</span>))
             }
         }
     }
 
-    <span class="doccomment">/// Prepare lattice for the next analysis of a sentence with the</span>
-    <span class="doccomment">/// specified length (in codepoints)</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">reset</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">length</span>: <span class="ident">usize</span>) {
-        <span class="ident"><span class="self">Self</span>::reset_vec</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>.<span class="ident">ends</span>, <span class="ident">length</span> <span class="op">+</span> <span class="number">1</span>);
-        <span class="ident"><span class="self">Self</span>::reset_vec</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>.<span class="ident">ends_full</span>, <span class="ident">length</span> <span class="op">+</span> <span class="number">1</span>);
-        <span class="ident"><span class="self">Self</span>::reset_vec</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>.<span class="ident">indices</span>, <span class="ident">length</span> <span class="op">+</span> <span class="number">1</span>);
-        <span class="self">self</span>.<span class="ident">eos</span> <span class="op">=</span> <span class="prelude-val">None</span>;
-        <span class="self">self</span>.<span class="ident">size</span> <span class="op">=</span> <span class="ident">length</span> <span class="op">+</span> <span class="number">1</span>;
-        <span class="self">self</span>.<span class="ident">connect_bos</span>();
+    <span class="doccomment">/// Prepare lattice for the next analysis of a sentence with the
+    /// specified length (in codepoints)
+    </span><span class="kw">pub fn </span>reset(<span class="kw-2">&amp;mut </span><span class="self">self</span>, length: usize) {
+        <span class="self">Self</span>::reset_vec(<span class="kw-2">&amp;mut </span><span class="self">self</span>.ends, length + <span class="number">1</span>);
+        <span class="self">Self</span>::reset_vec(<span class="kw-2">&amp;mut </span><span class="self">self</span>.ends_full, length + <span class="number">1</span>);
+        <span class="self">Self</span>::reset_vec(<span class="kw-2">&amp;mut </span><span class="self">self</span>.indices, length + <span class="number">1</span>);
+        <span class="self">self</span>.eos = <span class="prelude-val">None</span>;
+        <span class="self">self</span>.size = length + <span class="number">1</span>;
+        <span class="self">self</span>.connect_bos();
     }
 
-    <span class="kw">fn</span> <span class="ident">connect_bos</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>) {
-        <span class="self">self</span>.<span class="ident">ends</span>[<span class="number">0</span>].<span class="ident">push</span>(<span class="ident">VNode::new</span>(<span class="number">0</span>, <span class="number">0</span>));
+    <span class="kw">fn </span>connect_bos(<span class="kw-2">&amp;mut </span><span class="self">self</span>) {
+        <span class="self">self</span>.ends[<span class="number">0</span>].push(VNode::new(<span class="number">0</span>, <span class="number">0</span>));
     }
 
-    <span class="doccomment">/// Find EOS node -- finish the lattice construction</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">connect_eos</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">conn</span>: <span class="kw-2">&amp;</span><span class="ident">ConnectionMatrix</span>) -&gt; <span class="ident">SudachiResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
-        <span class="kw">let</span> <span class="ident">len</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">size</span>;
-        <span class="kw">let</span> <span class="ident">eos_start</span> <span class="op">=</span> (<span class="ident">len</span> <span class="op">-</span> <span class="number">1</span>) <span class="kw">as</span> <span class="ident">u16</span>;
-        <span class="kw">let</span> <span class="ident">eos_end</span> <span class="op">=</span> (<span class="ident">len</span> <span class="op">-</span> <span class="number">1</span>) <span class="kw">as</span> <span class="ident">u16</span>;
-        <span class="kw">let</span> <span class="ident">node</span> <span class="op">=</span> <span class="ident">Node::new</span>(<span class="ident">eos_start</span>, <span class="ident">eos_end</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="ident">WordId::EOS</span>);
-        <span class="kw">let</span> (<span class="ident">idx</span>, <span class="ident">cost</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">connect_node</span>(<span class="kw-2">&amp;</span><span class="ident">node</span>, <span class="ident">conn</span>);
-        <span class="kw">if</span> <span class="ident">cost</span> <span class="op">==</span> <span class="ident">i32::MAX</span> {
-            <span class="prelude-val">Err</span>(<span class="ident">SudachiError::EosBosDisconnect</span>)
-        } <span class="kw">else</span> {
-            <span class="self">self</span>.<span class="ident">eos</span> <span class="op">=</span> <span class="prelude-val">Some</span>((<span class="ident">idx</span>, <span class="ident">cost</span>));
+    <span class="doccomment">/// Find EOS node -- finish the lattice construction
+    </span><span class="kw">pub fn </span>connect_eos(<span class="kw-2">&amp;mut </span><span class="self">self</span>, conn: <span class="kw-2">&amp;</span>ConnectionMatrix) -&gt; SudachiResult&lt;()&gt; {
+        <span class="kw">let </span>len = <span class="self">self</span>.size;
+        <span class="kw">let </span>eos_start = (len - <span class="number">1</span>) <span class="kw">as </span>u16;
+        <span class="kw">let </span>eos_end = (len - <span class="number">1</span>) <span class="kw">as </span>u16;
+        <span class="kw">let </span>node = Node::new(eos_start, eos_end, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, WordId::EOS);
+        <span class="kw">let </span>(idx, cost) = <span class="self">self</span>.connect_node(<span class="kw-2">&amp;</span>node, conn);
+        <span class="kw">if </span>cost == i32::MAX {
+            <span class="prelude-val">Err</span>(SudachiError::EosBosDisconnect)
+        } <span class="kw">else </span>{
+            <span class="self">self</span>.eos = <span class="prelude-val">Some</span>((idx, cost));
             <span class="prelude-val">Ok</span>(())
         }
     }
 
-    <span class="doccomment">/// Insert a single node in the lattice, founding the path to the previous node</span>
-    <span class="doccomment">/// Assumption: lattice for all previous boundaries is already constructed</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">insert</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">node</span>: <span class="ident">Node</span>, <span class="ident">conn</span>: <span class="kw-2">&amp;</span><span class="ident">ConnectionMatrix</span>) -&gt; <span class="ident">i32</span> {
-        <span class="kw">let</span> (<span class="ident">idx</span>, <span class="ident">cost</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">connect_node</span>(<span class="kw-2">&amp;</span><span class="ident">node</span>, <span class="ident">conn</span>);
-        <span class="kw">let</span> <span class="ident">end_idx</span> <span class="op">=</span> <span class="ident">node</span>.<span class="ident">end</span>();
-        <span class="self">self</span>.<span class="ident">ends</span>[<span class="ident">end_idx</span>].<span class="ident">push</span>(<span class="ident">VNode::new</span>(<span class="ident">node</span>.<span class="ident">right_id</span>(), <span class="ident">cost</span>));
-        <span class="self">self</span>.<span class="ident">indices</span>[<span class="ident">end_idx</span>].<span class="ident">push</span>(<span class="ident">idx</span>);
-        <span class="self">self</span>.<span class="ident">ends_full</span>[<span class="ident">end_idx</span>].<span class="ident">push</span>(<span class="ident">node</span>);
-        <span class="ident">cost</span>
+    <span class="doccomment">/// Insert a single node in the lattice, founding the path to the previous node
+    /// Assumption: lattice for all previous boundaries is already constructed
+    </span><span class="kw">pub fn </span>insert(<span class="kw-2">&amp;mut </span><span class="self">self</span>, node: Node, conn: <span class="kw-2">&amp;</span>ConnectionMatrix) -&gt; i32 {
+        <span class="kw">let </span>(idx, cost) = <span class="self">self</span>.connect_node(<span class="kw-2">&amp;</span>node, conn);
+        <span class="kw">let </span>end_idx = node.end();
+        <span class="self">self</span>.ends[end_idx].push(VNode::new(node.right_id(), cost));
+        <span class="self">self</span>.indices[end_idx].push(idx);
+        <span class="self">self</span>.ends_full[end_idx].push(node);
+        cost
     }
 
-    <span class="doccomment">/// Find the path with the minimal cost through the lattice to the attached node</span>
-    <span class="doccomment">/// Assumption: lattice for all previous boundaries is already constructed</span>
-    <span class="attribute">#[<span class="ident">inline</span>]</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">connect_node</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">r_node</span>: <span class="kw-2">&amp;</span><span class="ident">Node</span>, <span class="ident">conn</span>: <span class="kw-2">&amp;</span><span class="ident">ConnectionMatrix</span>) -&gt; (<span class="ident">NodeIdx</span>, <span class="ident">i32</span>) {
-        <span class="kw">let</span> <span class="ident">begin</span> <span class="op">=</span> <span class="ident">r_node</span>.<span class="ident">begin</span>();
+    <span class="doccomment">/// Find the path with the minimal cost through the lattice to the attached node
+    /// Assumption: lattice for all previous boundaries is already constructed
+    </span><span class="attribute">#[inline]
+    </span><span class="kw">pub fn </span>connect_node(<span class="kw-2">&amp;</span><span class="self">self</span>, r_node: <span class="kw-2">&amp;</span>Node, conn: <span class="kw-2">&amp;</span>ConnectionMatrix) -&gt; (NodeIdx, i32) {
+        <span class="kw">let </span>begin = r_node.begin();
 
-        <span class="kw">let</span> <span class="ident">node_cost</span> <span class="op">=</span> <span class="ident">r_node</span>.<span class="ident">cost</span>() <span class="kw">as</span> <span class="ident">i32</span>;
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">min_cost</span> <span class="op">=</span> <span class="ident">i32::MAX</span>;
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">prev_idx</span> <span class="op">=</span> <span class="ident">NodeIdx::empty</span>();
+        <span class="kw">let </span>node_cost = r_node.cost() <span class="kw">as </span>i32;
+        <span class="kw">let </span><span class="kw-2">mut </span>min_cost = i32::MAX;
+        <span class="kw">let </span><span class="kw-2">mut </span>prev_idx = NodeIdx::empty();
 
-        <span class="kw">for</span> (<span class="ident">i</span>, <span class="ident">l_node</span>) <span class="kw">in</span> <span class="self">self</span>.<span class="ident">ends</span>[<span class="ident">begin</span>].<span class="ident">iter</span>().<span class="ident">enumerate</span>() {
-            <span class="kw">if</span> <span class="op">!</span><span class="ident">l_node</span>.<span class="ident">is_connected_to_bos</span>() {
+        <span class="kw">for </span>(i, l_node) <span class="kw">in </span><span class="self">self</span>.ends[begin].iter().enumerate() {
+            <span class="kw">if </span>!l_node.is_connected_to_bos() {
                 <span class="kw">continue</span>;
             }
 
-            <span class="kw">let</span> <span class="ident">connect_cost</span> <span class="op">=</span> <span class="ident">conn</span>.<span class="ident">cost</span>(<span class="ident">l_node</span>.<span class="ident">right_id</span>(), <span class="ident">r_node</span>.<span class="ident">left_id</span>()) <span class="kw">as</span> <span class="ident">i32</span>;
-            <span class="kw">let</span> <span class="ident">new_cost</span> <span class="op">=</span> <span class="ident">l_node</span>.<span class="ident">total_cost</span>() <span class="op">+</span> <span class="ident">connect_cost</span> <span class="op">+</span> <span class="ident">node_cost</span>;
-            <span class="kw">if</span> <span class="ident">new_cost</span> <span class="op">&lt;</span> <span class="ident">min_cost</span> {
-                <span class="ident">min_cost</span> <span class="op">=</span> <span class="ident">new_cost</span>;
-                <span class="ident">prev_idx</span> <span class="op">=</span> <span class="ident">NodeIdx::new</span>(<span class="ident">begin</span> <span class="kw">as</span> <span class="ident">u16</span>, <span class="ident">i</span> <span class="kw">as</span> <span class="ident">u16</span>);
+            <span class="kw">let </span>connect_cost = conn.cost(l_node.right_id(), r_node.left_id()) <span class="kw">as </span>i32;
+            <span class="kw">let </span>new_cost = l_node.total_cost() + connect_cost + node_cost;
+            <span class="kw">if </span>new_cost &lt; min_cost {
+                min_cost = new_cost;
+                prev_idx = NodeIdx::new(begin <span class="kw">as </span>u16, i <span class="kw">as </span>u16);
             }
         }
 
-        (<span class="ident">prev_idx</span>, <span class="ident">min_cost</span>)
+        (prev_idx, min_cost)
     }
 
-    <span class="doccomment">/// Checks if there exist at least one at the word end boundary</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">has_previous_node</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">i</span>: <span class="ident">usize</span>) -&gt; <span class="ident">bool</span> {
-        <span class="self">self</span>.<span class="ident">ends</span>.<span class="ident">get</span>(<span class="ident">i</span>).<span class="ident">map</span>(<span class="op">|</span><span class="ident">d</span><span class="op">|</span> <span class="op">!</span><span class="ident">d</span>.<span class="ident">is_empty</span>()).<span class="ident">unwrap_or</span>(<span class="bool-val">false</span>)
+    <span class="doccomment">/// Checks if there exist at least one at the word end boundary
+    </span><span class="kw">pub fn </span>has_previous_node(<span class="kw-2">&amp;</span><span class="self">self</span>, i: usize) -&gt; bool {
+        <span class="self">self</span>.ends.get(i).map(|d| !d.is_empty()).unwrap_or(<span class="bool-val">false</span>)
     }
 
-    <span class="doccomment">/// Lookup a node for the index</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">node</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">id</span>: <span class="ident">NodeIdx</span>) -&gt; (<span class="kw-2">&amp;</span><span class="ident">Node</span>, <span class="ident">i32</span>) {
-        <span class="kw">let</span> <span class="ident">node</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">ends_full</span>[<span class="ident">id</span>.<span class="ident">end</span>() <span class="kw">as</span> <span class="ident">usize</span>][<span class="ident">id</span>.<span class="ident">index</span>() <span class="kw">as</span> <span class="ident">usize</span>];
-        <span class="kw">let</span> <span class="ident">cost</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">ends</span>[<span class="ident">id</span>.<span class="ident">end</span>() <span class="kw">as</span> <span class="ident">usize</span>][<span class="ident">id</span>.<span class="ident">index</span>() <span class="kw">as</span> <span class="ident">usize</span>].<span class="ident">total_cost</span>;
-        (<span class="ident">node</span>, <span class="ident">cost</span>)
+    <span class="doccomment">/// Lookup a node for the index
+    </span><span class="kw">pub fn </span>node(<span class="kw-2">&amp;</span><span class="self">self</span>, id: NodeIdx) -&gt; (<span class="kw-2">&amp;</span>Node, i32) {
+        <span class="kw">let </span>node = <span class="kw-2">&amp;</span><span class="self">self</span>.ends_full[id.end() <span class="kw">as </span>usize][id.index() <span class="kw">as </span>usize];
+        <span class="kw">let </span>cost = <span class="self">self</span>.ends[id.end() <span class="kw">as </span>usize][id.index() <span class="kw">as </span>usize].total_cost;
+        (node, cost)
     }
 
-    <span class="doccomment">/// Fill the path with the minimum cost (indices only).</span>
-    <span class="doccomment">/// **Attention**: the path will be reversed (end to beginning) and will need to be traversed</span>
-    <span class="doccomment">/// in the reverse order.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">fill_top_path</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">result</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">NodeIdx</span><span class="op">&gt;</span>) {
-        <span class="kw">if</span> <span class="self">self</span>.<span class="ident">eos</span>.<span class="ident">is_none</span>() {
+    <span class="doccomment">/// Fill the path with the minimum cost (indices only).
+    /// **Attention**: the path will be reversed (end to beginning) and will need to be traversed
+    /// in the reverse order.
+    </span><span class="kw">pub fn </span>fill_top_path(<span class="kw-2">&amp;</span><span class="self">self</span>, result: <span class="kw-2">&amp;mut </span>Vec&lt;NodeIdx&gt;) {
+        <span class="kw">if </span><span class="self">self</span>.eos.is_none() {
             <span class="kw">return</span>;
         }
-        <span class="comment">// start with EOS</span>
-        <span class="kw">let</span> (<span class="kw-2">mut</span> <span class="ident">idx</span>, <span class="kw">_</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">eos</span>.<span class="ident">unwrap</span>();
-        <span class="ident">result</span>.<span class="ident">push</span>(<span class="ident">idx</span>);
-        <span class="kw">loop</span> {
-            <span class="kw">let</span> <span class="ident">prev_idx</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">indices</span>[<span class="ident">idx</span>.<span class="ident">end</span>() <span class="kw">as</span> <span class="ident">usize</span>][<span class="ident">idx</span>.<span class="ident">index</span>() <span class="kw">as</span> <span class="ident">usize</span>];
-            <span class="kw">if</span> <span class="ident">prev_idx</span>.<span class="ident">end</span>() <span class="op">!</span><span class="op">=</span> <span class="number">0</span> {
-                <span class="comment">// add if not BOS</span>
-                <span class="ident">result</span>.<span class="ident">push</span>(<span class="ident">prev_idx</span>);
-                <span class="ident">idx</span> <span class="op">=</span> <span class="ident">prev_idx</span>;
-            } <span class="kw">else</span> {
-                <span class="comment">// finish if BOS</span>
-                <span class="kw">break</span>;
+        <span class="comment">// start with EOS
+        </span><span class="kw">let </span>(<span class="kw-2">mut </span>idx, <span class="kw">_</span>) = <span class="self">self</span>.eos.unwrap();
+        result.push(idx);
+        <span class="kw">loop </span>{
+            <span class="kw">let </span>prev_idx = <span class="self">self</span>.indices[idx.end() <span class="kw">as </span>usize][idx.index() <span class="kw">as </span>usize];
+            <span class="kw">if </span>prev_idx.end() != <span class="number">0 </span>{
+                <span class="comment">// add if not BOS
+                </span>result.push(prev_idx);
+                idx = prev_idx;
+            } <span class="kw">else </span>{
+                <span class="comment">// finish if BOS
+                </span><span class="kw">break</span>;
             }
         }
     }
 }
 
-<span class="kw">impl</span> <span class="ident">Lattice</span> {
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">dump</span><span class="op">&lt;</span><span class="ident">W</span>: <span class="ident">Write</span><span class="op">&gt;</span>(
+<span class="kw">impl </span>Lattice {
+    <span class="kw">pub fn </span>dump&lt;W: Write&gt;(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
-        <span class="ident">input</span>: <span class="kw-2">&amp;</span><span class="ident">InputBuffer</span>,
-        <span class="ident">grammar</span>: <span class="kw-2">&amp;</span><span class="ident">Grammar</span>,
-        <span class="ident">lexicon</span>: <span class="kw-2">&amp;</span><span class="ident">LexiconSet</span>,
-        <span class="ident">out</span>: <span class="kw-2">&amp;mut</span> <span class="ident">W</span>,
-    ) -&gt; <span class="ident">SudachiResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
-        <span class="kw">enum</span> <span class="ident">PosData</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
-            <span class="ident">Bos</span>,
-            <span class="ident">Borrow</span>(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> [<span class="ident">String</span>]),
+        input: <span class="kw-2">&amp;</span>InputBuffer,
+        grammar: <span class="kw-2">&amp;</span>Grammar,
+        lexicon: <span class="kw-2">&amp;</span>LexiconSet,
+        out: <span class="kw-2">&amp;mut </span>W,
+    ) -&gt; SudachiResult&lt;()&gt; {
+        <span class="kw">enum </span>PosData&lt;<span class="lifetime">&#39;a</span>&gt; {
+            Bos,
+            Borrow(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>[String]),
         }
 
-        <span class="kw">impl</span> <span class="ident">Display</span> <span class="kw">for</span> <span class="ident">PosData</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span> {
-            <span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Formatter</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span>) -&gt; <span class="ident">std::fmt::Result</span> {
-                <span class="kw">match</span> <span class="self">self</span> {
-                    <span class="ident">PosData::Bos</span> =&gt; <span class="macro">write!</span>(<span class="ident">f</span>, <span class="string">&quot;BOS/EOS&quot;</span>),
-                    <span class="ident">PosData::Borrow</span>(<span class="ident">data</span>) =&gt; {
-                        <span class="kw">for</span> (<span class="ident">i</span>, <span class="ident">s</span>) <span class="kw">in</span> <span class="ident">data</span>.<span class="ident">iter</span>().<span class="ident">enumerate</span>() {
-                            <span class="macro">write!</span>(<span class="ident">f</span>, <span class="string">&quot;{}&quot;</span>, <span class="ident">s</span>)<span class="question-mark">?</span>;
-                            <span class="kw">if</span> <span class="ident">i</span> <span class="op">+</span> <span class="number">1</span> <span class="op">!</span><span class="op">=</span> <span class="ident">data</span>.<span class="ident">len</span>() {
-                                <span class="macro">write!</span>(<span class="ident">f</span>, <span class="string">&quot;, &quot;</span>)<span class="question-mark">?</span>;
+        <span class="kw">impl </span>Display <span class="kw">for </span>PosData&lt;<span class="lifetime">&#39;_</span>&gt; {
+            <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>Formatter&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; std::fmt::Result {
+                <span class="kw">match </span><span class="self">self </span>{
+                    PosData::Bos =&gt; <span class="macro">write!</span>(f, <span class="string">&quot;BOS/EOS&quot;</span>),
+                    PosData::Borrow(data) =&gt; {
+                        <span class="kw">for </span>(i, s) <span class="kw">in </span>data.iter().enumerate() {
+                            <span class="macro">write!</span>(f, <span class="string">&quot;{}&quot;</span>, s)<span class="question-mark">?</span>;
+                            <span class="kw">if </span>i + <span class="number">1 </span>!= data.len() {
+                                <span class="macro">write!</span>(f, <span class="string">&quot;, &quot;</span>)<span class="question-mark">?</span>;
                             }
                         }
                         <span class="prelude-val">Ok</span>(())
@@ -530,59 +529,58 @@
             }
         }
 
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">dump_idx</span> <span class="op">=</span> <span class="number">0</span>;
+        <span class="kw">let </span><span class="kw-2">mut </span>dump_idx = <span class="number">0</span>;
 
-        <span class="kw">for</span> <span class="ident">boundary</span> <span class="kw">in</span> (<span class="number">0</span>..<span class="self">self</span>.<span class="ident">indices</span>.<span class="ident">len</span>()).<span class="ident">rev</span>() {
-            <span class="kw">let</span> <span class="ident">nodes</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">ends_full</span>[<span class="ident">boundary</span>];
+        <span class="kw">for </span>boundary <span class="kw">in </span>(<span class="number">0</span>..<span class="self">self</span>.indices.len()).rev() {
+            <span class="kw">let </span>nodes = <span class="kw-2">&amp;</span><span class="self">self</span>.ends_full[boundary];
 
-            <span class="kw">for</span> <span class="ident">node_idx</span> <span class="kw">in</span> <span class="number">0</span>..<span class="ident">nodes</span>.<span class="ident">len</span>() {
-                <span class="kw">let</span> <span class="ident">r_node</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">nodes</span>[<span class="ident">node_idx</span>];
-                <span class="kw">let</span> (<span class="ident">surface</span>, <span class="ident">pos</span>) <span class="op">=</span> <span class="kw">if</span> <span class="ident">r_node</span>.<span class="ident">is_special_node</span>() {
-                    (<span class="string">&quot;(null)&quot;</span>, <span class="ident">PosData::Bos</span>)
-                } <span class="kw">else</span> <span class="kw">if</span> <span class="ident">r_node</span>.<span class="ident">is_oov</span>() {
-                    <span class="kw">let</span> <span class="ident">pos_id</span> <span class="op">=</span> <span class="ident">r_node</span>.<span class="ident">word_id</span>().<span class="ident">word</span>() <span class="kw">as</span> <span class="ident">usize</span>;
+            <span class="kw">for </span>node_idx <span class="kw">in </span><span class="number">0</span>..nodes.len() {
+                <span class="kw">let </span>r_node = <span class="kw-2">&amp;</span>nodes[node_idx];
+                <span class="kw">let </span>(surface, pos) = <span class="kw">if </span>r_node.is_special_node() {
+                    (<span class="string">&quot;(null)&quot;</span>, PosData::Bos)
+                } <span class="kw">else if </span>r_node.is_oov() {
+                    <span class="kw">let </span>pos_id = r_node.word_id().word() <span class="kw">as </span>usize;
                     (
-                        <span class="ident">input</span>.<span class="ident">curr_slice_c</span>(<span class="ident">r_node</span>.<span class="ident">begin</span>()..<span class="ident">r_node</span>.<span class="ident">end</span>()),
-                        <span class="ident">PosData::Borrow</span>(<span class="kw-2">&amp;</span><span class="ident">grammar</span>.<span class="ident">pos_list</span>[<span class="ident">pos_id</span>]),
+                        input.curr_slice_c(r_node.begin()..r_node.end()),
+                        PosData::Borrow(<span class="kw-2">&amp;</span>grammar.pos_list[pos_id]),
                     )
-                } <span class="kw">else</span> {
-                    <span class="kw">let</span> <span class="ident">winfo</span> <span class="op">=</span>
-                        <span class="ident">lexicon</span>.<span class="ident">get_word_info_subset</span>(<span class="ident">r_node</span>.<span class="ident">word_id</span>(), <span class="ident">InfoSubset::POS_ID</span>)<span class="question-mark">?</span>;
+                } <span class="kw">else </span>{
+                    <span class="kw">let </span>winfo =
+                        lexicon.get_word_info_subset(r_node.word_id(), InfoSubset::POS_ID)<span class="question-mark">?</span>;
                     (
-                        <span class="ident">input</span>.<span class="ident">orig_slice_c</span>(<span class="ident">r_node</span>.<span class="ident">begin</span>()..<span class="ident">r_node</span>.<span class="ident">end</span>()),
-                        <span class="ident">PosData::Borrow</span>(<span class="kw-2">&amp;</span><span class="ident">grammar</span>.<span class="ident">pos_list</span>[<span class="ident">winfo</span>.<span class="ident">pos_id</span>() <span class="kw">as</span> <span class="ident">usize</span>]),
+                        input.orig_slice_c(r_node.begin()..r_node.end()),
+                        PosData::Borrow(<span class="kw-2">&amp;</span>grammar.pos_list[winfo.pos_id() <span class="kw">as </span>usize]),
                     )
                 };
 
                 <span class="macro">write!</span>(
-                    <span class="ident">out</span>,
+                    out,
                     <span class="string">&quot;{}: {} {} {}{} {} {} {} {}:&quot;</span>,
-                    <span class="ident">dump_idx</span>,
-                    <span class="ident">r_node</span>.<span class="ident">begin</span>(),
-                    <span class="ident">r_node</span>.<span class="ident">end</span>(),
-                    <span class="ident">surface</span>,
-                    <span class="ident">r_node</span>.<span class="ident">word_id</span>(),
-                    <span class="ident">pos</span>,
-                    <span class="ident">r_node</span>.<span class="ident">left_id</span>(),
-                    <span class="ident">r_node</span>.<span class="ident">right_id</span>(),
-                    <span class="ident">r_node</span>.<span class="ident">cost</span>()
+                    dump_idx,
+                    r_node.begin(),
+                    r_node.end(),
+                    surface,
+                    r_node.word_id(),
+                    pos,
+                    r_node.left_id(),
+                    r_node.right_id(),
+                    r_node.cost()
                 )<span class="question-mark">?</span>;
 
-                <span class="kw">let</span> <span class="ident">conn</span> <span class="op">=</span> <span class="ident">grammar</span>.<span class="ident">conn_matrix</span>();
+                <span class="kw">let </span>conn = grammar.conn_matrix();
 
-                <span class="kw">for</span> <span class="ident">l_node</span> <span class="kw">in</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">ends</span>[<span class="ident">r_node</span>.<span class="ident">begin</span>()] {
-                    <span class="kw">let</span> <span class="ident">connect_cost</span> <span class="op">=</span> <span class="ident">conn</span>.<span class="ident">cost</span>(<span class="ident">l_node</span>.<span class="ident">right_id</span>(), <span class="ident">r_node</span>.<span class="ident">left_id</span>());
-                    <span class="macro">write!</span>(<span class="ident">out</span>, <span class="string">&quot; {}&quot;</span>, <span class="ident">connect_cost</span>)<span class="question-mark">?</span>;
+                <span class="kw">for </span>l_node <span class="kw">in </span><span class="kw-2">&amp;</span><span class="self">self</span>.ends[r_node.begin()] {
+                    <span class="kw">let </span>connect_cost = conn.cost(l_node.right_id(), r_node.left_id());
+                    <span class="macro">write!</span>(out, <span class="string">&quot; {}&quot;</span>, connect_cost)<span class="question-mark">?</span>;
                 }
 
-                <span class="macro">write!</span>(<span class="ident">out</span>, <span class="string">&quot;\n&quot;</span>)<span class="question-mark">?</span>;
+                <span class="macro">write!</span>(out, <span class="string">&quot;\n&quot;</span>)<span class="question-mark">?</span>;
 
-                <span class="ident">dump_idx</span> <span class="op">+</span><span class="op">=</span> <span class="number">1</span>;
+                dump_idx += <span class="number">1</span>;
             }
         }
         <span class="prelude-val">Ok</span>(())
     }
 }
 </code></pre></div>
-</section><section id="search" class="content hidden"></section><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="sudachi" data-search-index-js="../../../search-index.js" data-search-js="../../../search.js"></div>
-</body></html>
+</section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="sudachi" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0 (897e37553 2022-11-02)" ></div></body></html>

@@ -1,103 +1,102 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `sudachi&#x2F;src&#x2F;input_text&#x2F;buffer&#x2F;mod.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>mod.rs - source</title><link rel="stylesheet" type="text/css" href="../../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../../../ayu.css" disabled ><script id="default-settings" ></script><script src="../../../../storage.js"></script><script src="../../../../crates.js"></script><script defer src="../../../../main.js"></script><script defer src="../../../../source-script.js"></script><script defer src="../../../../source-files.js"></script>
-    <noscript><link rel="stylesheet" href="../../../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../../../favicon.svg"><style type="text/css">#crate-search{background-image:url("../../../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu" role="button">&#9776;</div><a href='../../../../sudachi/index.html'><div class='logo-container rust-logo'><img src='../../../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu" title="themes"><img width="18" height="18" alt="Pick another theme!" src="../../../../brush.svg"></button><div id="theme-choices" role="menu"></div></div><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" id="help-button" title="help">?</button><a id="settings-menu" href="../../../../settings.html" title="settings"><img width="18" height="18" alt="Change settings" src="../../../../wheel.svg"></a></div></form></nav><section id="main" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">  1</span>
-<span id="2">  2</span>
-<span id="3">  3</span>
-<span id="4">  4</span>
-<span id="5">  5</span>
-<span id="6">  6</span>
-<span id="7">  7</span>
-<span id="8">  8</span>
-<span id="9">  9</span>
-<span id="10"> 10</span>
-<span id="11"> 11</span>
-<span id="12"> 12</span>
-<span id="13"> 13</span>
-<span id="14"> 14</span>
-<span id="15"> 15</span>
-<span id="16"> 16</span>
-<span id="17"> 17</span>
-<span id="18"> 18</span>
-<span id="19"> 19</span>
-<span id="20"> 20</span>
-<span id="21"> 21</span>
-<span id="22"> 22</span>
-<span id="23"> 23</span>
-<span id="24"> 24</span>
-<span id="25"> 25</span>
-<span id="26"> 26</span>
-<span id="27"> 27</span>
-<span id="28"> 28</span>
-<span id="29"> 29</span>
-<span id="30"> 30</span>
-<span id="31"> 31</span>
-<span id="32"> 32</span>
-<span id="33"> 33</span>
-<span id="34"> 34</span>
-<span id="35"> 35</span>
-<span id="36"> 36</span>
-<span id="37"> 37</span>
-<span id="38"> 38</span>
-<span id="39"> 39</span>
-<span id="40"> 40</span>
-<span id="41"> 41</span>
-<span id="42"> 42</span>
-<span id="43"> 43</span>
-<span id="44"> 44</span>
-<span id="45"> 45</span>
-<span id="46"> 46</span>
-<span id="47"> 47</span>
-<span id="48"> 48</span>
-<span id="49"> 49</span>
-<span id="50"> 50</span>
-<span id="51"> 51</span>
-<span id="52"> 52</span>
-<span id="53"> 53</span>
-<span id="54"> 54</span>
-<span id="55"> 55</span>
-<span id="56"> 56</span>
-<span id="57"> 57</span>
-<span id="58"> 58</span>
-<span id="59"> 59</span>
-<span id="60"> 60</span>
-<span id="61"> 61</span>
-<span id="62"> 62</span>
-<span id="63"> 63</span>
-<span id="64"> 64</span>
-<span id="65"> 65</span>
-<span id="66"> 66</span>
-<span id="67"> 67</span>
-<span id="68"> 68</span>
-<span id="69"> 69</span>
-<span id="70"> 70</span>
-<span id="71"> 71</span>
-<span id="72"> 72</span>
-<span id="73"> 73</span>
-<span id="74"> 74</span>
-<span id="75"> 75</span>
-<span id="76"> 76</span>
-<span id="77"> 77</span>
-<span id="78"> 78</span>
-<span id="79"> 79</span>
-<span id="80"> 80</span>
-<span id="81"> 81</span>
-<span id="82"> 82</span>
-<span id="83"> 83</span>
-<span id="84"> 84</span>
-<span id="85"> 85</span>
-<span id="86"> 86</span>
-<span id="87"> 87</span>
-<span id="88"> 88</span>
-<span id="89"> 89</span>
-<span id="90"> 90</span>
-<span id="91"> 91</span>
-<span id="92"> 92</span>
-<span id="93"> 93</span>
-<span id="94"> 94</span>
-<span id="95"> 95</span>
-<span id="96"> 96</span>
-<span id="97"> 97</span>
-<span id="98"> 98</span>
-<span id="99"> 99</span>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `sudachi/src/input_text/buffer/mod.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>mod.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" href="../../../../normalize.css"><link rel="stylesheet" href="../../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" href="../../../../ayu.css" disabled><link rel="stylesheet" href="../../../../dark.css" disabled><link rel="stylesheet" href="../../../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../../../storage.js"></script><script defer src="../../../../source-script.js"></script><script defer src="../../../../source-files.js"></script><script defer src="../../../../main.js"></script><noscript><link rel="stylesheet" href="../../../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../../../favicon.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="sidebar-logo" href="../../../../sudachi/index.html"><div class="logo-container"><img class="rust-logo" src="../../../../rust-logo.svg" alt="logo"></div></a><h2 class="location"></h2></nav><nav class="sidebar"><a class="sidebar-logo" href="../../../../sudachi/index.html"><div class="logo-container"><img class="rust-logo" src="../../../../rust-logo.svg" alt="logo"></div></a></nav><main><div class="width-limiter"><div class="sub-container"><a class="sub-logo-container" href="../../../../sudachi/index.html"><img class="rust-logo" src="../../../../rust-logo.svg" alt="logo"></a><nav class="sub"><form class="search-form"><div class="search-container"><span></span><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><button type="button">?</button></div><div id="settings-menu" tabindex="-1"><a href="../../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../../wheel.svg"></a></div></div></form></nav></div><section id="main-content" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">1</span>
+<span id="2">2</span>
+<span id="3">3</span>
+<span id="4">4</span>
+<span id="5">5</span>
+<span id="6">6</span>
+<span id="7">7</span>
+<span id="8">8</span>
+<span id="9">9</span>
+<span id="10">10</span>
+<span id="11">11</span>
+<span id="12">12</span>
+<span id="13">13</span>
+<span id="14">14</span>
+<span id="15">15</span>
+<span id="16">16</span>
+<span id="17">17</span>
+<span id="18">18</span>
+<span id="19">19</span>
+<span id="20">20</span>
+<span id="21">21</span>
+<span id="22">22</span>
+<span id="23">23</span>
+<span id="24">24</span>
+<span id="25">25</span>
+<span id="26">26</span>
+<span id="27">27</span>
+<span id="28">28</span>
+<span id="29">29</span>
+<span id="30">30</span>
+<span id="31">31</span>
+<span id="32">32</span>
+<span id="33">33</span>
+<span id="34">34</span>
+<span id="35">35</span>
+<span id="36">36</span>
+<span id="37">37</span>
+<span id="38">38</span>
+<span id="39">39</span>
+<span id="40">40</span>
+<span id="41">41</span>
+<span id="42">42</span>
+<span id="43">43</span>
+<span id="44">44</span>
+<span id="45">45</span>
+<span id="46">46</span>
+<span id="47">47</span>
+<span id="48">48</span>
+<span id="49">49</span>
+<span id="50">50</span>
+<span id="51">51</span>
+<span id="52">52</span>
+<span id="53">53</span>
+<span id="54">54</span>
+<span id="55">55</span>
+<span id="56">56</span>
+<span id="57">57</span>
+<span id="58">58</span>
+<span id="59">59</span>
+<span id="60">60</span>
+<span id="61">61</span>
+<span id="62">62</span>
+<span id="63">63</span>
+<span id="64">64</span>
+<span id="65">65</span>
+<span id="66">66</span>
+<span id="67">67</span>
+<span id="68">68</span>
+<span id="69">69</span>
+<span id="70">70</span>
+<span id="71">71</span>
+<span id="72">72</span>
+<span id="73">73</span>
+<span id="74">74</span>
+<span id="75">75</span>
+<span id="76">76</span>
+<span id="77">77</span>
+<span id="78">78</span>
+<span id="79">79</span>
+<span id="80">80</span>
+<span id="81">81</span>
+<span id="82">82</span>
+<span id="83">83</span>
+<span id="84">84</span>
+<span id="85">85</span>
+<span id="86">86</span>
+<span id="87">87</span>
+<span id="88">88</span>
+<span id="89">89</span>
+<span id="90">90</span>
+<span id="91">91</span>
+<span id="92">92</span>
+<span id="93">93</span>
+<span id="94">94</span>
+<span id="95">95</span>
+<span id="96">96</span>
+<span id="97">97</span>
+<span id="98">98</span>
+<span id="99">99</span>
 <span id="100">100</span>
 <span id="101">101</span>
 <span id="102">102</span>
@@ -476,455 +475,454 @@
  *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
- */</span>
+ */
 
-<span class="kw">mod</span> <span class="ident">edit</span>;
-<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">test</span>)]</span>
-<span class="kw">mod</span> <span class="ident">test_basic</span>;
-<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">test</span>)]</span>
-<span class="kw">mod</span> <span class="ident">test_ported</span>;
+</span><span class="kw">mod </span>edit;
+<span class="attribute">#[cfg(test)]
+</span><span class="kw">mod </span>test_basic;
+<span class="attribute">#[cfg(test)]
+</span><span class="kw">mod </span>test_ported;
 
-<span class="kw">pub</span> <span class="kw">use</span> <span class="ident"><span class="self">self</span>::edit::InputEditor</span>;
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::dic::category_type::CategoryType</span>;
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::dic::grammar::Grammar</span>;
-<span class="kw">use</span> <span class="ident">std::ops::Range</span>;
+<span class="kw">pub use </span><span class="self">self</span>::edit::InputEditor;
+<span class="kw">use </span><span class="kw">crate</span>::dic::category_type::CategoryType;
+<span class="kw">use </span><span class="kw">crate</span>::dic::grammar::Grammar;
+<span class="kw">use </span>std::ops::Range;
 
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::error</span>::{<span class="ident">SudachiError</span>, <span class="ident">SudachiResult</span>};
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::input_text::InputTextIndex</span>;
+<span class="kw">use </span><span class="kw">crate</span>::error::{SudachiError, SudachiResult};
+<span class="kw">use </span><span class="kw">crate</span>::input_text::InputTextIndex;
 
-<span class="doccomment">/// limit on the maximum length of the input types, in bytes, 3/4 of u16::MAX</span>
-<span class="kw">const</span> <span class="ident">MAX_LENGTH</span>: <span class="ident">usize</span> <span class="op">=</span> <span class="ident">u16::MAX</span> <span class="kw">as</span> <span class="ident">usize</span> <span class="op">/</span> <span class="number">4</span> <span class="op">*</span> <span class="number">3</span>;
+<span class="doccomment">/// limit on the maximum length of the input types, in bytes, 3/4 of u16::MAX
+</span><span class="kw">const </span>MAX_LENGTH: usize = u16::MAX <span class="kw">as </span>usize / <span class="number">4 </span>* <span class="number">3</span>;
 
-<span class="doccomment">/// if the limit of the rewritten sentence is more than this number, then all bets are off</span>
-<span class="kw">const</span> <span class="ident">REALLY_MAX_LENGTH</span>: <span class="ident">usize</span> <span class="op">=</span> <span class="ident">u16::MAX</span> <span class="kw">as</span> <span class="ident">usize</span>;
+<span class="doccomment">/// if the limit of the rewritten sentence is more than this number, then all bets are off
+</span><span class="kw">const </span>REALLY_MAX_LENGTH: usize = u16::MAX <span class="kw">as </span>usize;
 
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Eq</span>, <span class="ident">PartialEq</span>, <span class="ident">Debug</span>, <span class="ident">Clone</span>)]</span>
-<span class="kw">enum</span> <span class="ident">BufferState</span> {
-    <span class="ident">Clean</span>,
-    <span class="ident">RW</span>,
-    <span class="ident">RO</span>,
+<span class="attribute">#[derive(Eq, PartialEq, Debug, Clone)]
+</span><span class="kw">enum </span>BufferState {
+    Clean,
+    RW,
+    RO,
 }
 
-<span class="kw">impl</span> <span class="ident">Default</span> <span class="kw">for</span> <span class="ident">BufferState</span> {
-    <span class="kw">fn</span> <span class="ident">default</span>() -&gt; <span class="self">Self</span> {
-        <span class="ident">BufferState::Clean</span>
+<span class="kw">impl </span>Default <span class="kw">for </span>BufferState {
+    <span class="kw">fn </span>default() -&gt; <span class="self">Self </span>{
+        BufferState::Clean
     }
 }
 
-<span class="doccomment">/// InputBuffer - prepares the input data for the analysis</span>
-<span class="doccomment">///</span>
-<span class="doccomment">/// By saying char we actually mean Unicode codepoint here.</span>
-<span class="doccomment">/// In the context of this struct these terms are synonyms.</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Default</span>, <span class="ident">Clone</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">InputBuffer</span> {
-    <span class="doccomment">/// Original input data, output is done on this</span>
-    <span class="ident">original</span>: <span class="ident">String</span>,
-    <span class="doccomment">/// Normalized input data, analysis is done on this. Byte-based indexing.</span>
-    <span class="ident">modified</span>: <span class="ident">String</span>,
-    <span class="doccomment">/// Buffer for normalization, reusing allocations</span>
-    <span class="ident">modified_2</span>: <span class="ident">String</span>,
-    <span class="doccomment">/// Byte mapping from normalized data to originals.</span>
-    <span class="doccomment">/// Only values lying on codepoint boundaries are correct. Byte-based indexing.</span>
-    <span class="ident">m2o</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>,
-    <span class="doccomment">/// Buffer for normalization.</span>
-    <span class="doccomment">/// After building it is used as byte-to-char mapping for original data.</span>
-    <span class="ident">m2o_2</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>,
-    <span class="doccomment">/// Characters of the modified string. Char-based indexing.</span>
-    <span class="ident">mod_chars</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">char</span><span class="op">&gt;</span>,
-    <span class="doccomment">/// Char-to-byte mapping for the modified string. Char-based indexing.</span>
-    <span class="ident">mod_c2b</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>,
-    <span class="doccomment">/// Byte-to-char mapping for the modified string. Byte-based indexing.</span>
-    <span class="ident">mod_b2c</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>,
-    <span class="doccomment">/// Markers whether the byte can start new word or not</span>
-    <span class="ident">mod_bow</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">bool</span><span class="op">&gt;</span>,
-    <span class="doccomment">/// Character categories. Char-based indexing.</span>
-    <span class="ident">mod_cat</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">CategoryType</span><span class="op">&gt;</span>,
-    <span class="doccomment">/// Number of codepoints with the same category. Char-based indexing.</span>
-    <span class="ident">mod_cat_continuity</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>,
-    <span class="doccomment">/// This very temporarily keeps the replacement data.</span>
-    <span class="doccomment">/// &#39;static lifetime is a lie and it is **incorrect** to use</span>
-    <span class="doccomment">/// it outside `with_replacer` function or its callees.</span>
-    <span class="ident">replaces</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">edit::ReplaceOp</span><span class="op">&lt;</span><span class="lifetime">&#39;static</span><span class="op">&gt;</span><span class="op">&gt;</span>,
-    <span class="doccomment">/// Current state of the buffer</span>
-    <span class="ident">state</span>: <span class="ident">BufferState</span>,
+<span class="doccomment">/// InputBuffer - prepares the input data for the analysis
+///
+/// By saying char we actually mean Unicode codepoint here.
+/// In the context of this struct these terms are synonyms.
+</span><span class="attribute">#[derive(Default, Clone)]
+</span><span class="kw">pub struct </span>InputBuffer {
+    <span class="doccomment">/// Original input data, output is done on this
+    </span>original: String,
+    <span class="doccomment">/// Normalized input data, analysis is done on this. Byte-based indexing.
+    </span>modified: String,
+    <span class="doccomment">/// Buffer for normalization, reusing allocations
+    </span>modified_2: String,
+    <span class="doccomment">/// Byte mapping from normalized data to originals.
+    /// Only values lying on codepoint boundaries are correct. Byte-based indexing.
+    </span>m2o: Vec&lt;usize&gt;,
+    <span class="doccomment">/// Buffer for normalization.
+    /// After building it is used as byte-to-char mapping for original data.
+    </span>m2o_2: Vec&lt;usize&gt;,
+    <span class="doccomment">/// Characters of the modified string. Char-based indexing.
+    </span>mod_chars: Vec&lt;char&gt;,
+    <span class="doccomment">/// Char-to-byte mapping for the modified string. Char-based indexing.
+    </span>mod_c2b: Vec&lt;usize&gt;,
+    <span class="doccomment">/// Byte-to-char mapping for the modified string. Byte-based indexing.
+    </span>mod_b2c: Vec&lt;usize&gt;,
+    <span class="doccomment">/// Markers whether the byte can start new word or not
+    </span>mod_bow: Vec&lt;bool&gt;,
+    <span class="doccomment">/// Character categories. Char-based indexing.
+    </span>mod_cat: Vec&lt;CategoryType&gt;,
+    <span class="doccomment">/// Number of codepoints with the same category. Char-based indexing.
+    </span>mod_cat_continuity: Vec&lt;usize&gt;,
+    <span class="doccomment">/// This very temporarily keeps the replacement data.
+    /// &#39;static lifetime is a lie and it is **incorrect** to use
+    /// it outside `with_replacer` function or its callees.
+    </span>replaces: Vec&lt;edit::ReplaceOp&lt;<span class="lifetime">&#39;static</span>&gt;&gt;,
+    <span class="doccomment">/// Current state of the buffer
+    </span>state: BufferState,
 }
 
-<span class="kw">impl</span> <span class="ident">InputBuffer</span> {
-    <span class="doccomment">/// Creates new InputBuffer</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>() -&gt; <span class="ident">InputBuffer</span> {
-        <span class="ident">InputBuffer::default</span>()
+<span class="kw">impl </span>InputBuffer {
+    <span class="doccomment">/// Creates new InputBuffer
+    </span><span class="kw">pub fn </span>new() -&gt; InputBuffer {
+        InputBuffer::default()
     }
 
-    <span class="doccomment">/// Resets the input buffer, so it could be used to process new input.</span>
-    <span class="doccomment">/// New input should be written to the returned mutable reference.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">reset</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>) -&gt; <span class="kw-2">&amp;mut</span> <span class="ident">String</span> {
-        <span class="comment">// extended buffers can be ignored during cleaning,</span>
-        <span class="comment">// they will be cleaned before usage automatically</span>
-        <span class="self">self</span>.<span class="ident">original</span>.<span class="ident">clear</span>();
-        <span class="self">self</span>.<span class="ident">modified</span>.<span class="ident">clear</span>();
-        <span class="self">self</span>.<span class="ident">m2o</span>.<span class="ident">clear</span>();
-        <span class="self">self</span>.<span class="ident">mod_chars</span>.<span class="ident">clear</span>();
-        <span class="self">self</span>.<span class="ident">mod_c2b</span>.<span class="ident">clear</span>();
-        <span class="self">self</span>.<span class="ident">mod_b2c</span>.<span class="ident">clear</span>();
-        <span class="self">self</span>.<span class="ident">mod_bow</span>.<span class="ident">clear</span>();
-        <span class="self">self</span>.<span class="ident">mod_cat</span>.<span class="ident">clear</span>();
-        <span class="self">self</span>.<span class="ident">mod_cat_continuity</span>.<span class="ident">clear</span>();
-        <span class="self">self</span>.<span class="ident">state</span> <span class="op">=</span> <span class="ident">BufferState::Clean</span>;
-        <span class="kw-2">&amp;mut</span> <span class="self">self</span>.<span class="ident">original</span>
+    <span class="doccomment">/// Resets the input buffer, so it could be used to process new input.
+    /// New input should be written to the returned mutable reference.
+    </span><span class="kw">pub fn </span>reset(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;mut </span>String {
+        <span class="comment">// extended buffers can be ignored during cleaning,
+        // they will be cleaned before usage automatically
+        </span><span class="self">self</span>.original.clear();
+        <span class="self">self</span>.modified.clear();
+        <span class="self">self</span>.m2o.clear();
+        <span class="self">self</span>.mod_chars.clear();
+        <span class="self">self</span>.mod_c2b.clear();
+        <span class="self">self</span>.mod_b2c.clear();
+        <span class="self">self</span>.mod_bow.clear();
+        <span class="self">self</span>.mod_cat.clear();
+        <span class="self">self</span>.mod_cat_continuity.clear();
+        <span class="self">self</span>.state = BufferState::Clean;
+        <span class="kw-2">&amp;mut </span><span class="self">self</span>.original
     }
 
-    <span class="doccomment">/// Creates input from the passed string. Should be used mostly for tests.</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// Panics if the input string is too long.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">from</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">T</span>: <span class="ident">AsRef</span><span class="op">&lt;</span><span class="ident">str</span><span class="op">&gt;</span><span class="op">&gt;</span>(<span class="ident">data</span>: <span class="ident">T</span>) -&gt; <span class="ident">InputBuffer</span> {
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">buf</span> <span class="op">=</span> <span class="ident"><span class="self">Self</span>::new</span>();
-        <span class="ident">buf</span>.<span class="ident">reset</span>().<span class="ident">push_str</span>(<span class="ident">data</span>.<span class="ident">as_ref</span>());
-        <span class="ident">buf</span>.<span class="ident">start_build</span>().<span class="ident">expect</span>(<span class="string">&quot;&quot;</span>);
-        <span class="ident">buf</span>
+    <span class="doccomment">/// Creates input from the passed string. Should be used mostly for tests.
+    ///
+    /// Panics if the input string is too long.
+    </span><span class="kw">pub fn </span>from&lt;<span class="lifetime">&#39;a</span>, T: AsRef&lt;str&gt;&gt;(data: T) -&gt; InputBuffer {
+        <span class="kw">let </span><span class="kw-2">mut </span>buf = <span class="self">Self</span>::new();
+        buf.reset().push_str(data.as_ref());
+        buf.start_build().expect(<span class="string">&quot;&quot;</span>);
+        buf
     }
 
-    <span class="doccomment">/// Moves InputBuffer into RW state, making it possible to perform edits on it</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">start_build</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>) -&gt; <span class="ident">SudachiResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
-        <span class="kw">if</span> <span class="self">self</span>.<span class="ident">original</span>.<span class="ident">len</span>() <span class="op">&gt;</span> <span class="ident">MAX_LENGTH</span> {
-            <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">SudachiError::InputTooLong</span>(<span class="self">self</span>.<span class="ident">original</span>.<span class="ident">len</span>(), <span class="ident">MAX_LENGTH</span>));
+    <span class="doccomment">/// Moves InputBuffer into RW state, making it possible to perform edits on it
+    </span><span class="kw">pub fn </span>start_build(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; SudachiResult&lt;()&gt; {
+        <span class="kw">if </span><span class="self">self</span>.original.len() &gt; MAX_LENGTH {
+            <span class="kw">return </span><span class="prelude-val">Err</span>(SudachiError::InputTooLong(<span class="self">self</span>.original.len(), MAX_LENGTH));
         }
-        <span class="macro">debug_assert_eq!</span>(<span class="self">self</span>.<span class="ident">state</span>, <span class="ident">BufferState::Clean</span>);
-        <span class="self">self</span>.<span class="ident">state</span> <span class="op">=</span> <span class="ident">BufferState::RW</span>;
-        <span class="self">self</span>.<span class="ident">modified</span>.<span class="ident">push_str</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">original</span>);
-        <span class="self">self</span>.<span class="ident">m2o</span>.<span class="ident">extend</span>(<span class="number">0</span>..<span class="self">self</span>.<span class="ident">modified</span>.<span class="ident">len</span>() <span class="op">+</span> <span class="number">1</span>);
+        <span class="macro">debug_assert_eq!</span>(<span class="self">self</span>.state, BufferState::Clean);
+        <span class="self">self</span>.state = BufferState::RW;
+        <span class="self">self</span>.modified.push_str(<span class="kw-2">&amp;</span><span class="self">self</span>.original);
+        <span class="self">self</span>.m2o.extend(<span class="number">0</span>..<span class="self">self</span>.modified.len() + <span class="number">1</span>);
         <span class="prelude-val">Ok</span>(())
     }
 
-    <span class="doccomment">/// Finalizes InputBuffer state, making it RO</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">build</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">grammar</span>: <span class="kw-2">&amp;</span><span class="ident">Grammar</span>) -&gt; <span class="ident">SudachiResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
-        <span class="macro">debug_assert_eq!</span>(<span class="self">self</span>.<span class="ident">state</span>, <span class="ident">BufferState::RW</span>);
-        <span class="self">self</span>.<span class="ident">state</span> <span class="op">=</span> <span class="ident">BufferState::RO</span>;
-        <span class="self">self</span>.<span class="ident">mod_chars</span>.<span class="ident">clear</span>();
-        <span class="kw">let</span> <span class="ident">cats</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">grammar</span>.<span class="ident">character_category</span>;
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">last_offset</span> <span class="op">=</span> <span class="number">0</span>;
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">last_chidx</span> <span class="op">=</span> <span class="number">0</span>;
+    <span class="doccomment">/// Finalizes InputBuffer state, making it RO
+    </span><span class="kw">pub fn </span>build(<span class="kw-2">&amp;mut </span><span class="self">self</span>, grammar: <span class="kw-2">&amp;</span>Grammar) -&gt; SudachiResult&lt;()&gt; {
+        <span class="macro">debug_assert_eq!</span>(<span class="self">self</span>.state, BufferState::RW);
+        <span class="self">self</span>.state = BufferState::RO;
+        <span class="self">self</span>.mod_chars.clear();
+        <span class="kw">let </span>cats = <span class="kw-2">&amp;</span>grammar.character_category;
+        <span class="kw">let </span><span class="kw-2">mut </span>last_offset = <span class="number">0</span>;
+        <span class="kw">let </span><span class="kw-2">mut </span>last_chidx = <span class="number">0</span>;
 
-        <span class="comment">// Special cases for BOW logic</span>
-        <span class="kw">let</span> <span class="ident">non_starting</span> <span class="op">=</span> <span class="ident">CategoryType::ALPHA</span> <span class="op">|</span> <span class="ident">CategoryType::GREEK</span> <span class="op">|</span> <span class="ident">CategoryType::CYRILLIC</span>;
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">prev_cat</span> <span class="op">=</span> <span class="ident">CategoryType::empty</span>();
-        <span class="self">self</span>.<span class="ident">mod_bow</span>.<span class="ident">resize</span>(<span class="self">self</span>.<span class="ident">modified</span>.<span class="ident">len</span>(), <span class="bool-val">false</span>);
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">next_bow</span> <span class="op">=</span> <span class="bool-val">true</span>;
+        <span class="comment">// Special cases for BOW logic
+        </span><span class="kw">let </span>non_starting = CategoryType::ALPHA | CategoryType::GREEK | CategoryType::CYRILLIC;
+        <span class="kw">let </span><span class="kw-2">mut </span>prev_cat = CategoryType::empty();
+        <span class="self">self</span>.mod_bow.resize(<span class="self">self</span>.modified.len(), <span class="bool-val">false</span>);
+        <span class="kw">let </span><span class="kw-2">mut </span>next_bow = <span class="bool-val">true</span>;
 
-        <span class="kw">for</span> (<span class="ident">chidx</span>, (<span class="ident">bidx</span>, <span class="ident">ch</span>)) <span class="kw">in</span> <span class="self">self</span>.<span class="ident">modified</span>.<span class="ident">char_indices</span>().<span class="ident">enumerate</span>() {
-            <span class="self">self</span>.<span class="ident">mod_chars</span>.<span class="ident">push</span>(<span class="ident">ch</span>);
-            <span class="kw">let</span> <span class="ident">cat</span> <span class="op">=</span> <span class="ident">cats</span>.<span class="ident">get_category_types</span>(<span class="ident">ch</span>);
-            <span class="self">self</span>.<span class="ident">mod_cat</span>.<span class="ident">push</span>(<span class="ident">cat</span>);
-            <span class="self">self</span>.<span class="ident">mod_c2b</span>.<span class="ident">push</span>(<span class="ident">bidx</span>);
-            <span class="self">self</span>.<span class="ident">mod_b2c</span>
-                .<span class="ident">extend</span>(<span class="ident">std::iter::repeat</span>(<span class="ident">last_chidx</span>).<span class="ident">take</span>(<span class="ident">bidx</span> <span class="op">-</span> <span class="ident">last_offset</span>));
-            <span class="ident">last_offset</span> <span class="op">=</span> <span class="ident">bidx</span>;
-            <span class="ident">last_chidx</span> <span class="op">=</span> <span class="ident">chidx</span>;
+        <span class="kw">for </span>(chidx, (bidx, ch)) <span class="kw">in </span><span class="self">self</span>.modified.char_indices().enumerate() {
+            <span class="self">self</span>.mod_chars.push(ch);
+            <span class="kw">let </span>cat = cats.get_category_types(ch);
+            <span class="self">self</span>.mod_cat.push(cat);
+            <span class="self">self</span>.mod_c2b.push(bidx);
+            <span class="self">self</span>.mod_b2c
+                .extend(std::iter::repeat(last_chidx).take(bidx - last_offset));
+            last_offset = bidx;
+            last_chidx = chidx;
 
-            <span class="kw">let</span> <span class="ident">can_bow</span> <span class="op">=</span> <span class="kw">if</span> <span class="op">!</span><span class="ident">next_bow</span> {
-                <span class="comment">// this char was forbidden by the previous one</span>
-                <span class="ident">next_bow</span> <span class="op">=</span> <span class="bool-val">true</span>;
-                <span class="bool-val">false</span>
-            } <span class="kw">else</span> <span class="kw">if</span> <span class="ident">cat</span>.<span class="ident">intersects</span>(<span class="ident">CategoryType::NOOOVBOW2</span>) {
-                <span class="comment">// this rule is stronger than the next one and must come before</span>
-                <span class="comment">// this and next are forbidden</span>
-                <span class="ident">next_bow</span> <span class="op">=</span> <span class="bool-val">false</span>;
-                <span class="bool-val">false</span>
-            } <span class="kw">else</span> <span class="kw">if</span> <span class="ident">cat</span>.<span class="ident">intersects</span>(<span class="ident">CategoryType::NOOOVBOW</span>) {
-                <span class="comment">// this char is forbidden</span>
-                <span class="bool-val">false</span>
-            } <span class="kw">else</span> <span class="kw">if</span> <span class="ident">cat</span>.<span class="ident">intersects</span>(<span class="ident">non_starting</span>) {
-                <span class="comment">// the previous char is compatible</span>
-                <span class="op">!</span><span class="ident">cat</span>.<span class="ident">intersects</span>(<span class="ident">prev_cat</span>)
-            } <span class="kw">else</span> {
-                <span class="bool-val">true</span>
-            };
+            <span class="kw">let </span>can_bow = <span class="kw">if </span>!next_bow {
+                <span class="comment">// this char was forbidden by the previous one
+                </span>next_bow = <span class="bool-val">true</span>;
+                <span class="bool-val">false
+            </span>} <span class="kw">else if </span>cat.intersects(CategoryType::NOOOVBOW2) {
+                <span class="comment">// this rule is stronger than the next one and must come before
+                // this and next are forbidden
+                </span>next_bow = <span class="bool-val">false</span>;
+                <span class="bool-val">false
+            </span>} <span class="kw">else if </span>cat.intersects(CategoryType::NOOOVBOW) {
+                <span class="comment">// this char is forbidden
+                </span><span class="bool-val">false
+            </span>} <span class="kw">else if </span>cat.intersects(non_starting) {
+                <span class="comment">// the previous char is compatible
+                </span>!cat.intersects(prev_cat)
+            } <span class="kw">else </span>{
+                <span class="bool-val">true
+            </span>};
 
-            <span class="self">self</span>.<span class="ident">mod_bow</span>[<span class="ident">bidx</span>] <span class="op">=</span> <span class="ident">can_bow</span>;
-            <span class="ident">prev_cat</span> <span class="op">=</span> <span class="ident">cat</span>;
+            <span class="self">self</span>.mod_bow[bidx] = can_bow;
+            prev_cat = cat;
         }
-        <span class="comment">// trailing indices for the last codepoint</span>
-        <span class="self">self</span>.<span class="ident">mod_b2c</span>
-            .<span class="ident">extend</span>(<span class="ident">std::iter::repeat</span>(<span class="ident">last_chidx</span>).<span class="ident">take</span>(<span class="self">self</span>.<span class="ident">modified</span>.<span class="ident">len</span>() <span class="op">-</span> <span class="ident">last_offset</span>));
-        <span class="comment">// sentinel values for range translations</span>
-        <span class="self">self</span>.<span class="ident">mod_c2b</span>.<span class="ident">push</span>(<span class="self">self</span>.<span class="ident">mod_b2c</span>.<span class="ident">len</span>());
-        <span class="self">self</span>.<span class="ident">mod_b2c</span>.<span class="ident">push</span>(<span class="ident">last_chidx</span> <span class="op">+</span> <span class="number">1</span>);
+        <span class="comment">// trailing indices for the last codepoint
+        </span><span class="self">self</span>.mod_b2c
+            .extend(std::iter::repeat(last_chidx).take(<span class="self">self</span>.modified.len() - last_offset));
+        <span class="comment">// sentinel values for range translations
+        </span><span class="self">self</span>.mod_c2b.push(<span class="self">self</span>.mod_b2c.len());
+        <span class="self">self</span>.mod_b2c.push(last_chidx + <span class="number">1</span>);
 
-        <span class="self">self</span>.<span class="ident">fill_cat_continuity</span>();
-        <span class="self">self</span>.<span class="ident">fill_orig_b2c</span>();
+        <span class="self">self</span>.fill_cat_continuity();
+        <span class="self">self</span>.fill_orig_b2c();
 
         <span class="prelude-val">Ok</span>(())
     }
 
-    <span class="kw">fn</span> <span class="ident">fill_cat_continuity</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>) {
-        <span class="kw">if</span> <span class="self">self</span>.<span class="ident">mod_chars</span>.<span class="ident">is_empty</span>() {
+    <span class="kw">fn </span>fill_cat_continuity(<span class="kw-2">&amp;mut </span><span class="self">self</span>) {
+        <span class="kw">if </span><span class="self">self</span>.mod_chars.is_empty() {
             <span class="kw">return</span>;
         }
-        <span class="comment">// single pass algorithm</span>
-        <span class="comment">// by default continuity is 1 codepoint</span>
-        <span class="comment">// go from the back and set it prev + 1 when chars are compatible</span>
-        <span class="self">self</span>.<span class="ident">mod_cat_continuity</span>.<span class="ident">resize</span>(<span class="self">self</span>.<span class="ident">mod_chars</span>.<span class="ident">len</span>(), <span class="number">1</span>);
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">cat</span> <span class="op">=</span> <span class="kw-2">*</span><span class="self">self</span>.<span class="ident">mod_cat</span>.<span class="ident">last</span>().<span class="ident">unwrap_or</span>(<span class="kw-2">&amp;</span><span class="ident">CategoryType::all</span>());
-        <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> (<span class="number">0</span>..<span class="self">self</span>.<span class="ident">mod_cat</span>.<span class="ident">len</span>() <span class="op">-</span> <span class="number">1</span>).<span class="ident">rev</span>() {
-            <span class="kw">let</span> <span class="ident">cur</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">mod_cat</span>[<span class="ident">i</span>];
-            <span class="kw">let</span> <span class="ident">common</span> <span class="op">=</span> <span class="ident">cur</span> <span class="op">&amp;</span> <span class="ident">cat</span>;
-            <span class="kw">if</span> <span class="op">!</span><span class="ident">common</span>.<span class="ident">is_empty</span>() {
-                <span class="self">self</span>.<span class="ident">mod_cat_continuity</span>[<span class="ident">i</span>] <span class="op">=</span> <span class="self">self</span>.<span class="ident">mod_cat_continuity</span>[<span class="ident">i</span> <span class="op">+</span> <span class="number">1</span>] <span class="op">+</span> <span class="number">1</span>;
-                <span class="ident">cat</span> <span class="op">=</span> <span class="ident">common</span>;
-            } <span class="kw">else</span> {
-                <span class="ident">cat</span> <span class="op">=</span> <span class="ident">cur</span>;
+        <span class="comment">// single pass algorithm
+        // by default continuity is 1 codepoint
+        // go from the back and set it prev + 1 when chars are compatible
+        </span><span class="self">self</span>.mod_cat_continuity.resize(<span class="self">self</span>.mod_chars.len(), <span class="number">1</span>);
+        <span class="kw">let </span><span class="kw-2">mut </span>cat = <span class="kw-2">*</span><span class="self">self</span>.mod_cat.last().unwrap_or(<span class="kw-2">&amp;</span>CategoryType::all());
+        <span class="kw">for </span>i <span class="kw">in </span>(<span class="number">0</span>..<span class="self">self</span>.mod_cat.len() - <span class="number">1</span>).rev() {
+            <span class="kw">let </span>cur = <span class="self">self</span>.mod_cat[i];
+            <span class="kw">let </span>common = cur &amp; cat;
+            <span class="kw">if </span>!common.is_empty() {
+                <span class="self">self</span>.mod_cat_continuity[i] = <span class="self">self</span>.mod_cat_continuity[i + <span class="number">1</span>] + <span class="number">1</span>;
+                cat = common;
+            } <span class="kw">else </span>{
+                cat = cur;
             }
         }
     }
 
-    <span class="kw">fn</span> <span class="ident">fill_orig_b2c</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>) {
-        <span class="self">self</span>.<span class="ident">m2o_2</span>.<span class="ident">clear</span>();
-        <span class="self">self</span>.<span class="ident">m2o_2</span>.<span class="ident">resize</span>(<span class="self">self</span>.<span class="ident">original</span>.<span class="ident">len</span>() <span class="op">+</span> <span class="number">1</span>, <span class="ident">usize::MAX</span>);
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">max</span> <span class="op">=</span> <span class="number">0</span>;
-        <span class="kw">for</span> (<span class="ident">ch_idx</span>, (<span class="ident">b_idx</span>, <span class="kw">_</span>)) <span class="kw">in</span> <span class="self">self</span>.<span class="ident">original</span>.<span class="ident">char_indices</span>().<span class="ident">enumerate</span>() {
-            <span class="self">self</span>.<span class="ident">m2o_2</span>[<span class="ident">b_idx</span>] <span class="op">=</span> <span class="ident">ch_idx</span>;
-            <span class="ident">max</span> <span class="op">=</span> <span class="ident">ch_idx</span>
+    <span class="kw">fn </span>fill_orig_b2c(<span class="kw-2">&amp;mut </span><span class="self">self</span>) {
+        <span class="self">self</span>.m2o_2.clear();
+        <span class="self">self</span>.m2o_2.resize(<span class="self">self</span>.original.len() + <span class="number">1</span>, usize::MAX);
+        <span class="kw">let </span><span class="kw-2">mut </span>max = <span class="number">0</span>;
+        <span class="kw">for </span>(ch_idx, (b_idx, <span class="kw">_</span>)) <span class="kw">in </span><span class="self">self</span>.original.char_indices().enumerate() {
+            <span class="self">self</span>.m2o_2[b_idx] = ch_idx;
+            max = ch_idx
         }
-        <span class="self">self</span>.<span class="ident">m2o_2</span>[<span class="self">self</span>.<span class="ident">original</span>.<span class="ident">len</span>()] <span class="op">=</span> <span class="ident">max</span> <span class="op">+</span> <span class="number">1</span>;
+        <span class="self">self</span>.m2o_2[<span class="self">self</span>.original.len()] = max + <span class="number">1</span>;
     }
 
-    <span class="kw">fn</span> <span class="ident">commit</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>) -&gt; <span class="ident">SudachiResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
-        <span class="kw">if</span> <span class="self">self</span>.<span class="ident">replaces</span>.<span class="ident">is_empty</span>() {
-            <span class="kw">return</span> <span class="prelude-val">Ok</span>(());
+    <span class="kw">fn </span>commit(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; SudachiResult&lt;()&gt; {
+        <span class="kw">if </span><span class="self">self</span>.replaces.is_empty() {
+            <span class="kw">return </span><span class="prelude-val">Ok</span>(());
         }
 
-        <span class="self">self</span>.<span class="ident">mod_chars</span>.<span class="ident">clear</span>();
-        <span class="self">self</span>.<span class="ident">modified_2</span>.<span class="ident">clear</span>();
-        <span class="self">self</span>.<span class="ident">m2o_2</span>.<span class="ident">clear</span>();
+        <span class="self">self</span>.mod_chars.clear();
+        <span class="self">self</span>.modified_2.clear();
+        <span class="self">self</span>.m2o_2.clear();
 
-        <span class="kw">let</span> <span class="ident">sz</span> <span class="op">=</span> <span class="ident">edit::resolve_edits</span>(
-            <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">modified</span>,
-            <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">m2o</span>,
-            <span class="kw-2">&amp;mut</span> <span class="self">self</span>.<span class="ident">modified_2</span>,
-            <span class="kw-2">&amp;mut</span> <span class="self">self</span>.<span class="ident">m2o_2</span>,
-            <span class="kw-2">&amp;mut</span> <span class="self">self</span>.<span class="ident">replaces</span>,
+        <span class="kw">let </span>sz = edit::resolve_edits(
+            <span class="kw-2">&amp;</span><span class="self">self</span>.modified,
+            <span class="kw-2">&amp;</span><span class="self">self</span>.m2o,
+            <span class="kw-2">&amp;mut </span><span class="self">self</span>.modified_2,
+            <span class="kw-2">&amp;mut </span><span class="self">self</span>.m2o_2,
+            <span class="kw-2">&amp;mut </span><span class="self">self</span>.replaces,
         );
-        <span class="kw">if</span> <span class="ident">sz</span> <span class="op">&gt;</span> <span class="ident">REALLY_MAX_LENGTH</span> {
-            <span class="comment">// super improbable, but still</span>
-            <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">SudachiError::InputTooLong</span>(<span class="ident">sz</span>, <span class="ident">REALLY_MAX_LENGTH</span>));
+        <span class="kw">if </span>sz &gt; REALLY_MAX_LENGTH {
+            <span class="comment">// super improbable, but still
+            </span><span class="kw">return </span><span class="prelude-val">Err</span>(SudachiError::InputTooLong(sz, REALLY_MAX_LENGTH));
         }
-        <span class="ident">std::mem::swap</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>.<span class="ident">modified</span>, <span class="kw-2">&amp;mut</span> <span class="self">self</span>.<span class="ident">modified_2</span>);
-        <span class="ident">std::mem::swap</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>.<span class="ident">m2o</span>, <span class="kw-2">&amp;mut</span> <span class="self">self</span>.<span class="ident">m2o_2</span>);
+        std::mem::swap(<span class="kw-2">&amp;mut </span><span class="self">self</span>.modified, <span class="kw-2">&amp;mut </span><span class="self">self</span>.modified_2);
+        std::mem::swap(<span class="kw-2">&amp;mut </span><span class="self">self</span>.m2o, <span class="kw-2">&amp;mut </span><span class="self">self</span>.m2o_2);
         <span class="prelude-val">Ok</span>(())
     }
 
-    <span class="kw">fn</span> <span class="ident">rollback</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>) {
-        <span class="self">self</span>.<span class="ident">replaces</span>.<span class="ident">clear</span>()
+    <span class="kw">fn </span>rollback(<span class="kw-2">&amp;mut </span><span class="self">self</span>) {
+        <span class="self">self</span>.replaces.clear()
     }
 
-    <span class="kw">fn</span> <span class="ident">make_editor</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>) -&gt; <span class="ident">InputEditor</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
-        <span class="comment">// SAFETY: while it is possible to write into borrowed replaces</span>
-        <span class="comment">// the buffer object itself will be accessible as RO</span>
-        <span class="kw">let</span> <span class="ident">replaces</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw-2">mut</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">edit::ReplaceOp</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="op">=</span>
-            <span class="kw">unsafe</span> { <span class="ident">std::mem::transmute</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>.<span class="ident">replaces</span>) };
-        <span class="kw">return</span> <span class="ident">InputEditor::new</span>(<span class="ident">replaces</span>);
+    <span class="kw">fn </span>make_editor&lt;<span class="lifetime">&#39;a</span>&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; InputEditor&lt;<span class="lifetime">&#39;a</span>&gt; {
+        <span class="comment">// SAFETY: while it is possible to write into borrowed replaces
+        // the buffer object itself will be accessible as RO
+        </span><span class="kw">let </span>replaces: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="kw-2">mut </span>Vec&lt;edit::ReplaceOp&lt;<span class="lifetime">&#39;a</span>&gt;&gt; =
+            <span class="kw">unsafe </span>{ std::mem::transmute(<span class="kw-2">&amp;mut </span><span class="self">self</span>.replaces) };
+        <span class="kw">return </span>InputEditor::new(replaces);
     }
 
-    <span class="doccomment">/// Execute a function which can modify the contents of the current buffer</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// Edit can borrow &amp;str from the context with the borrow checker working correctly     </span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">with_editor</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">F</span><span class="op">&gt;</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">func</span>: <span class="ident">F</span>) -&gt; <span class="ident">SudachiResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span>
-    <span class="kw">where</span>
-        <span class="ident">F</span>: <span class="ident">FnOnce</span>(<span class="kw-2">&amp;</span><span class="ident">InputBuffer</span>, <span class="ident">InputEditor</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>) -&gt; <span class="ident">SudachiResult</span><span class="op">&lt;</span><span class="ident">InputEditor</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span><span class="op">&gt;</span>,
-        <span class="ident">F</span>: <span class="lifetime">&#39;a</span>,
+    <span class="doccomment">/// Execute a function which can modify the contents of the current buffer
+    ///
+    /// Edit can borrow &amp;str from the context with the borrow checker working correctly     
+    </span><span class="kw">pub fn </span>with_editor&lt;<span class="lifetime">&#39;a</span>, F&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, func: F) -&gt; SudachiResult&lt;()&gt;
+    <span class="kw">where
+        </span>F: FnOnce(<span class="kw-2">&amp;</span>InputBuffer, InputEditor&lt;<span class="lifetime">&#39;a</span>&gt;) -&gt; SudachiResult&lt;InputEditor&lt;<span class="lifetime">&#39;a</span>&gt;&gt;,
+        F: <span class="lifetime">&#39;a</span>,
     {
-        <span class="macro">debug_assert_eq!</span>(<span class="self">self</span>.<span class="ident">state</span>, <span class="ident">BufferState::RW</span>);
-        <span class="comment">// InputBufferReplacer should have &#39;a lifetime parameter for API safety</span>
-        <span class="comment">// It is impossible to create it outside of this function</span>
-        <span class="comment">// And the API forces user to return it by value</span>
-        <span class="kw">let</span> <span class="ident">editor</span>: <span class="ident">InputEditor</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">make_editor</span>();
-        <span class="kw">match</span> <span class="ident">func</span>(<span class="self">self</span>, <span class="ident">editor</span>) {
-            <span class="prelude-val">Ok</span>(<span class="kw">_</span>) =&gt; <span class="self">self</span>.<span class="ident">commit</span>(),
-            <span class="prelude-val">Err</span>(<span class="ident">e</span>) =&gt; {
-                <span class="self">self</span>.<span class="ident">rollback</span>();
-                <span class="prelude-val">Err</span>(<span class="ident">e</span>)
+        <span class="macro">debug_assert_eq!</span>(<span class="self">self</span>.state, BufferState::RW);
+        <span class="comment">// InputBufferReplacer should have &#39;a lifetime parameter for API safety
+        // It is impossible to create it outside of this function
+        // And the API forces user to return it by value
+        </span><span class="kw">let </span>editor: InputEditor&lt;<span class="lifetime">&#39;a</span>&gt; = <span class="self">self</span>.make_editor();
+        <span class="kw">match </span>func(<span class="self">self</span>, editor) {
+            <span class="prelude-val">Ok</span>(<span class="kw">_</span>) =&gt; <span class="self">self</span>.commit(),
+            <span class="prelude-val">Err</span>(e) =&gt; {
+                <span class="self">self</span>.rollback();
+                <span class="prelude-val">Err</span>(e)
             }
         }
     }
 
-    <span class="doccomment">/// Recompute chars from modified string (useful if the processing will use chars)</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">refresh_chars</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>) {
-        <span class="macro">debug_assert_eq!</span>(<span class="self">self</span>.<span class="ident">state</span>, <span class="ident">BufferState::RW</span>);
-        <span class="kw">if</span> <span class="self">self</span>.<span class="ident">mod_chars</span>.<span class="ident">is_empty</span>() {
-            <span class="self">self</span>.<span class="ident">mod_chars</span>.<span class="ident">extend</span>(<span class="self">self</span>.<span class="ident">modified</span>.<span class="ident">chars</span>());
+    <span class="doccomment">/// Recompute chars from modified string (useful if the processing will use chars)
+    </span><span class="kw">pub fn </span>refresh_chars(<span class="kw-2">&amp;mut </span><span class="self">self</span>) {
+        <span class="macro">debug_assert_eq!</span>(<span class="self">self</span>.state, BufferState::RW);
+        <span class="kw">if </span><span class="self">self</span>.mod_chars.is_empty() {
+            <span class="self">self</span>.mod_chars.extend(<span class="self">self</span>.modified.chars());
         }
     }
 }
 
-<span class="comment">// RO Accessors</span>
-<span class="kw">impl</span> <span class="ident">InputBuffer</span> {
-    <span class="doccomment">/// Borrow original data</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">original</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="ident">str</span> {
-        <span class="macro">debug_assert_ne!</span>(<span class="self">self</span>.<span class="ident">state</span>, <span class="ident">BufferState::Clean</span>);
-        <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">original</span>
+<span class="comment">// RO Accessors
+</span><span class="kw">impl </span>InputBuffer {
+    <span class="doccomment">/// Borrow original data
+    </span><span class="kw">pub fn </span>original(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>str {
+        <span class="macro">debug_assert_ne!</span>(<span class="self">self</span>.state, BufferState::Clean);
+        <span class="kw-2">&amp;</span><span class="self">self</span>.original
     }
 
-    <span class="doccomment">/// Borrow modified data</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">current</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="ident">str</span> {
-        <span class="macro">debug_assert_ne!</span>(<span class="self">self</span>.<span class="ident">state</span>, <span class="ident">BufferState::Clean</span>);
-        <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">modified</span>
+    <span class="doccomment">/// Borrow modified data
+    </span><span class="kw">pub fn </span>current(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>str {
+        <span class="macro">debug_assert_ne!</span>(<span class="self">self</span>.state, BufferState::Clean);
+        <span class="kw-2">&amp;</span><span class="self">self</span>.modified
     }
 
-    <span class="doccomment">/// Borrow array of current characters</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">current_chars</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>[<span class="ident">char</span>] {
-        <span class="macro">debug_assert_ne!</span>(<span class="self">self</span>.<span class="ident">state</span>, <span class="ident">BufferState::Clean</span>);
-        <span class="macro">debug_assert_eq!</span>(<span class="self">self</span>.<span class="ident">modified</span>.<span class="ident">is_empty</span>(), <span class="self">self</span>.<span class="ident">mod_chars</span>.<span class="ident">is_empty</span>());
-        <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">mod_chars</span>
+    <span class="doccomment">/// Borrow array of current characters
+    </span><span class="kw">pub fn </span>current_chars(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>[char] {
+        <span class="macro">debug_assert_ne!</span>(<span class="self">self</span>.state, BufferState::Clean);
+        <span class="macro">debug_assert_eq!</span>(<span class="self">self</span>.modified.is_empty(), <span class="self">self</span>.mod_chars.is_empty());
+        <span class="kw-2">&amp;</span><span class="self">self</span>.mod_chars
     }
 
-    <span class="doccomment">/// Returns byte offsets of current chars</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">curr_byte_offsets</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>[<span class="ident">usize</span>] {
-        <span class="macro">debug_assert_eq!</span>(<span class="self">self</span>.<span class="ident">state</span>, <span class="ident">BufferState::RO</span>);
-        <span class="kw">let</span> <span class="ident">len</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">mod_c2b</span>.<span class="ident">len</span>();
-        <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">mod_c2b</span>[<span class="number">0</span>..<span class="ident">len</span> <span class="op">-</span> <span class="number">1</span>]
+    <span class="doccomment">/// Returns byte offsets of current chars
+    </span><span class="kw">pub fn </span>curr_byte_offsets(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>[usize] {
+        <span class="macro">debug_assert_eq!</span>(<span class="self">self</span>.state, BufferState::RO);
+        <span class="kw">let </span>len = <span class="self">self</span>.mod_c2b.len();
+        <span class="kw-2">&amp;</span><span class="self">self</span>.mod_c2b[<span class="number">0</span>..len - <span class="number">1</span>]
     }
 
-    <span class="doccomment">/// Get index of the current byte in original sentence</span>
-    <span class="doccomment">/// Bytes not on character boundaries are not supported</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">get_original_index</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">index</span>: <span class="ident">usize</span>) -&gt; <span class="ident">usize</span> {
-        <span class="macro">debug_assert!</span>(<span class="self">self</span>.<span class="ident">modified</span>.<span class="ident">is_char_boundary</span>(<span class="ident">index</span>));
-        <span class="self">self</span>.<span class="ident">m2o</span>[<span class="ident">index</span>]
+    <span class="doccomment">/// Get index of the current byte in original sentence
+    /// Bytes not on character boundaries are not supported
+    </span><span class="kw">pub fn </span>get_original_index(<span class="kw-2">&amp;</span><span class="self">self</span>, index: usize) -&gt; usize {
+        <span class="macro">debug_assert!</span>(<span class="self">self</span>.modified.is_char_boundary(index));
+        <span class="self">self</span>.m2o[index]
     }
 
-    <span class="doccomment">/// Mod Char Idx -&gt; Orig Byte Idx</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">to_orig_byte_idx</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">index</span>: <span class="ident">usize</span>) -&gt; <span class="ident">usize</span> {
-        <span class="macro">debug_assert_ne!</span>(<span class="self">self</span>.<span class="ident">state</span>, <span class="ident">BufferState::Clean</span>);
-        <span class="kw">let</span> <span class="ident">byte_idx</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">mod_c2b</span>[<span class="ident">index</span>];
-        <span class="self">self</span>.<span class="ident">m2o</span>[<span class="ident">byte_idx</span>]
+    <span class="doccomment">/// Mod Char Idx -&gt; Orig Byte Idx
+    </span><span class="kw">pub fn </span>to_orig_byte_idx(<span class="kw-2">&amp;</span><span class="self">self</span>, index: usize) -&gt; usize {
+        <span class="macro">debug_assert_ne!</span>(<span class="self">self</span>.state, BufferState::Clean);
+        <span class="kw">let </span>byte_idx = <span class="self">self</span>.mod_c2b[index];
+        <span class="self">self</span>.m2o[byte_idx]
     }
 
-    <span class="doccomment">/// Mod Char Idx -&gt; Orig Char Idx</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">to_orig_char_idx</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">index</span>: <span class="ident">usize</span>) -&gt; <span class="ident">usize</span> {
-        <span class="kw">let</span> <span class="ident">b_idx</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">to_orig_byte_idx</span>(<span class="ident">index</span>);
-        <span class="kw">let</span> <span class="ident">res</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">m2o_2</span>[<span class="ident">b_idx</span>];
-        <span class="macro">debug_assert_ne!</span>(<span class="ident">res</span>, <span class="ident">usize::MAX</span>);
-        <span class="ident">res</span>
+    <span class="doccomment">/// Mod Char Idx -&gt; Orig Char Idx
+    </span><span class="kw">pub fn </span>to_orig_char_idx(<span class="kw-2">&amp;</span><span class="self">self</span>, index: usize) -&gt; usize {
+        <span class="kw">let </span>b_idx = <span class="self">self</span>.to_orig_byte_idx(index);
+        <span class="kw">let </span>res = <span class="self">self</span>.m2o_2[b_idx];
+        <span class="macro">debug_assert_ne!</span>(res, usize::MAX);
+        res
     }
 
-    <span class="doccomment">/// Mod Char Idx -&gt; Mod Byte Idx</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">to_curr_byte_idx</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">index</span>: <span class="ident">usize</span>) -&gt; <span class="ident">usize</span> {
-        <span class="macro">debug_assert_eq!</span>(<span class="self">self</span>.<span class="ident">state</span>, <span class="ident">BufferState::RO</span>);
-        <span class="self">self</span>.<span class="ident">mod_c2b</span>[<span class="ident">index</span>]
+    <span class="doccomment">/// Mod Char Idx -&gt; Mod Byte Idx
+    </span><span class="kw">pub fn </span>to_curr_byte_idx(<span class="kw-2">&amp;</span><span class="self">self</span>, index: usize) -&gt; usize {
+        <span class="macro">debug_assert_eq!</span>(<span class="self">self</span>.state, BufferState::RO);
+        <span class="self">self</span>.mod_c2b[index]
     }
 
-    <span class="doccomment">/// Input: Mod Char Idx</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">curr_slice_c</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">data</span>: <span class="ident">Range</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>) -&gt; <span class="kw-2">&amp;</span><span class="ident">str</span> {
-        <span class="macro">debug_assert_eq!</span>(<span class="self">self</span>.<span class="ident">state</span>, <span class="ident">BufferState::RO</span>);
-        <span class="kw">let</span> <span class="ident">start</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">mod_c2b</span>[<span class="ident">data</span>.<span class="ident">start</span>];
-        <span class="kw">let</span> <span class="ident">end</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">mod_c2b</span>[<span class="ident">data</span>.<span class="ident">end</span>];
-        <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">modified</span>[<span class="ident">start</span>..<span class="ident">end</span>]
+    <span class="doccomment">/// Input: Mod Char Idx
+    </span><span class="kw">pub fn </span>curr_slice_c(<span class="kw-2">&amp;</span><span class="self">self</span>, data: Range&lt;usize&gt;) -&gt; <span class="kw-2">&amp;</span>str {
+        <span class="macro">debug_assert_eq!</span>(<span class="self">self</span>.state, BufferState::RO);
+        <span class="kw">let </span>start = <span class="self">self</span>.mod_c2b[data.start];
+        <span class="kw">let </span>end = <span class="self">self</span>.mod_c2b[data.end];
+        <span class="kw-2">&amp;</span><span class="self">self</span>.modified[start..end]
     }
 
-    <span class="doccomment">/// Input: Mod Char Idx</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">orig_slice_c</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">data</span>: <span class="ident">Range</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>) -&gt; <span class="kw-2">&amp;</span><span class="ident">str</span> {
-        <span class="macro">debug_assert_eq!</span>(<span class="self">self</span>.<span class="ident">state</span>, <span class="ident">BufferState::RO</span>);
-        <span class="kw">let</span> <span class="ident">start</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">to_orig_byte_idx</span>(<span class="ident">data</span>.<span class="ident">start</span>);
-        <span class="kw">let</span> <span class="ident">end</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">to_orig_byte_idx</span>(<span class="ident">data</span>.<span class="ident">end</span>);
-        <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">original</span>[<span class="ident">start</span>..<span class="ident">end</span>]
+    <span class="doccomment">/// Input: Mod Char Idx
+    </span><span class="kw">pub fn </span>orig_slice_c(<span class="kw-2">&amp;</span><span class="self">self</span>, data: Range&lt;usize&gt;) -&gt; <span class="kw-2">&amp;</span>str {
+        <span class="macro">debug_assert_eq!</span>(<span class="self">self</span>.state, BufferState::RO);
+        <span class="kw">let </span>start = <span class="self">self</span>.to_orig_byte_idx(data.start);
+        <span class="kw">let </span>end = <span class="self">self</span>.to_orig_byte_idx(data.end);
+        <span class="kw-2">&amp;</span><span class="self">self</span>.original[start..end]
     }
 
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">ch_idx</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">idx</span>: <span class="ident">usize</span>) -&gt; <span class="ident">usize</span> {
-        <span class="macro">debug_assert_eq!</span>(<span class="self">self</span>.<span class="ident">state</span>, <span class="ident">BufferState::RO</span>);
-        <span class="self">self</span>.<span class="ident">mod_b2c</span>[<span class="ident">idx</span>]
+    <span class="kw">pub fn </span>ch_idx(<span class="kw-2">&amp;</span><span class="self">self</span>, idx: usize) -&gt; usize {
+        <span class="macro">debug_assert_eq!</span>(<span class="self">self</span>.state, BufferState::RO);
+        <span class="self">self</span>.mod_b2c[idx]
     }
 
-    <span class="doccomment">/// Swaps original data with the passed location</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">swap_original</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">target</span>: <span class="kw-2">&amp;mut</span> <span class="ident">String</span>) {
-        <span class="ident">std::mem::swap</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>.<span class="ident">original</span>, <span class="ident">target</span>);
-        <span class="self">self</span>.<span class="ident">state</span> <span class="op">=</span> <span class="ident">BufferState::Clean</span>;
+    <span class="doccomment">/// Swaps original data with the passed location
+    </span><span class="kw">pub fn </span>swap_original(<span class="kw-2">&amp;mut </span><span class="self">self</span>, target: <span class="kw-2">&amp;mut </span>String) {
+        std::mem::swap(<span class="kw-2">&amp;mut </span><span class="self">self</span>.original, target);
+        <span class="self">self</span>.state = BufferState::Clean;
     }
 
-    <span class="doccomment">/// Return original data as owned, consuming itself    </span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">into_original</span>(<span class="self">self</span>) -&gt; <span class="ident">String</span> {
-        <span class="self">self</span>.<span class="ident">original</span>
+    <span class="doccomment">/// Return original data as owned, consuming itself    
+    </span><span class="kw">pub fn </span>into_original(<span class="self">self</span>) -&gt; String {
+        <span class="self">self</span>.original
     }
 
-    <span class="doccomment">/// Whether the byte can start a new word.</span>
-    <span class="doccomment">/// Supports bytes not on character boundaries.</span>
-    <span class="attribute">#[<span class="ident">inline</span>]</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">can_bow</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">offset</span>: <span class="ident">usize</span>) -&gt; <span class="ident">bool</span> {
-        <span class="macro">debug_assert_eq!</span>(<span class="self">self</span>.<span class="ident">state</span>, <span class="ident">BufferState::RO</span>);
-        <span class="self">self</span>.<span class="ident">mod_bow</span>[<span class="ident">offset</span>]
+    <span class="doccomment">/// Whether the byte can start a new word.
+    /// Supports bytes not on character boundaries.
+    </span><span class="attribute">#[inline]
+    </span><span class="kw">pub fn </span>can_bow(<span class="kw-2">&amp;</span><span class="self">self</span>, offset: usize) -&gt; bool {
+        <span class="macro">debug_assert_eq!</span>(<span class="self">self</span>.state, BufferState::RO);
+        <span class="self">self</span>.mod_bow[offset]
     }
 
-    <span class="doccomment">/// Returns char length to the next can_bow point</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// Used by SimpleOOV plugin</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">get_word_candidate_length</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">char_idx</span>: <span class="ident">usize</span>) -&gt; <span class="ident">usize</span> {
-        <span class="macro">debug_assert_eq!</span>(<span class="self">self</span>.<span class="ident">state</span>, <span class="ident">BufferState::RO</span>);
-        <span class="kw">let</span> <span class="ident">char_len</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">mod_chars</span>.<span class="ident">len</span>();
+    <span class="doccomment">/// Returns char length to the next can_bow point
+    ///
+    /// Used by SimpleOOV plugin
+    </span><span class="kw">pub fn </span>get_word_candidate_length(<span class="kw-2">&amp;</span><span class="self">self</span>, char_idx: usize) -&gt; usize {
+        <span class="macro">debug_assert_eq!</span>(<span class="self">self</span>.state, BufferState::RO);
+        <span class="kw">let </span>char_len = <span class="self">self</span>.mod_chars.len();
 
-        <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> (<span class="ident">char_idx</span> <span class="op">+</span> <span class="number">1</span>)..<span class="ident">char_len</span> {
-            <span class="kw">let</span> <span class="ident">byte_idx</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">mod_c2b</span>[<span class="ident">i</span>];
-            <span class="kw">if</span> <span class="self">self</span>.<span class="ident">can_bow</span>(<span class="ident">byte_idx</span>) {
-                <span class="kw">return</span> <span class="ident">i</span> <span class="op">-</span> <span class="ident">char_idx</span>;
+        <span class="kw">for </span>i <span class="kw">in </span>(char_idx + <span class="number">1</span>)..char_len {
+            <span class="kw">let </span>byte_idx = <span class="self">self</span>.mod_c2b[i];
+            <span class="kw">if </span><span class="self">self</span>.can_bow(byte_idx) {
+                <span class="kw">return </span>i - char_idx;
             }
         }
-        <span class="ident">char_len</span> <span class="op">-</span> <span class="ident">char_idx</span>
+        char_len - char_idx
     }
 }
 
-<span class="kw">impl</span> <span class="ident">InputTextIndex</span> <span class="kw">for</span> <span class="ident">InputBuffer</span> {
-    <span class="attribute">#[<span class="ident">inline</span>]</span>
-    <span class="kw">fn</span> <span class="ident">cat_of_range</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">range</span>: <span class="ident">Range</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>) -&gt; <span class="ident">CategoryType</span> {
-        <span class="macro">debug_assert_eq!</span>(<span class="self">self</span>.<span class="ident">state</span>, <span class="ident">BufferState::RO</span>);
-        <span class="kw">if</span> <span class="ident">range</span>.<span class="ident">is_empty</span>() {
-            <span class="kw">return</span> <span class="ident">CategoryType::empty</span>();
+<span class="kw">impl </span>InputTextIndex <span class="kw">for </span>InputBuffer {
+    <span class="attribute">#[inline]
+    </span><span class="kw">fn </span>cat_of_range(<span class="kw-2">&amp;</span><span class="self">self</span>, range: Range&lt;usize&gt;) -&gt; CategoryType {
+        <span class="macro">debug_assert_eq!</span>(<span class="self">self</span>.state, BufferState::RO);
+        <span class="kw">if </span>range.is_empty() {
+            <span class="kw">return </span>CategoryType::empty();
         }
 
-        <span class="self">self</span>.<span class="ident">mod_cat</span>[<span class="ident">range</span>]
-            .<span class="ident">iter</span>()
-            .<span class="ident">fold</span>(<span class="ident">CategoryType::all</span>(), <span class="op">|</span><span class="ident">a</span>, <span class="ident">b</span><span class="op">|</span> <span class="ident">a</span> <span class="op">&amp;</span> <span class="kw-2">*</span><span class="ident">b</span>)
+        <span class="self">self</span>.mod_cat[range]
+            .iter()
+            .fold(CategoryType::all(), |a, b| a &amp; <span class="kw-2">*</span>b)
     }
 
-    <span class="attribute">#[<span class="ident">inline</span>]</span>
-    <span class="kw">fn</span> <span class="ident">cat_at_char</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">offset</span>: <span class="ident">usize</span>) -&gt; <span class="ident">CategoryType</span> {
-        <span class="macro">debug_assert_eq!</span>(<span class="self">self</span>.<span class="ident">state</span>, <span class="ident">BufferState::RO</span>);
-        <span class="self">self</span>.<span class="ident">mod_cat</span>[<span class="ident">offset</span>]
+    <span class="attribute">#[inline]
+    </span><span class="kw">fn </span>cat_at_char(<span class="kw-2">&amp;</span><span class="self">self</span>, offset: usize) -&gt; CategoryType {
+        <span class="macro">debug_assert_eq!</span>(<span class="self">self</span>.state, BufferState::RO);
+        <span class="self">self</span>.mod_cat[offset]
     }
 
-    <span class="attribute">#[<span class="ident">inline</span>]</span>
-    <span class="kw">fn</span> <span class="ident">cat_continuous_len</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">offset</span>: <span class="ident">usize</span>) -&gt; <span class="ident">usize</span> {
-        <span class="macro">debug_assert_eq!</span>(<span class="self">self</span>.<span class="ident">state</span>, <span class="ident">BufferState::RO</span>);
-        <span class="self">self</span>.<span class="ident">mod_cat_continuity</span>[<span class="ident">offset</span>]
+    <span class="attribute">#[inline]
+    </span><span class="kw">fn </span>cat_continuous_len(<span class="kw-2">&amp;</span><span class="self">self</span>, offset: usize) -&gt; usize {
+        <span class="macro">debug_assert_eq!</span>(<span class="self">self</span>.state, BufferState::RO);
+        <span class="self">self</span>.mod_cat_continuity[offset]
     }
 
-    <span class="kw">fn</span> <span class="ident">char_distance</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">cpt</span>: <span class="ident">usize</span>, <span class="ident">offset</span>: <span class="ident">usize</span>) -&gt; <span class="ident">usize</span> {
-        <span class="macro">debug_assert_eq!</span>(<span class="self">self</span>.<span class="ident">state</span>, <span class="ident">BufferState::RO</span>);
-        <span class="kw">let</span> <span class="ident">end</span> <span class="op">=</span> (<span class="ident">cpt</span> <span class="op">+</span> <span class="ident">offset</span>).<span class="ident">min</span>(<span class="self">self</span>.<span class="ident">mod_chars</span>.<span class="ident">len</span>());
-        <span class="ident">end</span> <span class="op">-</span> <span class="ident">cpt</span>
+    <span class="kw">fn </span>char_distance(<span class="kw-2">&amp;</span><span class="self">self</span>, cpt: usize, offset: usize) -&gt; usize {
+        <span class="macro">debug_assert_eq!</span>(<span class="self">self</span>.state, BufferState::RO);
+        <span class="kw">let </span>end = (cpt + offset).min(<span class="self">self</span>.mod_chars.len());
+        end - cpt
     }
 
-    <span class="attribute">#[<span class="ident">inline</span>]</span>
-    <span class="kw">fn</span> <span class="ident">orig_slice</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">range</span>: <span class="ident">Range</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>) -&gt; <span class="kw-2">&amp;</span><span class="ident">str</span> {
-        <span class="macro">debug_assert_ne!</span>(<span class="self">self</span>.<span class="ident">state</span>, <span class="ident">BufferState::Clean</span>);
+    <span class="attribute">#[inline]
+    </span><span class="kw">fn </span>orig_slice(<span class="kw-2">&amp;</span><span class="self">self</span>, range: Range&lt;usize&gt;) -&gt; <span class="kw-2">&amp;</span>str {
+        <span class="macro">debug_assert_ne!</span>(<span class="self">self</span>.state, BufferState::Clean);
         <span class="macro">debug_assert!</span>(
-            <span class="self">self</span>.<span class="ident">modified</span>.<span class="ident">is_char_boundary</span>(<span class="ident">range</span>.<span class="ident">start</span>),
-            <span class="string">&quot;start is off char boundary&quot;</span>
-        );
+            <span class="self">self</span>.modified.is_char_boundary(range.start),
+            <span class="string">&quot;start is off char boundary&quot;
+        </span>);
         <span class="macro">debug_assert!</span>(
-            <span class="self">self</span>.<span class="ident">modified</span>.<span class="ident">is_char_boundary</span>(<span class="ident">range</span>.<span class="ident">end</span>),
-            <span class="string">&quot;end is off char boundary&quot;</span>
-        );
-        <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">original</span>[<span class="self">self</span>.<span class="ident">to_orig</span>(<span class="ident">range</span>)]
+            <span class="self">self</span>.modified.is_char_boundary(range.end),
+            <span class="string">&quot;end is off char boundary&quot;
+        </span>);
+        <span class="kw-2">&amp;</span><span class="self">self</span>.original[<span class="self">self</span>.to_orig(range)]
     }
 
-    <span class="attribute">#[<span class="ident">inline</span>]</span>
-    <span class="kw">fn</span> <span class="ident">curr_slice</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">range</span>: <span class="ident">Range</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>) -&gt; <span class="kw-2">&amp;</span><span class="ident">str</span> {
-        <span class="macro">debug_assert_ne!</span>(<span class="self">self</span>.<span class="ident">state</span>, <span class="ident">BufferState::Clean</span>);
-        <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">modified</span>[<span class="ident">range</span>]
+    <span class="attribute">#[inline]
+    </span><span class="kw">fn </span>curr_slice(<span class="kw-2">&amp;</span><span class="self">self</span>, range: Range&lt;usize&gt;) -&gt; <span class="kw-2">&amp;</span>str {
+        <span class="macro">debug_assert_ne!</span>(<span class="self">self</span>.state, BufferState::Clean);
+        <span class="kw-2">&amp;</span><span class="self">self</span>.modified[range]
     }
 
-    <span class="attribute">#[<span class="ident">inline</span>]</span>
-    <span class="kw">fn</span> <span class="ident">to_orig</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">range</span>: <span class="ident">Range</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>) -&gt; <span class="ident">Range</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span> {
-        <span class="macro">debug_assert_ne!</span>(<span class="self">self</span>.<span class="ident">state</span>, <span class="ident">BufferState::Clean</span>);
-        <span class="self">self</span>.<span class="ident">m2o</span>[<span class="ident">range</span>.<span class="ident">start</span>]..<span class="self">self</span>.<span class="ident">m2o</span>[<span class="ident">range</span>.<span class="ident">end</span>]
+    <span class="attribute">#[inline]
+    </span><span class="kw">fn </span>to_orig(<span class="kw-2">&amp;</span><span class="self">self</span>, range: Range&lt;usize&gt;) -&gt; Range&lt;usize&gt; {
+        <span class="macro">debug_assert_ne!</span>(<span class="self">self</span>.state, BufferState::Clean);
+        <span class="self">self</span>.m2o[range.start]..<span class="self">self</span>.m2o[range.end]
     }
 }
 </code></pre></div>
-</section><section id="search" class="content hidden"></section><div id="rustdoc-vars" data-root-path="../../../../" data-current-crate="sudachi" data-search-index-js="../../../../search-index.js" data-search-js="../../../../search.js"></div>
-</body></html>
+</section></div></main><div id="rustdoc-vars" data-root-path="../../../../" data-current-crate="sudachi" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0 (897e37553 2022-11-02)" ></div></body></html>

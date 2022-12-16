@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>sudachipy package &mdash; SudachiPy 0.6.4-a1 documentation</title>
+  <title>sudachipy package &mdash; SudachiPy 0.6.7-a1 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -14,7 +14,9 @@
         <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../_static/doctools.js"></script>
+        <script src="../_static/sphinx_highlight.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -46,11 +48,74 @@
 <p class="caption" role="heading"><span class="caption-text">API Reference:</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="#">sudachipy package</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#dictionary">Dictionary</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#splitmode">SplitMode</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#tokenizer">Tokenizer</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#morpheme">Morpheme</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#wordinfo">WordInfo</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#dictionary">Dictionary</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#sudachipy.Dictionary"><code class="docutils literal notranslate"><span class="pre">Dictionary</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#sudachipy.Dictionary.close"><code class="docutils literal notranslate"><span class="pre">Dictionary.close()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#sudachipy.Dictionary.create"><code class="docutils literal notranslate"><span class="pre">Dictionary.create()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#sudachipy.Dictionary.lookup"><code class="docutils literal notranslate"><span class="pre">Dictionary.lookup()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#sudachipy.Dictionary.pos_matcher"><code class="docutils literal notranslate"><span class="pre">Dictionary.pos_matcher()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#sudachipy.Dictionary.pos_of"><code class="docutils literal notranslate"><span class="pre">Dictionary.pos_of()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#sudachipy.Dictionary.pre_tokenizer"><code class="docutils literal notranslate"><span class="pre">Dictionary.pre_tokenizer()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#splitmode">SplitMode</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#sudachipy.SplitMode"><code class="docutils literal notranslate"><span class="pre">SplitMode</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#tokenizer">Tokenizer</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#sudachipy.Tokenizer"><code class="docutils literal notranslate"><span class="pre">Tokenizer</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#sudachipy.Tokenizer.SplitMode"><code class="docutils literal notranslate"><span class="pre">Tokenizer.SplitMode</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#sudachipy.Tokenizer.tokenize"><code class="docutils literal notranslate"><span class="pre">Tokenizer.tokenize()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#morpheme">Morpheme</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#sudachipy.MorphemeList"><code class="docutils literal notranslate"><span class="pre">MorphemeList</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#sudachipy.MorphemeList.empty"><code class="docutils literal notranslate"><span class="pre">MorphemeList.empty()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#sudachipy.MorphemeList.get_internal_cost"><code class="docutils literal notranslate"><span class="pre">MorphemeList.get_internal_cost()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#sudachipy.MorphemeList.size"><code class="docutils literal notranslate"><span class="pre">MorphemeList.size()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#sudachipy.Morpheme"><code class="docutils literal notranslate"><span class="pre">Morpheme</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#sudachipy.Morpheme.begin"><code class="docutils literal notranslate"><span class="pre">Morpheme.begin()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#sudachipy.Morpheme.dictionary_form"><code class="docutils literal notranslate"><span class="pre">Morpheme.dictionary_form()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#sudachipy.Morpheme.dictionary_id"><code class="docutils literal notranslate"><span class="pre">Morpheme.dictionary_id()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#sudachipy.Morpheme.end"><code class="docutils literal notranslate"><span class="pre">Morpheme.end()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#sudachipy.Morpheme.get_word_info"><code class="docutils literal notranslate"><span class="pre">Morpheme.get_word_info()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#sudachipy.Morpheme.is_oov"><code class="docutils literal notranslate"><span class="pre">Morpheme.is_oov()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#sudachipy.Morpheme.normalized_form"><code class="docutils literal notranslate"><span class="pre">Morpheme.normalized_form()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#sudachipy.Morpheme.part_of_speech"><code class="docutils literal notranslate"><span class="pre">Morpheme.part_of_speech()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#sudachipy.Morpheme.part_of_speech_id"><code class="docutils literal notranslate"><span class="pre">Morpheme.part_of_speech_id()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#sudachipy.Morpheme.reading_form"><code class="docutils literal notranslate"><span class="pre">Morpheme.reading_form()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#sudachipy.Morpheme.split"><code class="docutils literal notranslate"><span class="pre">Morpheme.split()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#sudachipy.Morpheme.surface"><code class="docutils literal notranslate"><span class="pre">Morpheme.surface()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#sudachipy.Morpheme.synonym_group_ids"><code class="docutils literal notranslate"><span class="pre">Morpheme.synonym_group_ids()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#sudachipy.Morpheme.word_id"><code class="docutils literal notranslate"><span class="pre">Morpheme.word_id()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#wordinfo">WordInfo</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#sudachipy.WordInfo"><code class="docutils literal notranslate"><span class="pre">WordInfo</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#sudachipy.WordInfo.a_unit_split"><code class="docutils literal notranslate"><span class="pre">WordInfo.a_unit_split</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#sudachipy.WordInfo.b_unit_split"><code class="docutils literal notranslate"><span class="pre">WordInfo.b_unit_split</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#sudachipy.WordInfo.dictionary_form"><code class="docutils literal notranslate"><span class="pre">WordInfo.dictionary_form</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#sudachipy.WordInfo.dictionary_form_word_id"><code class="docutils literal notranslate"><span class="pre">WordInfo.dictionary_form_word_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#sudachipy.WordInfo.head_word_length"><code class="docutils literal notranslate"><span class="pre">WordInfo.head_word_length</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#sudachipy.WordInfo.length"><code class="docutils literal notranslate"><span class="pre">WordInfo.length()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#sudachipy.WordInfo.normalized_form"><code class="docutils literal notranslate"><span class="pre">WordInfo.normalized_form</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#sudachipy.WordInfo.pos_id"><code class="docutils literal notranslate"><span class="pre">WordInfo.pos_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#sudachipy.WordInfo.reading_form"><code class="docutils literal notranslate"><span class="pre">WordInfo.reading_form</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#sudachipy.WordInfo.surface"><code class="docutils literal notranslate"><span class="pre">WordInfo.surface</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#sudachipy.WordInfo.synonym_group_ids"><code class="docutils literal notranslate"><span class="pre">WordInfo.synonym_group_ids</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#sudachipy.WordInfo.word_structure"><code class="docutils literal notranslate"><span class="pre">WordInfo.word_structure</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="sudachipy.dictionary.html">sudachipy.dictionary package</a></li>
@@ -72,8 +137,8 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
-      <li>sudachipy package</li>
+      <li><a href="../index.html" class="icon icon-home"></a></li>
+      <li class="breadcrumb-item active">sudachipy package</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../_sources/api/sudachipy.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -84,9 +149,9 @@
            <div itemprop="articleBody">
              
   <section id="sudachipy-package">
-<h1>sudachipy package<a class="headerlink" href="#sudachipy-package" title="Permalink to this headline"></a></h1>
+<h1>sudachipy package<a class="headerlink" href="#sudachipy-package" title="Permalink to this heading"></a></h1>
 <section id="dictionary">
-<h2>Dictionary<a class="headerlink" href="#dictionary" title="Permalink to this headline"></a></h2>
+<h2>Dictionary<a class="headerlink" href="#dictionary" title="Permalink to this heading"></a></h2>
 <ul class="simple">
 <li><p>Dictionary does not provide an access to the grammar and lexicon.</p></li>
 </ul>
@@ -114,6 +179,27 @@ See <a class="reference external" href="https://worksapplications.github.io/suda
 </ul>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="sudachipy.Dictionary.lookup">
+<span class="sig-name descname"><span class="pre">lookup</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">$self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">surface</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out</span> <span class="pre">=</span> <span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#sudachipy.MorphemeList" title="sudachipy.MorphemeList"><span class="pre">sudachipy.MorphemeList</span></a></span></span><a class="headerlink" href="#sudachipy.Dictionary.lookup" title="Permalink to this definition"></a></dt>
+<dd><p>–</p>
+<p>Look up morphemes in the binary dictionary without performing the analysis.
+All morphemes from the dictionary with the given surface string are returned,
+with the last user dictionary searched first and the system dictionary searched last.
+Inside a dictionary, morphemes are outputted in-binary-dictionary order.
+Morphemes which are not indexed are not returned.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>surface</strong> (<em>str</em>) – find all morphemes with the given surface</p></li>
+<li><p><strong>out</strong> – if passed, reuse the given morpheme list instead of creating a new one.
+See <a class="reference external" href="https://worksapplications.github.io/sudachi.rs/python/topics/out_param.html">https://worksapplications.github.io/sudachi.rs/python/topics/out_param.html</a> for details.</p></li>
+</ul>
+</dd>
+</dl>
+<p>type: out: sudachipy.MorphemeList</p>
 </dd></dl>
 
 <dl class="py method">
@@ -164,7 +250,7 @@ If nothing was passed, simply use surface as token representations.</p></li>
 
 </section>
 <section id="splitmode">
-<h2>SplitMode<a class="headerlink" href="#splitmode" title="Permalink to this headline"></a></h2>
+<h2>SplitMode<a class="headerlink" href="#splitmode" title="Permalink to this heading"></a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="sudachipy.SplitMode">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">sudachipy.</span></span><span class="sig-name descname"><span class="pre">SplitMode</span></span><a class="headerlink" href="#sudachipy.SplitMode" title="Permalink to this definition"></a></dt>
@@ -176,7 +262,7 @@ If nothing was passed, simply use surface as token representations.</p></li>
 
 </section>
 <section id="tokenizer">
-<h2>Tokenizer<a class="headerlink" href="#tokenizer" title="Permalink to this headline"></a></h2>
+<h2>Tokenizer<a class="headerlink" href="#tokenizer" title="Permalink to this heading"></a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="sudachipy.Tokenizer">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">sudachipy.</span></span><span class="sig-name descname"><span class="pre">Tokenizer</span></span><a class="headerlink" href="#sudachipy.Tokenizer" title="Permalink to this definition"></a></dt>
@@ -211,7 +297,7 @@ See <a class="reference external" href="https://worksapplications.github.io/suda
 
 </section>
 <section id="morpheme">
-<h2>Morpheme<a class="headerlink" href="#morpheme" title="Permalink to this headline"></a></h2>
+<h2>Morpheme<a class="headerlink" href="#morpheme" title="Permalink to this heading"></a></h2>
 <ul class="simple">
 <li><dl class="simple">
 <dt>Class method <code class="docutils literal notranslate"><span class="pre">MorphemeList.empty()</span> <span class="pre">-&gt;</span> <span class="pre">MorphemeList</span></code> is deprecated.</dt><dd><ul>
@@ -369,7 +455,7 @@ When False is passed, empty lists are returned instead.</p></li>
 
 </section>
 <section id="wordinfo">
-<h2>WordInfo<a class="headerlink" href="#wordinfo" title="Permalink to this headline"></a></h2>
+<h2>WordInfo<a class="headerlink" href="#wordinfo" title="Permalink to this heading"></a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="sudachipy.WordInfo">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">sudachipy.</span></span><span class="sig-name descname"><span class="pre">WordInfo</span></span><a class="headerlink" href="#sudachipy.WordInfo" title="Permalink to this definition"></a></dt>

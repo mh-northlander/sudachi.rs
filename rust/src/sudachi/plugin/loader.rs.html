@@ -1,103 +1,102 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `sudachi&#x2F;src&#x2F;plugin&#x2F;loader.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>loader.rs - source</title><link rel="stylesheet" type="text/css" href="../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../../ayu.css" disabled ><script id="default-settings" ></script><script src="../../../storage.js"></script><script src="../../../crates.js"></script><script defer src="../../../main.js"></script><script defer src="../../../source-script.js"></script><script defer src="../../../source-files.js"></script>
-    <noscript><link rel="stylesheet" href="../../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../../favicon.svg"><style type="text/css">#crate-search{background-image:url("../../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu" role="button">&#9776;</div><a href='../../../sudachi/index.html'><div class='logo-container rust-logo'><img src='../../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu" title="themes"><img width="18" height="18" alt="Pick another theme!" src="../../../brush.svg"></button><div id="theme-choices" role="menu"></div></div><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" id="help-button" title="help">?</button><a id="settings-menu" href="../../../settings.html" title="settings"><img width="18" height="18" alt="Change settings" src="../../../wheel.svg"></a></div></form></nav><section id="main" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">  1</span>
-<span id="2">  2</span>
-<span id="3">  3</span>
-<span id="4">  4</span>
-<span id="5">  5</span>
-<span id="6">  6</span>
-<span id="7">  7</span>
-<span id="8">  8</span>
-<span id="9">  9</span>
-<span id="10"> 10</span>
-<span id="11"> 11</span>
-<span id="12"> 12</span>
-<span id="13"> 13</span>
-<span id="14"> 14</span>
-<span id="15"> 15</span>
-<span id="16"> 16</span>
-<span id="17"> 17</span>
-<span id="18"> 18</span>
-<span id="19"> 19</span>
-<span id="20"> 20</span>
-<span id="21"> 21</span>
-<span id="22"> 22</span>
-<span id="23"> 23</span>
-<span id="24"> 24</span>
-<span id="25"> 25</span>
-<span id="26"> 26</span>
-<span id="27"> 27</span>
-<span id="28"> 28</span>
-<span id="29"> 29</span>
-<span id="30"> 30</span>
-<span id="31"> 31</span>
-<span id="32"> 32</span>
-<span id="33"> 33</span>
-<span id="34"> 34</span>
-<span id="35"> 35</span>
-<span id="36"> 36</span>
-<span id="37"> 37</span>
-<span id="38"> 38</span>
-<span id="39"> 39</span>
-<span id="40"> 40</span>
-<span id="41"> 41</span>
-<span id="42"> 42</span>
-<span id="43"> 43</span>
-<span id="44"> 44</span>
-<span id="45"> 45</span>
-<span id="46"> 46</span>
-<span id="47"> 47</span>
-<span id="48"> 48</span>
-<span id="49"> 49</span>
-<span id="50"> 50</span>
-<span id="51"> 51</span>
-<span id="52"> 52</span>
-<span id="53"> 53</span>
-<span id="54"> 54</span>
-<span id="55"> 55</span>
-<span id="56"> 56</span>
-<span id="57"> 57</span>
-<span id="58"> 58</span>
-<span id="59"> 59</span>
-<span id="60"> 60</span>
-<span id="61"> 61</span>
-<span id="62"> 62</span>
-<span id="63"> 63</span>
-<span id="64"> 64</span>
-<span id="65"> 65</span>
-<span id="66"> 66</span>
-<span id="67"> 67</span>
-<span id="68"> 68</span>
-<span id="69"> 69</span>
-<span id="70"> 70</span>
-<span id="71"> 71</span>
-<span id="72"> 72</span>
-<span id="73"> 73</span>
-<span id="74"> 74</span>
-<span id="75"> 75</span>
-<span id="76"> 76</span>
-<span id="77"> 77</span>
-<span id="78"> 78</span>
-<span id="79"> 79</span>
-<span id="80"> 80</span>
-<span id="81"> 81</span>
-<span id="82"> 82</span>
-<span id="83"> 83</span>
-<span id="84"> 84</span>
-<span id="85"> 85</span>
-<span id="86"> 86</span>
-<span id="87"> 87</span>
-<span id="88"> 88</span>
-<span id="89"> 89</span>
-<span id="90"> 90</span>
-<span id="91"> 91</span>
-<span id="92"> 92</span>
-<span id="93"> 93</span>
-<span id="94"> 94</span>
-<span id="95"> 95</span>
-<span id="96"> 96</span>
-<span id="97"> 97</span>
-<span id="98"> 98</span>
-<span id="99"> 99</span>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `sudachi/src/plugin/loader.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>loader.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" href="../../../normalize.css"><link rel="stylesheet" href="../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" href="../../../ayu.css" disabled><link rel="stylesheet" href="../../../dark.css" disabled><link rel="stylesheet" href="../../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../../storage.js"></script><script defer src="../../../source-script.js"></script><script defer src="../../../source-files.js"></script><script defer src="../../../main.js"></script><noscript><link rel="stylesheet" href="../../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../../favicon.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="sidebar-logo" href="../../../sudachi/index.html"><div class="logo-container"><img class="rust-logo" src="../../../rust-logo.svg" alt="logo"></div></a><h2 class="location"></h2></nav><nav class="sidebar"><a class="sidebar-logo" href="../../../sudachi/index.html"><div class="logo-container"><img class="rust-logo" src="../../../rust-logo.svg" alt="logo"></div></a></nav><main><div class="width-limiter"><div class="sub-container"><a class="sub-logo-container" href="../../../sudachi/index.html"><img class="rust-logo" src="../../../rust-logo.svg" alt="logo"></a><nav class="sub"><form class="search-form"><div class="search-container"><span></span><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><button type="button">?</button></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../wheel.svg"></a></div></div></form></nav></div><section id="main-content" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">1</span>
+<span id="2">2</span>
+<span id="3">3</span>
+<span id="4">4</span>
+<span id="5">5</span>
+<span id="6">6</span>
+<span id="7">7</span>
+<span id="8">8</span>
+<span id="9">9</span>
+<span id="10">10</span>
+<span id="11">11</span>
+<span id="12">12</span>
+<span id="13">13</span>
+<span id="14">14</span>
+<span id="15">15</span>
+<span id="16">16</span>
+<span id="17">17</span>
+<span id="18">18</span>
+<span id="19">19</span>
+<span id="20">20</span>
+<span id="21">21</span>
+<span id="22">22</span>
+<span id="23">23</span>
+<span id="24">24</span>
+<span id="25">25</span>
+<span id="26">26</span>
+<span id="27">27</span>
+<span id="28">28</span>
+<span id="29">29</span>
+<span id="30">30</span>
+<span id="31">31</span>
+<span id="32">32</span>
+<span id="33">33</span>
+<span id="34">34</span>
+<span id="35">35</span>
+<span id="36">36</span>
+<span id="37">37</span>
+<span id="38">38</span>
+<span id="39">39</span>
+<span id="40">40</span>
+<span id="41">41</span>
+<span id="42">42</span>
+<span id="43">43</span>
+<span id="44">44</span>
+<span id="45">45</span>
+<span id="46">46</span>
+<span id="47">47</span>
+<span id="48">48</span>
+<span id="49">49</span>
+<span id="50">50</span>
+<span id="51">51</span>
+<span id="52">52</span>
+<span id="53">53</span>
+<span id="54">54</span>
+<span id="55">55</span>
+<span id="56">56</span>
+<span id="57">57</span>
+<span id="58">58</span>
+<span id="59">59</span>
+<span id="60">60</span>
+<span id="61">61</span>
+<span id="62">62</span>
+<span id="63">63</span>
+<span id="64">64</span>
+<span id="65">65</span>
+<span id="66">66</span>
+<span id="67">67</span>
+<span id="68">68</span>
+<span id="69">69</span>
+<span id="70">70</span>
+<span id="71">71</span>
+<span id="72">72</span>
+<span id="73">73</span>
+<span id="74">74</span>
+<span id="75">75</span>
+<span id="76">76</span>
+<span id="77">77</span>
+<span id="78">78</span>
+<span id="79">79</span>
+<span id="80">80</span>
+<span id="81">81</span>
+<span id="82">82</span>
+<span id="83">83</span>
+<span id="84">84</span>
+<span id="85">85</span>
+<span id="86">86</span>
+<span id="87">87</span>
+<span id="88">88</span>
+<span id="89">89</span>
+<span id="90">90</span>
+<span id="91">91</span>
+<span id="92">92</span>
+<span id="93">93</span>
+<span id="94">94</span>
+<span id="95">95</span>
+<span id="96">96</span>
+<span id="97">97</span>
+<span id="98">98</span>
+<span id="99">99</span>
 <span id="100">100</span>
 <span id="101">101</span>
 <span id="102">102</span>
@@ -254,233 +253,232 @@
  *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
- */</span>
+ */
 
-<span class="kw">use</span> <span class="ident">libloading</span>::{<span class="ident">Library</span>, <span class="ident">Symbol</span>};
-<span class="kw">use</span> <span class="ident">serde_json::Value</span>;
+</span><span class="kw">use </span>libloading::{Library, Symbol};
+<span class="kw">use </span>serde_json::Value;
 
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::config</span>::{<span class="ident">Config</span>, <span class="ident">ConfigError</span>};
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::dic::grammar::Grammar</span>;
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::error</span>::{<span class="ident">SudachiError</span>, <span class="ident">SudachiResult</span>};
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::plugin::PluginError</span>;
+<span class="kw">use </span><span class="kw">crate</span>::config::{Config, ConfigError};
+<span class="kw">use </span><span class="kw">crate</span>::dic::grammar::Grammar;
+<span class="kw">use </span><span class="kw">crate</span>::error::{SudachiError, SudachiResult};
+<span class="kw">use </span><span class="kw">crate</span>::plugin::PluginError;
 
-<span class="doccomment">/// Holds loaded plugins, whether they are bundled</span>
-<span class="doccomment">/// or loaded from DSOs</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">PluginContainer</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">PluginCategory</span> <span class="op">+</span> <span class="question-mark">?</span><span class="ident">Sized</span><span class="op">&gt;</span> {
-    <span class="ident">libraries</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Library</span><span class="op">&gt;</span>,
-    <span class="ident">plugins</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="op">&lt;</span><span class="ident">T</span> <span class="kw">as</span> <span class="ident">PluginCategory</span><span class="op">&gt;</span><span class="ident">::BoxType</span><span class="op">&gt;</span>,
+<span class="doccomment">/// Holds loaded plugins, whether they are bundled
+/// or loaded from DSOs
+</span><span class="kw">pub struct </span>PluginContainer&lt;T: PluginCategory + <span class="question-mark">?</span>Sized&gt; {
+    libraries: Vec&lt;Library&gt;,
+    plugins: Vec&lt;&lt;T <span class="kw">as </span>PluginCategory&gt;::BoxType&gt;,
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">PluginCategory</span> <span class="op">+</span> <span class="question-mark">?</span><span class="ident">Sized</span><span class="op">&gt;</span> <span class="ident">PluginContainer</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">plugins</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>[<span class="op">&lt;</span><span class="ident">T</span> <span class="kw">as</span> <span class="ident">PluginCategory</span><span class="op">&gt;</span><span class="ident">::BoxType</span>] {
-        <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">plugins</span>
+<span class="kw">impl</span>&lt;T: PluginCategory + <span class="question-mark">?</span>Sized&gt; PluginContainer&lt;T&gt; {
+    <span class="kw">pub fn </span>plugins(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>[&lt;T <span class="kw">as </span>PluginCategory&gt;::BoxType] {
+        <span class="kw-2">&amp;</span><span class="self">self</span>.plugins
     }
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">is_empty</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">bool</span> {
-        <span class="self">self</span>.<span class="ident">plugins</span>.<span class="ident">is_empty</span>()
-    }
-}
-
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">PluginCategory</span> <span class="op">+</span> <span class="question-mark">?</span><span class="ident">Sized</span><span class="op">&gt;</span> <span class="ident">Drop</span> <span class="kw">for</span> <span class="ident">PluginContainer</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
-    <span class="kw">fn</span> <span class="ident">drop</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>) {
-        <span class="self">self</span>.<span class="ident">plugins</span>.<span class="ident">clear</span>();
-        <span class="self">self</span>.<span class="ident">libraries</span>.<span class="ident">clear</span>();
+    <span class="kw">pub fn </span>is_empty(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
+        <span class="self">self</span>.plugins.is_empty()
     }
 }
 
-<span class="kw">struct</span> <span class="ident">PluginLoader</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">T</span>: <span class="ident">PluginCategory</span> <span class="op">+</span> <span class="question-mark">?</span><span class="ident">Sized</span><span class="op">&gt;</span> {
-    <span class="ident">cfg</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">Config</span>,
-    <span class="ident">grammar</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">Grammar</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>,
-    <span class="ident">libraries</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Library</span><span class="op">&gt;</span>,
-    <span class="ident">plugins</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="op">&lt;</span><span class="ident">T</span> <span class="kw">as</span> <span class="ident">PluginCategory</span><span class="op">&gt;</span><span class="ident">::BoxType</span><span class="op">&gt;</span>,
+<span class="kw">impl</span>&lt;T: PluginCategory + <span class="question-mark">?</span>Sized&gt; Drop <span class="kw">for </span>PluginContainer&lt;T&gt; {
+    <span class="kw">fn </span>drop(<span class="kw-2">&amp;mut </span><span class="self">self</span>) {
+        <span class="self">self</span>.plugins.clear();
+        <span class="self">self</span>.libraries.clear();
+    }
 }
 
-<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">target_os</span> <span class="op">=</span> <span class="string">&quot;linux&quot;</span>)]</span>
-<span class="kw">fn</span> <span class="ident">make_system_specific_name</span>(<span class="ident">s</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) -&gt; <span class="ident">String</span> {
-    <span class="macro">format!</span>(<span class="string">&quot;lib{}.so&quot;</span>, <span class="ident">s</span>)
+<span class="kw">struct </span>PluginLoader&lt;<span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span>, T: PluginCategory + <span class="question-mark">?</span>Sized&gt; {
+    cfg: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>Config,
+    grammar: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="kw-2">mut </span>Grammar&lt;<span class="lifetime">&#39;b</span>&gt;,
+    libraries: Vec&lt;Library&gt;,
+    plugins: Vec&lt;&lt;T <span class="kw">as </span>PluginCategory&gt;::BoxType&gt;,
 }
 
-<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">target_os</span> <span class="op">=</span> <span class="string">&quot;windows&quot;</span>)]</span>
-<span class="kw">fn</span> <span class="ident">make_system_specific_name</span>(<span class="ident">s</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) -&gt; <span class="ident">String</span> {
-    <span class="macro">format!</span>(<span class="string">&quot;{}.dll&quot;</span>, <span class="ident">s</span>)
+<span class="attribute">#[cfg(target_os = <span class="string">&quot;linux&quot;</span>)]
+</span><span class="kw">fn </span>make_system_specific_name(s: <span class="kw-2">&amp;</span>str) -&gt; String {
+    <span class="macro">format!</span>(<span class="string">&quot;lib{}.so&quot;</span>, s)
 }
 
-<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">target_os</span> <span class="op">=</span> <span class="string">&quot;macos&quot;</span>)]</span>
-<span class="kw">fn</span> <span class="ident">make_system_specific_name</span>(<span class="ident">s</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) -&gt; <span class="ident">String</span> {
-    <span class="macro">format!</span>(<span class="string">&quot;lib{}.dylib&quot;</span>, <span class="ident">s</span>)
+<span class="attribute">#[cfg(target_os = <span class="string">&quot;windows&quot;</span>)]
+</span><span class="kw">fn </span>make_system_specific_name(s: <span class="kw-2">&amp;</span>str) -&gt; String {
+    <span class="macro">format!</span>(<span class="string">&quot;{}.dll&quot;</span>, s)
 }
 
-<span class="kw">fn</span> <span class="ident">system_specific_name</span>(<span class="ident">s</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span> {
-    <span class="kw">if</span> <span class="ident">s</span>.<span class="ident">contains</span>(<span class="string">&#39;.&#39;</span>) {
-        <span class="prelude-val">None</span>
-    } <span class="kw">else</span> {
-        <span class="kw">let</span> <span class="ident">p</span> <span class="op">=</span> <span class="ident">std::path::Path::new</span>(<span class="ident">s</span>);
-        <span class="kw">let</span> <span class="ident">fname</span> <span class="op">=</span> <span class="ident">p</span>
-            .<span class="ident">file_name</span>()
-            .<span class="ident">and_then</span>(<span class="op">|</span><span class="ident">np</span><span class="op">|</span> <span class="ident">np</span>.<span class="ident">to_str</span>())
-            .<span class="ident">map</span>(<span class="op">|</span><span class="ident">f</span><span class="op">|</span> <span class="ident">make_system_specific_name</span>(<span class="ident">f</span>));
-        <span class="kw">let</span> <span class="ident">parent</span> <span class="op">=</span> <span class="ident">p</span>.<span class="ident">parent</span>().<span class="ident">and_then</span>(<span class="op">|</span><span class="ident">np</span><span class="op">|</span> <span class="ident">np</span>.<span class="ident">to_str</span>());
-        <span class="kw">match</span> (<span class="ident">parent</span>, <span class="ident">fname</span>) {
-            (<span class="prelude-val">Some</span>(<span class="ident">p</span>), <span class="prelude-val">Some</span>(<span class="ident">c</span>)) =&gt; <span class="prelude-val">Some</span>(<span class="macro">format!</span>(<span class="string">&quot;{}/{}&quot;</span>, <span class="ident">p</span>, <span class="ident">c</span>)),
-            <span class="kw">_</span> =&gt; <span class="prelude-val">None</span>,
+<span class="attribute">#[cfg(target_os = <span class="string">&quot;macos&quot;</span>)]
+</span><span class="kw">fn </span>make_system_specific_name(s: <span class="kw-2">&amp;</span>str) -&gt; String {
+    <span class="macro">format!</span>(<span class="string">&quot;lib{}.dylib&quot;</span>, s)
+}
+
+<span class="kw">fn </span>system_specific_name(s: <span class="kw-2">&amp;</span>str) -&gt; <span class="prelude-ty">Option</span>&lt;String&gt; {
+    <span class="kw">if </span>s.contains(<span class="string">&#39;.&#39;</span>) {
+        <span class="prelude-val">None
+    </span>} <span class="kw">else </span>{
+        <span class="kw">let </span>p = std::path::Path::new(s);
+        <span class="kw">let </span>fname = p
+            .file_name()
+            .and_then(|np| np.to_str())
+            .map(|f| make_system_specific_name(f));
+        <span class="kw">let </span>parent = p.parent().and_then(|np| np.to_str());
+        <span class="kw">match </span>(parent, fname) {
+            (<span class="prelude-val">Some</span>(p), <span class="prelude-val">Some</span>(c)) =&gt; <span class="prelude-val">Some</span>(<span class="macro">format!</span>(<span class="string">&quot;{}/{}&quot;</span>, p, c)),
+            <span class="kw">_ </span>=&gt; <span class="prelude-val">None</span>,
         }
     }
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">T</span>: <span class="ident">PluginCategory</span> <span class="op">+</span> <span class="question-mark">?</span><span class="ident">Sized</span><span class="op">&gt;</span> <span class="ident">PluginLoader</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">T</span><span class="op">&gt;</span> {
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">grammar</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">Grammar</span>, <span class="ident">config</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">Config</span>) -&gt; <span class="ident">PluginLoader</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">T</span><span class="op">&gt;</span> {
-        <span class="ident">PluginLoader</span> {
-            <span class="ident">cfg</span>: <span class="ident">config</span>,
-            <span class="ident">grammar</span>,
-            <span class="ident">libraries</span>: <span class="ident">Vec::new</span>(),
-            <span class="ident">plugins</span>: <span class="ident">Vec::new</span>(),
+<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span>, T: PluginCategory + <span class="question-mark">?</span>Sized&gt; PluginLoader&lt;<span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span>, T&gt; {
+    <span class="kw">pub fn </span>new(grammar: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="kw-2">mut </span>Grammar&lt;<span class="lifetime">&#39;b</span>&gt;, config: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>Config) -&gt; PluginLoader&lt;<span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span>, T&gt; {
+        PluginLoader {
+            cfg: config,
+            grammar,
+            libraries: Vec::new(),
+            plugins: Vec::new(),
         }
     }
 
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">load</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>) -&gt; <span class="ident">SudachiResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
-        <span class="kw">let</span> <span class="ident">configs</span> <span class="op">=</span> <span class="op">&lt;</span><span class="ident">T</span> <span class="kw">as</span> <span class="ident">PluginCategory</span><span class="op">&gt;</span><span class="ident">::configurations</span>(<span class="self">self</span>.<span class="ident">cfg</span>);
-        <span class="kw">for</span> <span class="ident">cfg</span> <span class="kw">in</span> <span class="ident">configs</span> {
-            <span class="kw">let</span> <span class="ident">name</span> <span class="op">=</span> <span class="ident">extract_plugin_class</span>(<span class="ident">cfg</span>)<span class="question-mark">?</span>;
-            <span class="self">self</span>.<span class="ident">load_plugin</span>(<span class="ident">name</span>, <span class="ident">cfg</span>)<span class="question-mark">?</span>;
+    <span class="kw">pub fn </span>load(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; SudachiResult&lt;()&gt; {
+        <span class="kw">let </span>configs = &lt;T <span class="kw">as </span>PluginCategory&gt;::configurations(<span class="self">self</span>.cfg);
+        <span class="kw">for </span>cfg <span class="kw">in </span>configs {
+            <span class="kw">let </span>name = extract_plugin_class(cfg)<span class="question-mark">?</span>;
+            <span class="self">self</span>.load_plugin(name, cfg)<span class="question-mark">?</span>;
         }
         <span class="prelude-val">Ok</span>(())
     }
 
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">freeze</span>(<span class="self">self</span>) -&gt; <span class="ident">PluginContainer</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
-        <span class="kw">return</span> <span class="ident">PluginContainer</span> {
-            <span class="ident">libraries</span>: <span class="self">self</span>.<span class="ident">libraries</span>,
-            <span class="ident">plugins</span>: <span class="self">self</span>.<span class="ident">plugins</span>,
+    <span class="kw">pub fn </span>freeze(<span class="self">self</span>) -&gt; PluginContainer&lt;T&gt; {
+        <span class="kw">return </span>PluginContainer {
+            libraries: <span class="self">self</span>.libraries,
+            plugins: <span class="self">self</span>.plugins,
         };
     }
 
-    <span class="kw">fn</span> <span class="ident">load_plugin</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">name</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">plugin_cfg</span>: <span class="kw-2">&amp;</span><span class="ident">Value</span>) -&gt; <span class="ident">SudachiResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">plugin</span> <span class="op">=</span>
-            <span class="comment">// Try to load bundled plugin first, if its name looks like it</span>
-            <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">stripped_name</span>) <span class="op">=</span> <span class="ident">name</span>.<span class="ident">strip_prefix</span>(<span class="string">&quot;com.worksap.nlp.sudachi.&quot;</span>) {
-                <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">p</span>) <span class="op">=</span> <span class="op">&lt;</span><span class="ident">T</span> <span class="kw">as</span> <span class="ident">PluginCategory</span><span class="op">&gt;</span><span class="ident">::bundled_impl</span>(<span class="ident">stripped_name</span>) {
-                    <span class="ident">p</span>
-                } <span class="kw">else</span> {
-                    <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">SudachiError::ConfigError</span>(<span class="ident">ConfigError::InvalidFormat</span>(
-                        <span class="macro">format!</span>(<span class="string">&quot;Failed to lookup bundled plugin: {}&quot;</span>, <span class="ident">name</span>)
+    <span class="kw">fn </span>load_plugin(<span class="kw-2">&amp;mut </span><span class="self">self</span>, name: <span class="kw-2">&amp;</span>str, plugin_cfg: <span class="kw-2">&amp;</span>Value) -&gt; SudachiResult&lt;()&gt; {
+        <span class="kw">let </span><span class="kw-2">mut </span>plugin =
+            <span class="comment">// Try to load bundled plugin first, if its name looks like it
+            </span><span class="kw">if let </span><span class="prelude-val">Some</span>(stripped_name) = name.strip_prefix(<span class="string">&quot;com.worksap.nlp.sudachi.&quot;</span>) {
+                <span class="kw">if let </span><span class="prelude-val">Some</span>(p) = &lt;T <span class="kw">as </span>PluginCategory&gt;::bundled_impl(stripped_name) {
+                    p
+                } <span class="kw">else </span>{
+                    <span class="kw">return </span><span class="prelude-val">Err</span>(SudachiError::ConfigError(ConfigError::InvalidFormat(
+                        <span class="macro">format!</span>(<span class="string">&quot;Failed to lookup bundled plugin: {}&quot;</span>, name)
                     )))
                 }
-            <span class="comment">// Otherwise treat name as DSO</span>
-            } <span class="kw">else</span> {
-                <span class="kw">let</span> <span class="ident">candidates</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">resolve_dso_names</span>(<span class="ident">name</span>);
-                <span class="self">self</span>.<span class="ident">load_plugin_from_dso</span>(<span class="kw-2">&amp;</span><span class="ident">candidates</span>)<span class="question-mark">?</span>
-            };
+            <span class="comment">// Otherwise treat name as DSO
+            </span>} <span class="kw">else </span>{
+                <span class="kw">let </span>candidates = <span class="self">self</span>.resolve_dso_names(name);
+                <span class="self">self</span>.load_plugin_from_dso(<span class="kw-2">&amp;</span>candidates)<span class="question-mark">?
+            </span>};
 
-        <span class="op">&lt;</span><span class="ident">T</span> <span class="kw">as</span> <span class="ident">PluginCategory</span><span class="op">&gt;</span><span class="ident">::do_setup</span>(<span class="kw-2">&amp;mut</span> <span class="ident">plugin</span>, <span class="ident">plugin_cfg</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">cfg</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">grammar</span>)
-            .<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">e</span><span class="op">|</span> <span class="ident">e</span>.<span class="ident">with_context</span>(<span class="macro">format!</span>(<span class="string">&quot;plugin {} setup&quot;</span>, <span class="ident">name</span>)))<span class="question-mark">?</span>;
-        <span class="self">self</span>.<span class="ident">plugins</span>.<span class="ident">push</span>(<span class="ident">plugin</span>);
+        &lt;T <span class="kw">as </span>PluginCategory&gt;::do_setup(<span class="kw-2">&amp;mut </span>plugin, plugin_cfg, <span class="kw-2">&amp;</span><span class="self">self</span>.cfg, <span class="kw-2">&amp;mut </span><span class="self">self</span>.grammar)
+            .map_err(|e| e.with_context(<span class="macro">format!</span>(<span class="string">&quot;plugin {} setup&quot;</span>, name)))<span class="question-mark">?</span>;
+        <span class="self">self</span>.plugins.push(plugin);
         <span class="prelude-val">Ok</span>(())
     }
 
-    <span class="kw">fn</span> <span class="ident">resolve_dso_names</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">name</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) -&gt; <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span> {
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">resolved</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">cfg</span>.<span class="ident">resolve_paths</span>(<span class="ident">name</span>.<span class="ident">to_owned</span>());
+    <span class="kw">fn </span>resolve_dso_names(<span class="kw-2">&amp;</span><span class="self">self</span>, name: <span class="kw-2">&amp;</span>str) -&gt; Vec&lt;String&gt; {
+        <span class="kw">let </span><span class="kw-2">mut </span>resolved = <span class="self">self</span>.cfg.resolve_paths(name.to_owned());
 
-        <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">sysname</span>) <span class="op">=</span> <span class="ident">system_specific_name</span>(<span class="ident">name</span>) {
-            <span class="kw">let</span> <span class="ident">resolved_sys</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">cfg</span>.<span class="ident">resolve_paths</span>(<span class="ident">sysname</span>);
-            <span class="ident">resolved</span>.<span class="ident">extend</span>(<span class="ident">resolved_sys</span>);
+        <span class="kw">if let </span><span class="prelude-val">Some</span>(sysname) = system_specific_name(name) {
+            <span class="kw">let </span>resolved_sys = <span class="self">self</span>.cfg.resolve_paths(sysname);
+            resolved.extend(resolved_sys);
         }
 
-        <span class="ident">resolved</span>
+        resolved
     }
 
-    <span class="kw">fn</span> <span class="ident">try_load_library_from</span>(<span class="ident">candidates</span>: <span class="kw-2">&amp;</span>[<span class="ident">String</span>]) -&gt; <span class="ident">SudachiResult</span><span class="op">&lt;</span>(<span class="ident">Library</span>, <span class="kw-2">&amp;</span><span class="ident">str</span>)<span class="op">&gt;</span> {
-        <span class="kw">if</span> <span class="ident">candidates</span>.<span class="ident">is_empty</span>() {
-            <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">SudachiError::PluginError</span>(<span class="ident">PluginError::InvalidDataFormat</span>(
-                <span class="string">&quot;No candidates to load library&quot;</span>.<span class="ident">to_owned</span>(),
+    <span class="kw">fn </span>try_load_library_from(candidates: <span class="kw-2">&amp;</span>[String]) -&gt; SudachiResult&lt;(Library, <span class="kw-2">&amp;</span>str)&gt; {
+        <span class="kw">if </span>candidates.is_empty() {
+            <span class="kw">return </span><span class="prelude-val">Err</span>(SudachiError::PluginError(PluginError::InvalidDataFormat(
+                <span class="string">&quot;No candidates to load library&quot;</span>.to_owned(),
             )));
         }
 
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">last_error</span> <span class="op">=</span> <span class="ident">libloading::Error::IncompatibleSize</span>;
-        <span class="kw">for</span> <span class="ident">p</span> <span class="kw">in</span> <span class="ident">candidates</span>.<span class="ident">iter</span>() {
-            <span class="kw">match</span> <span class="kw">unsafe</span> { <span class="ident">Library::new</span>(<span class="ident">p</span>.<span class="ident">as_str</span>()) } {
-                <span class="prelude-val">Ok</span>(<span class="ident">lib</span>) =&gt; <span class="kw">return</span> <span class="prelude-val">Ok</span>((<span class="ident">lib</span>, <span class="ident">p</span>.<span class="ident">as_str</span>())),
-                <span class="prelude-val">Err</span>(<span class="ident">e</span>) =&gt; <span class="ident">last_error</span> <span class="op">=</span> <span class="ident">e</span>,
+        <span class="kw">let </span><span class="kw-2">mut </span>last_error = libloading::Error::IncompatibleSize;
+        <span class="kw">for </span>p <span class="kw">in </span>candidates.iter() {
+            <span class="kw">match unsafe </span>{ Library::new(p.as_str()) } {
+                <span class="prelude-val">Ok</span>(lib) =&gt; <span class="kw">return </span><span class="prelude-val">Ok</span>((lib, p.as_str())),
+                <span class="prelude-val">Err</span>(e) =&gt; last_error = e,
             }
         }
-        <span class="prelude-val">Err</span>(<span class="ident">SudachiError::PluginError</span>(<span class="ident">PluginError::Libloading</span> {
-            <span class="ident">source</span>: <span class="ident">last_error</span>,
-            <span class="ident">message</span>: <span class="macro">format!</span>(<span class="string">&quot;failed to load library from: {:?}&quot;</span>, <span class="ident">candidates</span>),
+        <span class="prelude-val">Err</span>(SudachiError::PluginError(PluginError::Libloading {
+            source: last_error,
+            message: <span class="macro">format!</span>(<span class="string">&quot;failed to load library from: {:?}&quot;</span>, candidates),
         }))
     }
 
-    <span class="kw">fn</span> <span class="ident">load_plugin_from_dso</span>(
-        <span class="kw-2">&amp;mut</span> <span class="self">self</span>,
-        <span class="ident">candidates</span>: <span class="kw-2">&amp;</span>[<span class="ident">String</span>],
-    ) -&gt; <span class="ident">SudachiResult</span><span class="op">&lt;</span><span class="op">&lt;</span><span class="ident">T</span> <span class="kw">as</span> <span class="ident">PluginCategory</span><span class="op">&gt;</span><span class="ident">::BoxType</span><span class="op">&gt;</span> {
-        <span class="kw">let</span> (<span class="ident">lib</span>, <span class="ident">path</span>) <span class="op">=</span> <span class="ident"><span class="self">Self</span>::try_load_library_from</span>(<span class="ident">candidates</span>)<span class="question-mark">?</span>;
-        <span class="kw">let</span> <span class="ident">load_fn</span>: <span class="ident">Symbol</span><span class="op">&lt;</span><span class="kw">fn</span>() -&gt; <span class="ident">SudachiResult</span><span class="op">&lt;</span><span class="op">&lt;</span><span class="ident">T</span> <span class="kw">as</span> <span class="ident">PluginCategory</span><span class="op">&gt;</span><span class="ident">::BoxType</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="op">=</span>
-            <span class="kw">unsafe</span> { <span class="ident">lib</span>.<span class="ident">get</span>(<span class="string">b&quot;load_plugin&quot;</span>) }.<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">e</span><span class="op">|</span> <span class="ident">PluginError::Libloading</span> {
-                <span class="ident">source</span>: <span class="ident">e</span>,
-                <span class="ident">message</span>: <span class="macro">format!</span>(<span class="string">&quot;no load_plugin symbol in {}&quot;</span>, <span class="ident">path</span>),
+    <span class="kw">fn </span>load_plugin_from_dso(
+        <span class="kw-2">&amp;mut </span><span class="self">self</span>,
+        candidates: <span class="kw-2">&amp;</span>[String],
+    ) -&gt; SudachiResult&lt;&lt;T <span class="kw">as </span>PluginCategory&gt;::BoxType&gt; {
+        <span class="kw">let </span>(lib, path) = <span class="self">Self</span>::try_load_library_from(candidates)<span class="question-mark">?</span>;
+        <span class="kw">let </span>load_fn: Symbol&lt;<span class="kw">fn</span>() -&gt; SudachiResult&lt;&lt;T <span class="kw">as </span>PluginCategory&gt;::BoxType&gt;&gt; =
+            <span class="kw">unsafe </span>{ lib.get(<span class="string">b&quot;load_plugin&quot;</span>) }.map_err(|e| PluginError::Libloading {
+                source: e,
+                message: <span class="macro">format!</span>(<span class="string">&quot;no load_plugin symbol in {}&quot;</span>, path),
             })<span class="question-mark">?</span>;
-        <span class="kw">let</span> <span class="ident">plugin</span> <span class="op">=</span> <span class="ident">load_fn</span>();
-        <span class="self">self</span>.<span class="ident">libraries</span>.<span class="ident">push</span>(<span class="ident">lib</span>);
-        <span class="ident">plugin</span>
+        <span class="kw">let </span>plugin = load_fn();
+        <span class="self">self</span>.libraries.push(lib);
+        plugin
     }
 }
 
-<span class="kw">fn</span> <span class="ident">extract_plugin_class</span>(<span class="ident">val</span>: <span class="kw-2">&amp;</span><span class="ident">Value</span>) -&gt; <span class="ident">SudachiResult</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">str</span><span class="op">&gt;</span> {
-    <span class="kw">let</span> <span class="ident">obj</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">val</span> {
-        <span class="ident">Value::Object</span>(<span class="ident">v</span>) =&gt; <span class="ident">v</span>,
-        <span class="ident">o</span> =&gt; {
-            <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">SudachiError::ConfigError</span>(<span class="ident">ConfigError::InvalidFormat</span>(
-                <span class="macro">format!</span>(<span class="string">&quot;plugin config must be an object, was {}&quot;</span>, <span class="ident">o</span>),
+<span class="kw">fn </span>extract_plugin_class(val: <span class="kw-2">&amp;</span>Value) -&gt; SudachiResult&lt;<span class="kw-2">&amp;</span>str&gt; {
+    <span class="kw">let </span>obj = <span class="kw">match </span>val {
+        Value::Object(v) =&gt; v,
+        o =&gt; {
+            <span class="kw">return </span><span class="prelude-val">Err</span>(SudachiError::ConfigError(ConfigError::InvalidFormat(
+                <span class="macro">format!</span>(<span class="string">&quot;plugin config must be an object, was {}&quot;</span>, o),
             )));
         }
     };
-    <span class="kw">match</span> <span class="ident">obj</span>.<span class="ident">get</span>(<span class="string">&quot;class&quot;</span>) {
-        <span class="prelude-val">Some</span>(<span class="ident">Value::String</span>(<span class="ident">v</span>)) =&gt; <span class="prelude-val">Ok</span>(<span class="ident">v</span>),
-        <span class="kw">_</span> =&gt; <span class="prelude-val">Err</span>(<span class="ident">SudachiError::ConfigError</span>(<span class="ident">ConfigError::InvalidFormat</span>(
-            <span class="string">&quot;plugin config must have &#39;class&#39; key to indicate plugin SO file&quot;</span>.<span class="ident">to_owned</span>(),
+    <span class="kw">match </span>obj.get(<span class="string">&quot;class&quot;</span>) {
+        <span class="prelude-val">Some</span>(Value::String(v)) =&gt; <span class="prelude-val">Ok</span>(v),
+        <span class="kw">_ </span>=&gt; <span class="prelude-val">Err</span>(SudachiError::ConfigError(ConfigError::InvalidFormat(
+            <span class="string">&quot;plugin config must have &#39;class&#39; key to indicate plugin SO file&quot;</span>.to_owned(),
         ))),
     }
 }
 
-<span class="doccomment">/// A category of Plugins</span>
-<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">PluginCategory</span> {
-    <span class="doccomment">/// Boxed type of the plugin. Should be Box&lt;dyn XXXX&gt;.</span>
-    <span class="kw">type</span> <span class="ident">BoxType</span>;
+<span class="doccomment">/// A category of Plugins
+</span><span class="kw">pub trait </span>PluginCategory {
+    <span class="doccomment">/// Boxed type of the plugin. Should be Box&lt;dyn XXXX&gt;.
+    </span><span class="kw">type </span>BoxType;
 
-    <span class="doccomment">/// Type of the initialization function.</span>
-    <span class="doccomment">/// It must take 0 arguments and return `SudachiResult&lt;Self::BoxType&gt;`.</span>
-    <span class="kw">type</span> <span class="ident">InitFnType</span>;
+    <span class="doccomment">/// Type of the initialization function.
+    /// It must take 0 arguments and return `SudachiResult&lt;Self::BoxType&gt;`.
+    </span><span class="kw">type </span>InitFnType;
 
-    <span class="doccomment">/// Extract plugin configurations from the config</span>
-    <span class="kw">fn</span> <span class="ident">configurations</span>(<span class="ident">cfg</span>: <span class="kw-2">&amp;</span><span class="ident">Config</span>) -&gt; <span class="kw-2">&amp;</span>[<span class="ident">Value</span>];
+    <span class="doccomment">/// Extract plugin configurations from the config
+    </span><span class="kw">fn </span>configurations(cfg: <span class="kw-2">&amp;</span>Config) -&gt; <span class="kw-2">&amp;</span>[Value];
 
-    <span class="doccomment">/// Create bundled plugin for plugin name</span>
-    <span class="doccomment">/// Instead of full name like com.worksap.nlp.sudachi.ProlongedSoundMarkPlugin</span>
-    <span class="doccomment">/// should handle only the short one: ProlongedSoundMarkPlugin</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// com.worksap.nlp.sudachi. (last dot included) will be stripped automatically</span>
-    <span class="doccomment">/// by the loader code</span>
-    <span class="kw">fn</span> <span class="ident">bundled_impl</span>(<span class="ident">name</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::BoxType</span><span class="op">&gt;</span>;
+    <span class="doccomment">/// Create bundled plugin for plugin name
+    /// Instead of full name like com.worksap.nlp.sudachi.ProlongedSoundMarkPlugin
+    /// should handle only the short one: ProlongedSoundMarkPlugin
+    ///
+    /// com.worksap.nlp.sudachi. (last dot included) will be stripped automatically
+    /// by the loader code
+    </span><span class="kw">fn </span>bundled_impl(name: <span class="kw-2">&amp;</span>str) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>::BoxType&gt;;
 
-    <span class="doccomment">/// Perform initial setup.</span>
-    <span class="doccomment">/// We can&#39;t call set_up of the plugin directly in the default implementation</span>
-    <span class="doccomment">/// of this method because we do not know the specific type yet</span>
-    <span class="kw">fn</span> <span class="ident">do_setup</span>(
-        <span class="ident">ptr</span>: <span class="kw-2">&amp;mut</span> <span class="ident"><span class="self">Self</span>::BoxType</span>,
-        <span class="ident">settings</span>: <span class="kw-2">&amp;</span><span class="ident">Value</span>,
-        <span class="ident">config</span>: <span class="kw-2">&amp;</span><span class="ident">Config</span>,
-        <span class="ident">grammar</span>: <span class="kw-2">&amp;</span><span class="ident">Grammar</span>,
-    ) -&gt; <span class="ident">SudachiResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span>;
+    <span class="doccomment">/// Perform initial setup.
+    /// We can&#39;t call set_up of the plugin directly in the default implementation
+    /// of this method because we do not know the specific type yet
+    </span><span class="kw">fn </span>do_setup(
+        ptr: <span class="kw-2">&amp;mut </span><span class="self">Self</span>::BoxType,
+        settings: <span class="kw-2">&amp;</span>Value,
+        config: <span class="kw-2">&amp;</span>Config,
+        grammar: <span class="kw-2">&amp;mut </span>Grammar,
+    ) -&gt; SudachiResult&lt;()&gt;;
 }
 
-<span class="doccomment">/// Helper function to load the plugins of a single category</span>
-<span class="doccomment">/// Should be called with turbofish syntax and trait object type:</span>
-<span class="doccomment">/// `let plugins = load_plugins_of::&lt;dyn InputText&gt;(...)`.</span>
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">load_plugins_of</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">PluginCategory</span> <span class="op">+</span> <span class="question-mark">?</span><span class="ident">Sized</span><span class="op">&gt;</span>(
-    <span class="ident">cfg</span>: <span class="kw-2">&amp;</span><span class="ident">Config</span>,
-    <span class="ident">grammar</span>: <span class="kw-2">&amp;</span><span class="ident">Grammar</span>,
-) -&gt; <span class="ident">SudachiResult</span><span class="op">&lt;</span><span class="ident">PluginContainer</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span> {
-    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">loader</span>: <span class="ident">PluginLoader</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">PluginLoader::new</span>(<span class="ident">grammar</span>, <span class="ident">cfg</span>);
-    <span class="ident">loader</span>.<span class="ident">load</span>()<span class="question-mark">?</span>;
-    <span class="prelude-val">Ok</span>(<span class="ident">loader</span>.<span class="ident">freeze</span>())
+<span class="doccomment">/// Helper function to load the plugins of a single category
+/// Should be called with turbofish syntax and trait object type:
+/// `let plugins = load_plugins_of::&lt;dyn InputText&gt;(...)`.
+</span><span class="kw">pub fn </span>load_plugins_of&lt;<span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span>, T: PluginCategory + <span class="question-mark">?</span>Sized&gt;(
+    cfg: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>Config,
+    grammar: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="kw-2">mut </span>Grammar&lt;<span class="lifetime">&#39;b</span>&gt;,
+) -&gt; SudachiResult&lt;PluginContainer&lt;T&gt;&gt; {
+    <span class="kw">let </span><span class="kw-2">mut </span>loader: PluginLoader&lt;T&gt; = PluginLoader::new(grammar, cfg);
+    loader.load()<span class="question-mark">?</span>;
+    <span class="prelude-val">Ok</span>(loader.freeze())
 }
 </code></pre></div>
-</section><section id="search" class="content hidden"></section><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="sudachi" data-search-index-js="../../../search-index.js" data-search-js="../../../search.js"></div>
-</body></html>
+</section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="sudachi" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0 (897e37553 2022-11-02)" ></div></body></html>

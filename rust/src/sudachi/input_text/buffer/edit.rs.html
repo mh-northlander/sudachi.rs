@@ -1,103 +1,102 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `sudachi&#x2F;src&#x2F;input_text&#x2F;buffer&#x2F;edit.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>edit.rs - source</title><link rel="stylesheet" type="text/css" href="../../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../../../ayu.css" disabled ><script id="default-settings" ></script><script src="../../../../storage.js"></script><script src="../../../../crates.js"></script><script defer src="../../../../main.js"></script><script defer src="../../../../source-script.js"></script><script defer src="../../../../source-files.js"></script>
-    <noscript><link rel="stylesheet" href="../../../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../../../favicon.svg"><style type="text/css">#crate-search{background-image:url("../../../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu" role="button">&#9776;</div><a href='../../../../sudachi/index.html'><div class='logo-container rust-logo'><img src='../../../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu" title="themes"><img width="18" height="18" alt="Pick another theme!" src="../../../../brush.svg"></button><div id="theme-choices" role="menu"></div></div><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" id="help-button" title="help">?</button><a id="settings-menu" href="../../../../settings.html" title="settings"><img width="18" height="18" alt="Change settings" src="../../../../wheel.svg"></a></div></form></nav><section id="main" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">  1</span>
-<span id="2">  2</span>
-<span id="3">  3</span>
-<span id="4">  4</span>
-<span id="5">  5</span>
-<span id="6">  6</span>
-<span id="7">  7</span>
-<span id="8">  8</span>
-<span id="9">  9</span>
-<span id="10"> 10</span>
-<span id="11"> 11</span>
-<span id="12"> 12</span>
-<span id="13"> 13</span>
-<span id="14"> 14</span>
-<span id="15"> 15</span>
-<span id="16"> 16</span>
-<span id="17"> 17</span>
-<span id="18"> 18</span>
-<span id="19"> 19</span>
-<span id="20"> 20</span>
-<span id="21"> 21</span>
-<span id="22"> 22</span>
-<span id="23"> 23</span>
-<span id="24"> 24</span>
-<span id="25"> 25</span>
-<span id="26"> 26</span>
-<span id="27"> 27</span>
-<span id="28"> 28</span>
-<span id="29"> 29</span>
-<span id="30"> 30</span>
-<span id="31"> 31</span>
-<span id="32"> 32</span>
-<span id="33"> 33</span>
-<span id="34"> 34</span>
-<span id="35"> 35</span>
-<span id="36"> 36</span>
-<span id="37"> 37</span>
-<span id="38"> 38</span>
-<span id="39"> 39</span>
-<span id="40"> 40</span>
-<span id="41"> 41</span>
-<span id="42"> 42</span>
-<span id="43"> 43</span>
-<span id="44"> 44</span>
-<span id="45"> 45</span>
-<span id="46"> 46</span>
-<span id="47"> 47</span>
-<span id="48"> 48</span>
-<span id="49"> 49</span>
-<span id="50"> 50</span>
-<span id="51"> 51</span>
-<span id="52"> 52</span>
-<span id="53"> 53</span>
-<span id="54"> 54</span>
-<span id="55"> 55</span>
-<span id="56"> 56</span>
-<span id="57"> 57</span>
-<span id="58"> 58</span>
-<span id="59"> 59</span>
-<span id="60"> 60</span>
-<span id="61"> 61</span>
-<span id="62"> 62</span>
-<span id="63"> 63</span>
-<span id="64"> 64</span>
-<span id="65"> 65</span>
-<span id="66"> 66</span>
-<span id="67"> 67</span>
-<span id="68"> 68</span>
-<span id="69"> 69</span>
-<span id="70"> 70</span>
-<span id="71"> 71</span>
-<span id="72"> 72</span>
-<span id="73"> 73</span>
-<span id="74"> 74</span>
-<span id="75"> 75</span>
-<span id="76"> 76</span>
-<span id="77"> 77</span>
-<span id="78"> 78</span>
-<span id="79"> 79</span>
-<span id="80"> 80</span>
-<span id="81"> 81</span>
-<span id="82"> 82</span>
-<span id="83"> 83</span>
-<span id="84"> 84</span>
-<span id="85"> 85</span>
-<span id="86"> 86</span>
-<span id="87"> 87</span>
-<span id="88"> 88</span>
-<span id="89"> 89</span>
-<span id="90"> 90</span>
-<span id="91"> 91</span>
-<span id="92"> 92</span>
-<span id="93"> 93</span>
-<span id="94"> 94</span>
-<span id="95"> 95</span>
-<span id="96"> 96</span>
-<span id="97"> 97</span>
-<span id="98"> 98</span>
-<span id="99"> 99</span>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `sudachi/src/input_text/buffer/edit.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>edit.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" href="../../../../normalize.css"><link rel="stylesheet" href="../../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" href="../../../../ayu.css" disabled><link rel="stylesheet" href="../../../../dark.css" disabled><link rel="stylesheet" href="../../../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../../../storage.js"></script><script defer src="../../../../source-script.js"></script><script defer src="../../../../source-files.js"></script><script defer src="../../../../main.js"></script><noscript><link rel="stylesheet" href="../../../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../../../favicon.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="sidebar-logo" href="../../../../sudachi/index.html"><div class="logo-container"><img class="rust-logo" src="../../../../rust-logo.svg" alt="logo"></div></a><h2 class="location"></h2></nav><nav class="sidebar"><a class="sidebar-logo" href="../../../../sudachi/index.html"><div class="logo-container"><img class="rust-logo" src="../../../../rust-logo.svg" alt="logo"></div></a></nav><main><div class="width-limiter"><div class="sub-container"><a class="sub-logo-container" href="../../../../sudachi/index.html"><img class="rust-logo" src="../../../../rust-logo.svg" alt="logo"></a><nav class="sub"><form class="search-form"><div class="search-container"><span></span><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><button type="button">?</button></div><div id="settings-menu" tabindex="-1"><a href="../../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../../wheel.svg"></a></div></div></form></nav></div><section id="main-content" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">1</span>
+<span id="2">2</span>
+<span id="3">3</span>
+<span id="4">4</span>
+<span id="5">5</span>
+<span id="6">6</span>
+<span id="7">7</span>
+<span id="8">8</span>
+<span id="9">9</span>
+<span id="10">10</span>
+<span id="11">11</span>
+<span id="12">12</span>
+<span id="13">13</span>
+<span id="14">14</span>
+<span id="15">15</span>
+<span id="16">16</span>
+<span id="17">17</span>
+<span id="18">18</span>
+<span id="19">19</span>
+<span id="20">20</span>
+<span id="21">21</span>
+<span id="22">22</span>
+<span id="23">23</span>
+<span id="24">24</span>
+<span id="25">25</span>
+<span id="26">26</span>
+<span id="27">27</span>
+<span id="28">28</span>
+<span id="29">29</span>
+<span id="30">30</span>
+<span id="31">31</span>
+<span id="32">32</span>
+<span id="33">33</span>
+<span id="34">34</span>
+<span id="35">35</span>
+<span id="36">36</span>
+<span id="37">37</span>
+<span id="38">38</span>
+<span id="39">39</span>
+<span id="40">40</span>
+<span id="41">41</span>
+<span id="42">42</span>
+<span id="43">43</span>
+<span id="44">44</span>
+<span id="45">45</span>
+<span id="46">46</span>
+<span id="47">47</span>
+<span id="48">48</span>
+<span id="49">49</span>
+<span id="50">50</span>
+<span id="51">51</span>
+<span id="52">52</span>
+<span id="53">53</span>
+<span id="54">54</span>
+<span id="55">55</span>
+<span id="56">56</span>
+<span id="57">57</span>
+<span id="58">58</span>
+<span id="59">59</span>
+<span id="60">60</span>
+<span id="61">61</span>
+<span id="62">62</span>
+<span id="63">63</span>
+<span id="64">64</span>
+<span id="65">65</span>
+<span id="66">66</span>
+<span id="67">67</span>
+<span id="68">68</span>
+<span id="69">69</span>
+<span id="70">70</span>
+<span id="71">71</span>
+<span id="72">72</span>
+<span id="73">73</span>
+<span id="74">74</span>
+<span id="75">75</span>
+<span id="76">76</span>
+<span id="77">77</span>
+<span id="78">78</span>
+<span id="79">79</span>
+<span id="80">80</span>
+<span id="81">81</span>
+<span id="82">82</span>
+<span id="83">83</span>
+<span id="84">84</span>
+<span id="85">85</span>
+<span id="86">86</span>
+<span id="87">87</span>
+<span id="88">88</span>
+<span id="89">89</span>
+<span id="90">90</span>
+<span id="91">91</span>
+<span id="92">92</span>
+<span id="93">93</span>
+<span id="94">94</span>
+<span id="95">95</span>
+<span id="96">96</span>
+<span id="97">97</span>
+<span id="98">98</span>
+<span id="99">99</span>
 <span id="100">100</span>
 <span id="101">101</span>
 <span id="102">102</span>
@@ -390,369 +389,368 @@
  *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
- */</span>
+ */
 
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::input_text::buffer::REALLY_MAX_LENGTH</span>;
-<span class="kw">use</span> <span class="ident">std::ops::Range</span>;
+</span><span class="kw">use </span><span class="kw">crate</span>::input_text::buffer::REALLY_MAX_LENGTH;
+<span class="kw">use </span>std::ops::Range;
 
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">ReplaceOp</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
-    <span class="ident">what</span>: <span class="ident">Range</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>,
-    <span class="ident">with</span>: <span class="ident">ReplaceTgt</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>,
+<span class="attribute">#[derive(Clone)]
+</span><span class="kw">pub struct </span>ReplaceOp&lt;<span class="lifetime">&#39;a</span>&gt; {
+    what: Range&lt;usize&gt;,
+    with: ReplaceTgt&lt;<span class="lifetime">&#39;a</span>&gt;,
 }
 
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>)]</span>
-<span class="kw">enum</span> <span class="ident">ReplaceTgt</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
-    <span class="ident">Ref</span>(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">str</span>),
-    <span class="ident">Char</span>(<span class="ident">char</span>),
-    <span class="ident">Str</span>(<span class="ident">String</span>),
+<span class="attribute">#[derive(Clone)]
+</span><span class="kw">enum </span>ReplaceTgt&lt;<span class="lifetime">&#39;a</span>&gt; {
+    Ref(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>str),
+    Char(char),
+    Str(String),
 }
 
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">InputEditor</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
-    <span class="ident">replaces</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw-2">mut</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">ReplaceOp</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+<span class="kw">pub struct </span>InputEditor&lt;<span class="lifetime">&#39;a</span>&gt; {
+    replaces: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="kw-2">mut </span>Vec&lt;ReplaceOp&lt;<span class="lifetime">&#39;a</span>&gt;&gt;,
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="ident">InputEditor</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
-    <span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">replaces</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw-2">mut</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">ReplaceOp</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span><span class="op">&gt;</span>) -&gt; <span class="ident">InputEditor</span> {
-        <span class="ident">InputEditor</span> { <span class="ident">replaces</span> }
+<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; InputEditor&lt;<span class="lifetime">&#39;a</span>&gt; {
+    <span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">fn </span>new(replaces: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="kw-2">mut </span>Vec&lt;ReplaceOp&lt;<span class="lifetime">&#39;a</span>&gt;&gt;) -&gt; InputEditor {
+        InputEditor { replaces }
     }
 
-    <span class="doccomment">/// Replace range with a &amp;str</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">replace_ref</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">range</span>: <span class="ident">Range</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>, <span class="ident">result</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">str</span>) {
-        <span class="kw">let</span> <span class="ident">op</span> <span class="op">=</span> <span class="ident">ReplaceOp</span> {
-            <span class="ident">what</span>: <span class="ident">range</span>,
-            <span class="ident">with</span>: <span class="ident">ReplaceTgt::Ref</span>(<span class="ident">result</span>),
+    <span class="doccomment">/// Replace range with a &amp;str
+    </span><span class="kw">pub fn </span>replace_ref(<span class="kw-2">&amp;mut </span><span class="self">self</span>, range: Range&lt;usize&gt;, result: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>str) {
+        <span class="kw">let </span>op = ReplaceOp {
+            what: range,
+            with: ReplaceTgt::Ref(result),
         };
-        <span class="self">self</span>.<span class="ident">replaces</span>.<span class="ident">push</span>(<span class="ident">op</span>);
+        <span class="self">self</span>.replaces.push(op);
     }
 
-    <span class="doccomment">/// Replace range with char</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">replace_char</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">range</span>: <span class="ident">Range</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>, <span class="ident">result</span>: <span class="ident">char</span>) {
-        <span class="kw">let</span> <span class="ident">op</span> <span class="op">=</span> <span class="ident">ReplaceOp</span> {
-            <span class="ident">what</span>: <span class="ident">range</span>,
-            <span class="ident">with</span>: <span class="ident">ReplaceTgt::Char</span>(<span class="ident">result</span>),
+    <span class="doccomment">/// Replace range with char
+    </span><span class="kw">pub fn </span>replace_char(<span class="kw-2">&amp;mut </span><span class="self">self</span>, range: Range&lt;usize&gt;, result: char) {
+        <span class="kw">let </span>op = ReplaceOp {
+            what: range,
+            with: ReplaceTgt::Char(result),
         };
-        <span class="self">self</span>.<span class="ident">replaces</span>.<span class="ident">push</span>(<span class="ident">op</span>);
+        <span class="self">self</span>.replaces.push(op);
     }
 
-    <span class="doccomment">/// Replace range with owned String</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">replace_own</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">range</span>: <span class="ident">Range</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>, <span class="ident">result</span>: <span class="ident">String</span>) {
-        <span class="kw">let</span> <span class="ident">op</span> <span class="op">=</span> <span class="ident">ReplaceOp</span> {
-            <span class="ident">what</span>: <span class="ident">range</span>,
-            <span class="ident">with</span>: <span class="ident">ReplaceTgt::Str</span>(<span class="ident">result</span>),
+    <span class="doccomment">/// Replace range with owned String
+    </span><span class="kw">pub fn </span>replace_own(<span class="kw-2">&amp;mut </span><span class="self">self</span>, range: Range&lt;usize&gt;, result: String) {
+        <span class="kw">let </span>op = ReplaceOp {
+            what: range,
+            with: ReplaceTgt::Str(result),
         };
-        <span class="self">self</span>.<span class="ident">replaces</span>.<span class="ident">push</span>(<span class="ident">op</span>);
+        <span class="self">self</span>.replaces.push(op);
     }
 
-    <span class="doccomment">/// Replace range with char, followed by chars from iterator</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">replace_char_iter</span><span class="op">&lt;</span><span class="ident">It</span><span class="op">&gt;</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">range</span>: <span class="ident">Range</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>, <span class="ident">ch</span>: <span class="ident">char</span>, <span class="kw-2">mut</span> <span class="ident">rest</span>: <span class="ident">It</span>)
-    <span class="kw">where</span>
-        <span class="ident">It</span>: <span class="ident">Iterator</span><span class="op">&lt;</span><span class="ident">Item</span> <span class="op">=</span> <span class="ident">char</span><span class="op">&gt;</span>,
+    <span class="doccomment">/// Replace range with char, followed by chars from iterator
+    </span><span class="kw">pub fn </span>replace_char_iter&lt;It&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, range: Range&lt;usize&gt;, ch: char, <span class="kw-2">mut </span>rest: It)
+    <span class="kw">where
+        </span>It: Iterator&lt;Item = char&gt;,
     {
-        <span class="kw">match</span> <span class="ident">rest</span>.<span class="ident">next</span>() {
-            <span class="prelude-val">None</span> =&gt; <span class="self">self</span>.<span class="ident">replace_char</span>(<span class="ident">range</span>, <span class="ident">ch</span>),
-            <span class="prelude-val">Some</span>(<span class="ident">ch2</span>) =&gt; {
-                <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">s</span> <span class="op">=</span> <span class="ident">String::with_capacity</span>(<span class="number">12</span>); <span class="comment">//4 japanese chars</span>
-                <span class="ident">s</span>.<span class="ident">push</span>(<span class="ident">ch</span>);
-                <span class="ident">s</span>.<span class="ident">push</span>(<span class="ident">ch2</span>);
-                <span class="ident">s</span>.<span class="ident">extend</span>(<span class="ident">rest</span>);
-                <span class="self">self</span>.<span class="ident">replace_own</span>(<span class="ident">range</span>, <span class="ident">s</span>)
+        <span class="kw">match </span>rest.next() {
+            <span class="prelude-val">None </span>=&gt; <span class="self">self</span>.replace_char(range, ch),
+            <span class="prelude-val">Some</span>(ch2) =&gt; {
+                <span class="kw">let </span><span class="kw-2">mut </span>s = String::with_capacity(<span class="number">12</span>); <span class="comment">//4 japanese chars
+                </span>s.push(ch);
+                s.push(ch2);
+                s.extend(rest);
+                <span class="self">self</span>.replace_own(range, s)
             }
         }
     }
 }
 
-<span class="comment">// Edits are assumed to be sorted (from start to end) and non-overlapping.</span>
-<span class="comment">// This is not checked right now (may be we should check this in debug mode)</span>
-<span class="comment">// Current plugin implementations satisfy this criteria.</span>
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">resolve_edits</span>(
-    <span class="ident">source</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>,
-    <span class="ident">source_mapping</span>: <span class="kw-2">&amp;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>,
-    <span class="ident">target</span>: <span class="kw-2">&amp;mut</span> <span class="ident">String</span>,
-    <span class="ident">target_mapping</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>,
-    <span class="ident">edits</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">ReplaceOp</span><span class="op">&gt;</span>,
-) -&gt; <span class="ident">usize</span> {
-    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">start</span>: <span class="ident">usize</span> <span class="op">=</span> <span class="number">0</span>;
-    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">cur_len</span>: <span class="ident">isize</span> <span class="op">=</span> <span class="ident">source</span>.<span class="ident">len</span>() <span class="kw">as</span> <span class="ident">isize</span>;
-    <span class="kw">for</span> <span class="ident">edit</span> <span class="kw">in</span> <span class="ident">edits</span>.<span class="ident">drain</span>(..) {
-        <span class="ident">target</span>.<span class="ident">push_str</span>(<span class="kw-2">&amp;</span><span class="ident">source</span>[<span class="ident">start</span>..<span class="ident">edit</span>.<span class="ident">what</span>.<span class="ident">start</span>]);
-        <span class="ident">target_mapping</span>.<span class="ident">extend</span>(<span class="ident">source_mapping</span>[<span class="ident">start</span>..<span class="ident">edit</span>.<span class="ident">what</span>.<span class="ident">start</span>].<span class="ident">iter</span>());
-        <span class="ident">start</span> <span class="op">=</span> <span class="ident">edit</span>.<span class="ident">what</span>.<span class="ident">end</span>;
-        <span class="ident">cur_len</span> <span class="op">+</span><span class="op">=</span> <span class="kw">match</span> <span class="ident">edit</span>.<span class="ident">with</span> {
-            <span class="ident">ReplaceTgt::Str</span>(<span class="ident">s</span>) =&gt; {
-                <span class="ident">add_replace</span>(<span class="ident">source_mapping</span>, <span class="ident">target</span>, <span class="ident">target_mapping</span>, <span class="ident">edit</span>.<span class="ident">what</span>, <span class="kw-2">&amp;</span><span class="ident">s</span>)
+<span class="comment">// Edits are assumed to be sorted (from start to end) and non-overlapping.
+// This is not checked right now (may be we should check this in debug mode)
+// Current plugin implementations satisfy this criteria.
+</span><span class="kw">pub fn </span>resolve_edits(
+    source: <span class="kw-2">&amp;</span>str,
+    source_mapping: <span class="kw-2">&amp;</span>Vec&lt;usize&gt;,
+    target: <span class="kw-2">&amp;mut </span>String,
+    target_mapping: <span class="kw-2">&amp;mut </span>Vec&lt;usize&gt;,
+    edits: <span class="kw-2">&amp;mut </span>Vec&lt;ReplaceOp&gt;,
+) -&gt; usize {
+    <span class="kw">let </span><span class="kw-2">mut </span>start: usize = <span class="number">0</span>;
+    <span class="kw">let </span><span class="kw-2">mut </span>cur_len: isize = source.len() <span class="kw">as </span>isize;
+    <span class="kw">for </span>edit <span class="kw">in </span>edits.drain(..) {
+        target.push_str(<span class="kw-2">&amp;</span>source[start..edit.what.start]);
+        target_mapping.extend(source_mapping[start..edit.what.start].iter());
+        start = edit.what.end;
+        cur_len += <span class="kw">match </span>edit.with {
+            ReplaceTgt::Str(s) =&gt; {
+                add_replace(source_mapping, target, target_mapping, edit.what, <span class="kw-2">&amp;</span>s)
             }
-            <span class="ident">ReplaceTgt::Ref</span>(<span class="ident">s</span>) =&gt; <span class="ident">add_replace</span>(<span class="ident">source_mapping</span>, <span class="ident">target</span>, <span class="ident">target_mapping</span>, <span class="ident">edit</span>.<span class="ident">what</span>, <span class="ident">s</span>),
-            <span class="ident">ReplaceTgt::Char</span>(<span class="ident">c</span>) =&gt; <span class="ident">add_replace</span>(
-                <span class="ident">source_mapping</span>,
-                <span class="ident">target</span>,
-                <span class="ident">target_mapping</span>,
-                <span class="ident">edit</span>.<span class="ident">what</span>,
-                <span class="ident">c</span>.<span class="ident">encode_utf8</span>(<span class="kw-2">&amp;mut</span> [<span class="number">0</span>; <span class="number">4</span>]),
+            ReplaceTgt::Ref(s) =&gt; add_replace(source_mapping, target, target_mapping, edit.what, s),
+            ReplaceTgt::Char(c) =&gt; add_replace(
+                source_mapping,
+                target,
+                target_mapping,
+                edit.what,
+                c.encode_utf8(<span class="kw-2">&amp;mut </span>[<span class="number">0</span>; <span class="number">4</span>]),
             ),
         };
-        <span class="kw">if</span> <span class="ident">cur_len</span> <span class="op">&gt;</span> <span class="ident">REALLY_MAX_LENGTH</span> <span class="kw">as</span> <span class="ident">isize</span> {
-            <span class="kw">return</span> <span class="ident">cur_len</span> <span class="kw">as</span> <span class="ident">usize</span>;
+        <span class="kw">if </span>cur_len &gt; REALLY_MAX_LENGTH <span class="kw">as </span>isize {
+            <span class="kw">return </span>cur_len <span class="kw">as </span>usize;
         }
     }
-    <span class="ident">target</span>.<span class="ident">push_str</span>(<span class="kw-2">&amp;</span><span class="ident">source</span>[<span class="ident">start</span>..]);
-    <span class="ident">target_mapping</span>.<span class="ident">extend</span>(<span class="ident">source_mapping</span>[<span class="ident">start</span>..].<span class="ident">iter</span>());
-    <span class="comment">// first byte of mapping MUST be 0</span>
-    <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">v</span>) <span class="op">=</span> <span class="ident">target_mapping</span>.<span class="ident">first_mut</span>() {
-        <span class="kw-2">*</span><span class="ident">v</span> <span class="op">=</span> <span class="number">0</span>;
+    target.push_str(<span class="kw-2">&amp;</span>source[start..]);
+    target_mapping.extend(source_mapping[start..].iter());
+    <span class="comment">// first byte of mapping MUST be 0
+    </span><span class="kw">if let </span><span class="prelude-val">Some</span>(v) = target_mapping.first_mut() {
+        <span class="kw-2">*</span>v = <span class="number">0</span>;
     }
-    <span class="ident">cur_len</span> <span class="kw">as</span> <span class="ident">usize</span>
+    cur_len <span class="kw">as </span>usize
 }
 
-<span class="kw">fn</span> <span class="ident">add_replace</span>(
-    <span class="ident">source_mapping</span>: <span class="kw-2">&amp;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>,
-    <span class="ident">target</span>: <span class="kw-2">&amp;mut</span> <span class="ident">String</span>,
-    <span class="ident">target_mapping</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>,
-    <span class="ident">what</span>: <span class="ident">Range</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>,
-    <span class="ident">with</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>,
-) -&gt; <span class="ident">isize</span> {
-    <span class="kw">if</span> <span class="ident">with</span>.<span class="ident">is_empty</span>() {
-        <span class="kw">return</span> <span class="op">-</span>(<span class="ident">what</span>.<span class="ident">len</span>() <span class="kw">as</span> <span class="ident">isize</span>);
+<span class="kw">fn </span>add_replace(
+    source_mapping: <span class="kw-2">&amp;</span>Vec&lt;usize&gt;,
+    target: <span class="kw-2">&amp;mut </span>String,
+    target_mapping: <span class="kw-2">&amp;mut </span>Vec&lt;usize&gt;,
+    what: Range&lt;usize&gt;,
+    with: <span class="kw-2">&amp;</span>str,
+) -&gt; isize {
+    <span class="kw">if </span>with.is_empty() {
+        <span class="kw">return </span>-(what.len() <span class="kw">as </span>isize);
     }
-    <span class="ident">target</span>.<span class="ident">push_str</span>(<span class="ident">with</span>);
+    target.push_str(with);
 
-    <span class="comment">// the first char of replacing string will correspond with whole replaced string</span>
-    <span class="ident">target_mapping</span>.<span class="ident">push</span>(<span class="ident">source_mapping</span>[<span class="ident">what</span>.<span class="ident">start</span>]);
-    <span class="kw">let</span> <span class="ident">pos</span> <span class="op">=</span> <span class="ident">source_mapping</span>[<span class="ident">what</span>.<span class="ident">end</span>];
-    <span class="kw">for</span> <span class="kw">_</span> <span class="kw">in</span> <span class="number">1</span>..<span class="ident">with</span>.<span class="ident">len</span>() {
-        <span class="ident">target_mapping</span>.<span class="ident">push</span>(<span class="ident">pos</span>);
+    <span class="comment">// the first char of replacing string will correspond with whole replaced string
+    </span>target_mapping.push(source_mapping[what.start]);
+    <span class="kw">let </span>pos = source_mapping[what.end];
+    <span class="kw">for _ in </span><span class="number">1</span>..with.len() {
+        target_mapping.push(pos);
     }
-    <span class="ident">with</span>.<span class="ident">len</span>() <span class="kw">as</span> <span class="ident">isize</span> <span class="op">-</span> <span class="ident">what</span>.<span class="ident">len</span>() <span class="kw">as</span> <span class="ident">isize</span>
+    with.len() <span class="kw">as </span>isize - what.len() <span class="kw">as </span>isize
 }
 
-<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">test</span>)]</span>
-<span class="kw">mod</span> <span class="ident">test</span> {
-    <span class="kw">use</span> <span class="ident"><span class="kw">super</span>::<span class="kw">super</span>::InputBuffer</span>;
-    <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::input_text::InputTextIndex</span>;
+<span class="attribute">#[cfg(test)]
+</span><span class="kw">mod </span>test {
+    <span class="kw">use </span><span class="kw">super</span>::<span class="kw">super</span>::InputBuffer;
+    <span class="kw">use </span><span class="kw">crate</span>::input_text::InputTextIndex;
 
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">edit_ref_1</span>() {
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">buffer</span> <span class="op">=</span> <span class="ident">InputBuffer::from</span>(<span class="string">&quot;宇宙人&quot;</span>);
-        <span class="ident">buffer</span>
-            .<span class="ident">with_editor</span>(<span class="op">|</span><span class="kw">_</span>, <span class="kw-2">mut</span> <span class="ident">r</span><span class="op">|</span> {
-                <span class="ident">r</span>.<span class="ident">replace_ref</span>(<span class="number">3</span>..<span class="number">6</span>, <span class="string">&quot;銀&quot;</span>);
-                <span class="prelude-val">Ok</span>(<span class="ident">r</span>)
+    <span class="attribute">#[test]
+    </span><span class="kw">fn </span>edit_ref_1() {
+        <span class="kw">let </span><span class="kw-2">mut </span>buffer = InputBuffer::from(<span class="string">&quot;宇宙人&quot;</span>);
+        buffer
+            .with_editor(|<span class="kw">_</span>, <span class="kw-2">mut </span>r| {
+                r.replace_ref(<span class="number">3</span>..<span class="number">6</span>, <span class="string">&quot;銀&quot;</span>);
+                <span class="prelude-val">Ok</span>(r)
             })
-            .<span class="ident">expect</span>(<span class="string">&quot;should not break&quot;</span>);
-        <span class="macro">assert_eq!</span>(<span class="number">0</span>, <span class="ident">buffer</span>.<span class="ident">replaces</span>.<span class="ident">len</span>());
-        <span class="macro">assert_eq!</span>(<span class="ident">buffer</span>.<span class="ident">current</span>(), <span class="string">&quot;宇銀人&quot;</span>);
-        <span class="macro">assert_eq!</span>(<span class="ident">buffer</span>.<span class="ident">orig_slice</span>(<span class="number">3</span>..<span class="number">6</span>), <span class="string">&quot;宙&quot;</span>);
+            .expect(<span class="string">&quot;should not break&quot;</span>);
+        <span class="macro">assert_eq!</span>(<span class="number">0</span>, buffer.replaces.len());
+        <span class="macro">assert_eq!</span>(buffer.current(), <span class="string">&quot;宇銀人&quot;</span>);
+        <span class="macro">assert_eq!</span>(buffer.orig_slice(<span class="number">3</span>..<span class="number">6</span>), <span class="string">&quot;宙&quot;</span>);
     }
 
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">edit_char_1</span>() {
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">buffer</span> <span class="op">=</span> <span class="ident">InputBuffer::from</span>(<span class="string">&quot;宇宙人&quot;</span>);
-        <span class="ident">buffer</span>
-            .<span class="ident">with_editor</span>(<span class="op">|</span><span class="kw">_</span>, <span class="kw-2">mut</span> <span class="ident">r</span><span class="op">|</span> {
-                <span class="ident">r</span>.<span class="ident">replace_char</span>(<span class="number">3</span>..<span class="number">6</span>, <span class="string">&#39;銀&#39;</span>);
-                <span class="prelude-val">Ok</span>(<span class="ident">r</span>)
+    <span class="attribute">#[test]
+    </span><span class="kw">fn </span>edit_char_1() {
+        <span class="kw">let </span><span class="kw-2">mut </span>buffer = InputBuffer::from(<span class="string">&quot;宇宙人&quot;</span>);
+        buffer
+            .with_editor(|<span class="kw">_</span>, <span class="kw-2">mut </span>r| {
+                r.replace_char(<span class="number">3</span>..<span class="number">6</span>, <span class="string">&#39;銀&#39;</span>);
+                <span class="prelude-val">Ok</span>(r)
             })
-            .<span class="ident">expect</span>(<span class="string">&quot;should not break&quot;</span>);
-        <span class="macro">assert_eq!</span>(<span class="number">0</span>, <span class="ident">buffer</span>.<span class="ident">replaces</span>.<span class="ident">len</span>());
-        <span class="macro">assert_eq!</span>(<span class="ident">buffer</span>.<span class="ident">current</span>(), <span class="string">&quot;宇銀人&quot;</span>);
-        <span class="macro">assert_eq!</span>(<span class="ident">buffer</span>.<span class="ident">orig_slice</span>(<span class="number">3</span>..<span class="number">6</span>), <span class="string">&quot;宙&quot;</span>);
+            .expect(<span class="string">&quot;should not break&quot;</span>);
+        <span class="macro">assert_eq!</span>(<span class="number">0</span>, buffer.replaces.len());
+        <span class="macro">assert_eq!</span>(buffer.current(), <span class="string">&quot;宇銀人&quot;</span>);
+        <span class="macro">assert_eq!</span>(buffer.orig_slice(<span class="number">3</span>..<span class="number">6</span>), <span class="string">&quot;宙&quot;</span>);
     }
 
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">edit_ref_2_borrow</span>() {
-        <span class="kw">let</span> <span class="ident">s</span> <span class="op">=</span> <span class="ident">String::from</span>(<span class="string">&quot;銀&quot;</span>);
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">buffer</span> <span class="op">=</span> <span class="ident">InputBuffer::from</span>(<span class="string">&quot;宇宙人&quot;</span>);
-        <span class="ident">buffer</span>
-            .<span class="ident">with_editor</span>(<span class="op">|</span><span class="kw">_</span>, <span class="kw-2">mut</span> <span class="ident">r</span><span class="op">|</span> {
-                <span class="ident">r</span>.<span class="ident">replace_ref</span>(<span class="number">3</span>..<span class="number">6</span>, <span class="kw-2">&amp;</span><span class="ident">s</span>);
-                <span class="prelude-val">Ok</span>(<span class="ident">r</span>)
+    <span class="attribute">#[test]
+    </span><span class="kw">fn </span>edit_ref_2_borrow() {
+        <span class="kw">let </span>s = String::from(<span class="string">&quot;銀&quot;</span>);
+        <span class="kw">let </span><span class="kw-2">mut </span>buffer = InputBuffer::from(<span class="string">&quot;宇宙人&quot;</span>);
+        buffer
+            .with_editor(|<span class="kw">_</span>, <span class="kw-2">mut </span>r| {
+                r.replace_ref(<span class="number">3</span>..<span class="number">6</span>, <span class="kw-2">&amp;</span>s);
+                <span class="prelude-val">Ok</span>(r)
             })
-            .<span class="ident">expect</span>(<span class="string">&quot;should not break&quot;</span>);
-        <span class="macro">assert_eq!</span>(<span class="number">0</span>, <span class="ident">buffer</span>.<span class="ident">replaces</span>.<span class="ident">len</span>());
-        <span class="macro">assert_eq!</span>(<span class="ident">buffer</span>.<span class="ident">current</span>(), <span class="string">&quot;宇銀人&quot;</span>);
+            .expect(<span class="string">&quot;should not break&quot;</span>);
+        <span class="macro">assert_eq!</span>(<span class="number">0</span>, buffer.replaces.len());
+        <span class="macro">assert_eq!</span>(buffer.current(), <span class="string">&quot;宇銀人&quot;</span>);
     }
 
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">edit_str_1</span>() {
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">buffer</span> <span class="op">=</span> <span class="ident">InputBuffer::from</span>(<span class="string">&quot;宇宙人&quot;</span>);
-        <span class="ident">buffer</span>
-            .<span class="ident">with_editor</span>(<span class="op">|</span><span class="kw">_</span>, <span class="kw-2">mut</span> <span class="ident">r</span><span class="op">|</span> {
-                <span class="ident">r</span>.<span class="ident">replace_own</span>(<span class="number">3</span>..<span class="number">6</span>, <span class="ident">String::from</span>(<span class="string">&quot;銀&quot;</span>));
-                <span class="prelude-val">Ok</span>(<span class="ident">r</span>)
+    <span class="attribute">#[test]
+    </span><span class="kw">fn </span>edit_str_1() {
+        <span class="kw">let </span><span class="kw-2">mut </span>buffer = InputBuffer::from(<span class="string">&quot;宇宙人&quot;</span>);
+        buffer
+            .with_editor(|<span class="kw">_</span>, <span class="kw-2">mut </span>r| {
+                r.replace_own(<span class="number">3</span>..<span class="number">6</span>, String::from(<span class="string">&quot;銀&quot;</span>));
+                <span class="prelude-val">Ok</span>(r)
             })
-            .<span class="ident">expect</span>(<span class="string">&quot;should not break&quot;</span>);
-        <span class="macro">assert_eq!</span>(<span class="number">0</span>, <span class="ident">buffer</span>.<span class="ident">replaces</span>.<span class="ident">len</span>());
-        <span class="macro">assert_eq!</span>(<span class="ident">buffer</span>.<span class="ident">current</span>(), <span class="string">&quot;宇銀人&quot;</span>);
-        <span class="macro">assert_eq!</span>(<span class="ident">buffer</span>.<span class="ident">orig_slice</span>(<span class="number">3</span>..<span class="number">6</span>), <span class="string">&quot;宙&quot;</span>);
+            .expect(<span class="string">&quot;should not break&quot;</span>);
+        <span class="macro">assert_eq!</span>(<span class="number">0</span>, buffer.replaces.len());
+        <span class="macro">assert_eq!</span>(buffer.current(), <span class="string">&quot;宇銀人&quot;</span>);
+        <span class="macro">assert_eq!</span>(buffer.orig_slice(<span class="number">3</span>..<span class="number">6</span>), <span class="string">&quot;宙&quot;</span>);
     }
 
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">replace_start_w_longer</span>() {
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">buffer</span> <span class="op">=</span> <span class="ident">InputBuffer::from</span>(<span class="string">&quot;宇宙人&quot;</span>);
-        <span class="ident">buffer</span>
-            .<span class="ident">with_editor</span>(<span class="op">|</span><span class="kw">_</span>, <span class="kw-2">mut</span> <span class="ident">r</span><span class="op">|</span> {
-                <span class="ident">r</span>.<span class="ident">replace_ref</span>(<span class="number">0</span>..<span class="number">3</span>, <span class="string">&quot;銀河&quot;</span>);
-                <span class="prelude-val">Ok</span>(<span class="ident">r</span>)
+    <span class="attribute">#[test]
+    </span><span class="kw">fn </span>replace_start_w_longer() {
+        <span class="kw">let </span><span class="kw-2">mut </span>buffer = InputBuffer::from(<span class="string">&quot;宇宙人&quot;</span>);
+        buffer
+            .with_editor(|<span class="kw">_</span>, <span class="kw-2">mut </span>r| {
+                r.replace_ref(<span class="number">0</span>..<span class="number">3</span>, <span class="string">&quot;銀河&quot;</span>);
+                <span class="prelude-val">Ok</span>(r)
             })
-            .<span class="ident">expect</span>(<span class="string">&quot;should not break&quot;</span>);
-        <span class="macro">assert_eq!</span>(<span class="number">0</span>, <span class="ident">buffer</span>.<span class="ident">replaces</span>.<span class="ident">len</span>());
-        <span class="macro">assert_eq!</span>(<span class="ident">buffer</span>.<span class="ident">m2o</span>, <span class="kw-2">&amp;</span>[<span class="number">0</span>, <span class="number">3</span>, <span class="number">3</span>, <span class="number">3</span>, <span class="number">3</span>, <span class="number">3</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>, <span class="number">6</span>, <span class="number">7</span>, <span class="number">8</span>, <span class="number">9</span>]);
-        <span class="macro">assert_eq!</span>(<span class="ident">buffer</span>.<span class="ident">current</span>(), <span class="string">&quot;銀河宙人&quot;</span>);
-        <span class="macro">assert_eq!</span>(<span class="ident">buffer</span>.<span class="ident">orig_slice</span>(<span class="number">0</span>..<span class="number">6</span>), <span class="string">&quot;宇&quot;</span>);
-        <span class="macro">assert_eq!</span>(<span class="ident">buffer</span>.<span class="ident">orig_slice</span>(<span class="number">0</span>..<span class="number">3</span>), <span class="string">&quot;宇&quot;</span>);
-        <span class="macro">assert_eq!</span>(<span class="ident">buffer</span>.<span class="ident">orig_slice</span>(<span class="number">3</span>..<span class="number">6</span>), <span class="string">&quot;&quot;</span>);
+            .expect(<span class="string">&quot;should not break&quot;</span>);
+        <span class="macro">assert_eq!</span>(<span class="number">0</span>, buffer.replaces.len());
+        <span class="macro">assert_eq!</span>(buffer.m2o, <span class="kw-2">&amp;</span>[<span class="number">0</span>, <span class="number">3</span>, <span class="number">3</span>, <span class="number">3</span>, <span class="number">3</span>, <span class="number">3</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>, <span class="number">6</span>, <span class="number">7</span>, <span class="number">8</span>, <span class="number">9</span>]);
+        <span class="macro">assert_eq!</span>(buffer.current(), <span class="string">&quot;銀河宙人&quot;</span>);
+        <span class="macro">assert_eq!</span>(buffer.orig_slice(<span class="number">0</span>..<span class="number">6</span>), <span class="string">&quot;宇&quot;</span>);
+        <span class="macro">assert_eq!</span>(buffer.orig_slice(<span class="number">0</span>..<span class="number">3</span>), <span class="string">&quot;宇&quot;</span>);
+        <span class="macro">assert_eq!</span>(buffer.orig_slice(<span class="number">3</span>..<span class="number">6</span>), <span class="string">&quot;&quot;</span>);
     }
 
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">replace_mid_w_longer</span>() {
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">buffer</span> <span class="op">=</span> <span class="ident">InputBuffer::from</span>(<span class="string">&quot;宇宙人&quot;</span>);
-        <span class="ident">buffer</span>
-            .<span class="ident">with_editor</span>(<span class="op">|</span><span class="kw">_</span>, <span class="kw-2">mut</span> <span class="ident">r</span><span class="op">|</span> {
-                <span class="ident">r</span>.<span class="ident">replace_ref</span>(<span class="number">3</span>..<span class="number">6</span>, <span class="string">&quot;銀河&quot;</span>);
-                <span class="prelude-val">Ok</span>(<span class="ident">r</span>)
+    <span class="attribute">#[test]
+    </span><span class="kw">fn </span>replace_mid_w_longer() {
+        <span class="kw">let </span><span class="kw-2">mut </span>buffer = InputBuffer::from(<span class="string">&quot;宇宙人&quot;</span>);
+        buffer
+            .with_editor(|<span class="kw">_</span>, <span class="kw-2">mut </span>r| {
+                r.replace_ref(<span class="number">3</span>..<span class="number">6</span>, <span class="string">&quot;銀河&quot;</span>);
+                <span class="prelude-val">Ok</span>(r)
             })
-            .<span class="ident">expect</span>(<span class="string">&quot;should not break&quot;</span>);
-        <span class="macro">assert_eq!</span>(<span class="number">0</span>, <span class="ident">buffer</span>.<span class="ident">replaces</span>.<span class="ident">len</span>());
-        <span class="macro">assert_eq!</span>(<span class="ident">buffer</span>.<span class="ident">m2o</span>, <span class="kw-2">&amp;</span>[<span class="number">0</span>, <span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">6</span>, <span class="number">6</span>, <span class="number">6</span>, <span class="number">6</span>, <span class="number">6</span>, <span class="number">6</span>, <span class="number">7</span>, <span class="number">8</span>, <span class="number">9</span>]);
-        <span class="macro">assert_eq!</span>(<span class="ident">buffer</span>.<span class="ident">current</span>(), <span class="string">&quot;宇銀河人&quot;</span>);
-        <span class="macro">assert_eq!</span>(<span class="ident">buffer</span>.<span class="ident">orig_slice</span>(<span class="number">3</span>..<span class="number">9</span>), <span class="string">&quot;宙&quot;</span>);
-        <span class="macro">assert_eq!</span>(<span class="ident">buffer</span>.<span class="ident">orig_slice</span>(<span class="number">3</span>..<span class="number">6</span>), <span class="string">&quot;宙&quot;</span>);
-        <span class="macro">assert_eq!</span>(<span class="ident">buffer</span>.<span class="ident">orig_slice</span>(<span class="number">6</span>..<span class="number">9</span>), <span class="string">&quot;&quot;</span>);
+            .expect(<span class="string">&quot;should not break&quot;</span>);
+        <span class="macro">assert_eq!</span>(<span class="number">0</span>, buffer.replaces.len());
+        <span class="macro">assert_eq!</span>(buffer.m2o, <span class="kw-2">&amp;</span>[<span class="number">0</span>, <span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">6</span>, <span class="number">6</span>, <span class="number">6</span>, <span class="number">6</span>, <span class="number">6</span>, <span class="number">6</span>, <span class="number">7</span>, <span class="number">8</span>, <span class="number">9</span>]);
+        <span class="macro">assert_eq!</span>(buffer.current(), <span class="string">&quot;宇銀河人&quot;</span>);
+        <span class="macro">assert_eq!</span>(buffer.orig_slice(<span class="number">3</span>..<span class="number">9</span>), <span class="string">&quot;宙&quot;</span>);
+        <span class="macro">assert_eq!</span>(buffer.orig_slice(<span class="number">3</span>..<span class="number">6</span>), <span class="string">&quot;宙&quot;</span>);
+        <span class="macro">assert_eq!</span>(buffer.orig_slice(<span class="number">6</span>..<span class="number">9</span>), <span class="string">&quot;&quot;</span>);
     }
 
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">replace_end_w_longer</span>() {
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">buffer</span> <span class="op">=</span> <span class="ident">InputBuffer::from</span>(<span class="string">&quot;宇宙人&quot;</span>);
-        <span class="ident">buffer</span>
-            .<span class="ident">with_editor</span>(<span class="op">|</span><span class="kw">_</span>, <span class="kw-2">mut</span> <span class="ident">r</span><span class="op">|</span> {
-                <span class="ident">r</span>.<span class="ident">replace_ref</span>(<span class="number">6</span>..<span class="number">9</span>, <span class="string">&quot;銀河&quot;</span>);
-                <span class="prelude-val">Ok</span>(<span class="ident">r</span>)
+    <span class="attribute">#[test]
+    </span><span class="kw">fn </span>replace_end_w_longer() {
+        <span class="kw">let </span><span class="kw-2">mut </span>buffer = InputBuffer::from(<span class="string">&quot;宇宙人&quot;</span>);
+        buffer
+            .with_editor(|<span class="kw">_</span>, <span class="kw-2">mut </span>r| {
+                r.replace_ref(<span class="number">6</span>..<span class="number">9</span>, <span class="string">&quot;銀河&quot;</span>);
+                <span class="prelude-val">Ok</span>(r)
             })
-            .<span class="ident">expect</span>(<span class="string">&quot;should not break&quot;</span>);
-        <span class="macro">assert_eq!</span>(<span class="number">0</span>, <span class="ident">buffer</span>.<span class="ident">replaces</span>.<span class="ident">len</span>());
-        <span class="macro">assert_eq!</span>(<span class="ident">buffer</span>.<span class="ident">m2o</span>, <span class="kw-2">&amp;</span>[<span class="number">0</span>, <span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>, <span class="number">6</span>, <span class="number">9</span>, <span class="number">9</span>, <span class="number">9</span>, <span class="number">9</span>, <span class="number">9</span>, <span class="number">9</span>]);
-        <span class="macro">assert_eq!</span>(<span class="ident">buffer</span>.<span class="ident">current</span>(), <span class="string">&quot;宇宙銀河&quot;</span>);
-        <span class="macro">assert_eq!</span>(<span class="ident">buffer</span>.<span class="ident">orig_slice</span>(<span class="number">6</span>..<span class="number">12</span>), <span class="string">&quot;人&quot;</span>);
-        <span class="macro">assert_eq!</span>(<span class="ident">buffer</span>.<span class="ident">orig_slice</span>(<span class="number">6</span>..<span class="number">9</span>), <span class="string">&quot;人&quot;</span>);
-        <span class="macro">assert_eq!</span>(<span class="ident">buffer</span>.<span class="ident">orig_slice</span>(<span class="number">9</span>..<span class="number">12</span>), <span class="string">&quot;&quot;</span>);
+            .expect(<span class="string">&quot;should not break&quot;</span>);
+        <span class="macro">assert_eq!</span>(<span class="number">0</span>, buffer.replaces.len());
+        <span class="macro">assert_eq!</span>(buffer.m2o, <span class="kw-2">&amp;</span>[<span class="number">0</span>, <span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>, <span class="number">6</span>, <span class="number">9</span>, <span class="number">9</span>, <span class="number">9</span>, <span class="number">9</span>, <span class="number">9</span>, <span class="number">9</span>]);
+        <span class="macro">assert_eq!</span>(buffer.current(), <span class="string">&quot;宇宙銀河&quot;</span>);
+        <span class="macro">assert_eq!</span>(buffer.orig_slice(<span class="number">6</span>..<span class="number">12</span>), <span class="string">&quot;人&quot;</span>);
+        <span class="macro">assert_eq!</span>(buffer.orig_slice(<span class="number">6</span>..<span class="number">9</span>), <span class="string">&quot;人&quot;</span>);
+        <span class="macro">assert_eq!</span>(buffer.orig_slice(<span class="number">9</span>..<span class="number">12</span>), <span class="string">&quot;&quot;</span>);
     }
 
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">replace_start_w_shorter</span>() {
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">buffer</span> <span class="op">=</span> <span class="ident">InputBuffer::from</span>(<span class="string">&quot;宇宙人&quot;</span>);
-        <span class="ident">buffer</span>
-            .<span class="ident">with_editor</span>(<span class="op">|</span><span class="kw">_</span>, <span class="kw-2">mut</span> <span class="ident">r</span><span class="op">|</span> {
-                <span class="ident">r</span>.<span class="ident">replace_ref</span>(<span class="number">0</span>..<span class="number">6</span>, <span class="string">&quot;河&quot;</span>);
-                <span class="prelude-val">Ok</span>(<span class="ident">r</span>)
+    <span class="attribute">#[test]
+    </span><span class="kw">fn </span>replace_start_w_shorter() {
+        <span class="kw">let </span><span class="kw-2">mut </span>buffer = InputBuffer::from(<span class="string">&quot;宇宙人&quot;</span>);
+        buffer
+            .with_editor(|<span class="kw">_</span>, <span class="kw-2">mut </span>r| {
+                r.replace_ref(<span class="number">0</span>..<span class="number">6</span>, <span class="string">&quot;河&quot;</span>);
+                <span class="prelude-val">Ok</span>(r)
             })
-            .<span class="ident">expect</span>(<span class="string">&quot;should not break&quot;</span>);
-        <span class="macro">assert_eq!</span>(<span class="number">0</span>, <span class="ident">buffer</span>.<span class="ident">replaces</span>.<span class="ident">len</span>());
-        <span class="macro">assert_eq!</span>(<span class="ident">buffer</span>.<span class="ident">current</span>(), <span class="string">&quot;河人&quot;</span>);
-        <span class="macro">assert_eq!</span>(<span class="ident">buffer</span>.<span class="ident">m2o</span>, <span class="kw-2">&amp;</span>[<span class="number">0</span>, <span class="number">6</span>, <span class="number">6</span>, <span class="number">6</span>, <span class="number">7</span>, <span class="number">8</span>, <span class="number">9</span>]);
-        <span class="macro">assert_eq!</span>(<span class="ident">buffer</span>.<span class="ident">orig_slice</span>(<span class="number">0</span>..<span class="number">3</span>), <span class="string">&quot;宇宙&quot;</span>);
-        <span class="macro">assert_eq!</span>(<span class="ident">buffer</span>.<span class="ident">orig_slice</span>(<span class="number">3</span>..<span class="number">6</span>), <span class="string">&quot;人&quot;</span>);
+            .expect(<span class="string">&quot;should not break&quot;</span>);
+        <span class="macro">assert_eq!</span>(<span class="number">0</span>, buffer.replaces.len());
+        <span class="macro">assert_eq!</span>(buffer.current(), <span class="string">&quot;河人&quot;</span>);
+        <span class="macro">assert_eq!</span>(buffer.m2o, <span class="kw-2">&amp;</span>[<span class="number">0</span>, <span class="number">6</span>, <span class="number">6</span>, <span class="number">6</span>, <span class="number">7</span>, <span class="number">8</span>, <span class="number">9</span>]);
+        <span class="macro">assert_eq!</span>(buffer.orig_slice(<span class="number">0</span>..<span class="number">3</span>), <span class="string">&quot;宇宙&quot;</span>);
+        <span class="macro">assert_eq!</span>(buffer.orig_slice(<span class="number">3</span>..<span class="number">6</span>), <span class="string">&quot;人&quot;</span>);
     }
 
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">replace_end_w_shorter</span>() {
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">buffer</span> <span class="op">=</span> <span class="ident">InputBuffer::from</span>(<span class="string">&quot;宇宙人&quot;</span>);
-        <span class="ident">buffer</span>
-            .<span class="ident">with_editor</span>(<span class="op">|</span><span class="kw">_</span>, <span class="kw-2">mut</span> <span class="ident">r</span><span class="op">|</span> {
-                <span class="ident">r</span>.<span class="ident">replace_ref</span>(<span class="number">3</span>..<span class="number">9</span>, <span class="string">&quot;河&quot;</span>);
-                <span class="prelude-val">Ok</span>(<span class="ident">r</span>)
+    <span class="attribute">#[test]
+    </span><span class="kw">fn </span>replace_end_w_shorter() {
+        <span class="kw">let </span><span class="kw-2">mut </span>buffer = InputBuffer::from(<span class="string">&quot;宇宙人&quot;</span>);
+        buffer
+            .with_editor(|<span class="kw">_</span>, <span class="kw-2">mut </span>r| {
+                r.replace_ref(<span class="number">3</span>..<span class="number">9</span>, <span class="string">&quot;河&quot;</span>);
+                <span class="prelude-val">Ok</span>(r)
             })
-            .<span class="ident">expect</span>(<span class="string">&quot;should not break&quot;</span>);
-        <span class="macro">assert_eq!</span>(<span class="number">0</span>, <span class="ident">buffer</span>.<span class="ident">replaces</span>.<span class="ident">len</span>());
-        <span class="macro">assert_eq!</span>(<span class="ident">buffer</span>.<span class="ident">current</span>(), <span class="string">&quot;宇河&quot;</span>);
-        <span class="macro">assert_eq!</span>(<span class="ident">buffer</span>.<span class="ident">m2o</span>, <span class="kw-2">&amp;</span>[<span class="number">0</span>, <span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">9</span>, <span class="number">9</span>, <span class="number">9</span>]);
-        <span class="macro">assert_eq!</span>(<span class="ident">buffer</span>.<span class="ident">orig_slice</span>(<span class="number">0</span>..<span class="number">3</span>), <span class="string">&quot;宇&quot;</span>);
-        <span class="macro">assert_eq!</span>(<span class="ident">buffer</span>.<span class="ident">orig_slice</span>(<span class="number">3</span>..<span class="number">6</span>), <span class="string">&quot;宙人&quot;</span>);
+            .expect(<span class="string">&quot;should not break&quot;</span>);
+        <span class="macro">assert_eq!</span>(<span class="number">0</span>, buffer.replaces.len());
+        <span class="macro">assert_eq!</span>(buffer.current(), <span class="string">&quot;宇河&quot;</span>);
+        <span class="macro">assert_eq!</span>(buffer.m2o, <span class="kw-2">&amp;</span>[<span class="number">0</span>, <span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">9</span>, <span class="number">9</span>, <span class="number">9</span>]);
+        <span class="macro">assert_eq!</span>(buffer.orig_slice(<span class="number">0</span>..<span class="number">3</span>), <span class="string">&quot;宇&quot;</span>);
+        <span class="macro">assert_eq!</span>(buffer.orig_slice(<span class="number">3</span>..<span class="number">6</span>), <span class="string">&quot;宙人&quot;</span>);
     }
 
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">replace_start_w_none</span>() {
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">buffer</span> <span class="op">=</span> <span class="ident">InputBuffer::from</span>(<span class="string">&quot;宇宙人&quot;</span>);
-        <span class="ident">buffer</span>
-            .<span class="ident">with_editor</span>(<span class="op">|</span><span class="kw">_</span>, <span class="kw-2">mut</span> <span class="ident">r</span><span class="op">|</span> {
-                <span class="ident">r</span>.<span class="ident">replace_ref</span>(<span class="number">0</span>..<span class="number">6</span>, <span class="string">&quot;&quot;</span>);
-                <span class="prelude-val">Ok</span>(<span class="ident">r</span>)
+    <span class="attribute">#[test]
+    </span><span class="kw">fn </span>replace_start_w_none() {
+        <span class="kw">let </span><span class="kw-2">mut </span>buffer = InputBuffer::from(<span class="string">&quot;宇宙人&quot;</span>);
+        buffer
+            .with_editor(|<span class="kw">_</span>, <span class="kw-2">mut </span>r| {
+                r.replace_ref(<span class="number">0</span>..<span class="number">6</span>, <span class="string">&quot;&quot;</span>);
+                <span class="prelude-val">Ok</span>(r)
             })
-            .<span class="ident">expect</span>(<span class="string">&quot;should not break&quot;</span>);
-        <span class="macro">assert_eq!</span>(<span class="number">0</span>, <span class="ident">buffer</span>.<span class="ident">replaces</span>.<span class="ident">len</span>());
-        <span class="macro">assert_eq!</span>(<span class="ident">buffer</span>.<span class="ident">current</span>(), <span class="string">&quot;人&quot;</span>);
-        <span class="macro">assert_eq!</span>(<span class="ident">buffer</span>.<span class="ident">m2o</span>, <span class="kw-2">&amp;</span>[<span class="number">0</span>, <span class="number">7</span>, <span class="number">8</span>, <span class="number">9</span>]);
-        <span class="macro">assert_eq!</span>(<span class="ident">buffer</span>.<span class="ident">orig_slice</span>(<span class="number">0</span>..<span class="number">3</span>), <span class="string">&quot;宇宙人&quot;</span>);
+            .expect(<span class="string">&quot;should not break&quot;</span>);
+        <span class="macro">assert_eq!</span>(<span class="number">0</span>, buffer.replaces.len());
+        <span class="macro">assert_eq!</span>(buffer.current(), <span class="string">&quot;人&quot;</span>);
+        <span class="macro">assert_eq!</span>(buffer.m2o, <span class="kw-2">&amp;</span>[<span class="number">0</span>, <span class="number">7</span>, <span class="number">8</span>, <span class="number">9</span>]);
+        <span class="macro">assert_eq!</span>(buffer.orig_slice(<span class="number">0</span>..<span class="number">3</span>), <span class="string">&quot;宇宙人&quot;</span>);
     }
 
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">replace_start_w_none_2</span>() {
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">buffer</span> <span class="op">=</span> <span class="ident">InputBuffer::from</span>(<span class="string">&quot;宇宙人&quot;</span>);
-        <span class="ident">buffer</span>
-            .<span class="ident">with_editor</span>(<span class="op">|</span><span class="kw">_</span>, <span class="kw-2">mut</span> <span class="ident">r</span><span class="op">|</span> {
-                <span class="ident">r</span>.<span class="ident">replace_ref</span>(<span class="number">0</span>..<span class="number">3</span>, <span class="string">&quot;&quot;</span>);
-                <span class="prelude-val">Ok</span>(<span class="ident">r</span>)
+    <span class="attribute">#[test]
+    </span><span class="kw">fn </span>replace_start_w_none_2() {
+        <span class="kw">let </span><span class="kw-2">mut </span>buffer = InputBuffer::from(<span class="string">&quot;宇宙人&quot;</span>);
+        buffer
+            .with_editor(|<span class="kw">_</span>, <span class="kw-2">mut </span>r| {
+                r.replace_ref(<span class="number">0</span>..<span class="number">3</span>, <span class="string">&quot;&quot;</span>);
+                <span class="prelude-val">Ok</span>(r)
             })
-            .<span class="ident">expect</span>(<span class="string">&quot;should not break&quot;</span>);
-        <span class="macro">assert_eq!</span>(<span class="number">0</span>, <span class="ident">buffer</span>.<span class="ident">replaces</span>.<span class="ident">len</span>());
-        <span class="macro">assert_eq!</span>(<span class="ident">buffer</span>.<span class="ident">current</span>(), <span class="string">&quot;宙人&quot;</span>);
-        <span class="macro">assert_eq!</span>(<span class="ident">buffer</span>.<span class="ident">m2o</span>, <span class="kw-2">&amp;</span>[<span class="number">0</span>, <span class="number">4</span>, <span class="number">5</span>, <span class="number">6</span>, <span class="number">7</span>, <span class="number">8</span>, <span class="number">9</span>]);
-        <span class="macro">assert_eq!</span>(<span class="ident">buffer</span>.<span class="ident">orig_slice</span>(<span class="number">0</span>..<span class="number">3</span>), <span class="string">&quot;宇宙&quot;</span>);
-        <span class="macro">assert_eq!</span>(<span class="ident">buffer</span>.<span class="ident">orig_slice</span>(<span class="number">3</span>..<span class="number">6</span>), <span class="string">&quot;人&quot;</span>);
+            .expect(<span class="string">&quot;should not break&quot;</span>);
+        <span class="macro">assert_eq!</span>(<span class="number">0</span>, buffer.replaces.len());
+        <span class="macro">assert_eq!</span>(buffer.current(), <span class="string">&quot;宙人&quot;</span>);
+        <span class="macro">assert_eq!</span>(buffer.m2o, <span class="kw-2">&amp;</span>[<span class="number">0</span>, <span class="number">4</span>, <span class="number">5</span>, <span class="number">6</span>, <span class="number">7</span>, <span class="number">8</span>, <span class="number">9</span>]);
+        <span class="macro">assert_eq!</span>(buffer.orig_slice(<span class="number">0</span>..<span class="number">3</span>), <span class="string">&quot;宇宙&quot;</span>);
+        <span class="macro">assert_eq!</span>(buffer.orig_slice(<span class="number">3</span>..<span class="number">6</span>), <span class="string">&quot;人&quot;</span>);
     }
 
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">replace_end_w_none</span>() {
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">buffer</span> <span class="op">=</span> <span class="ident">InputBuffer::from</span>(<span class="string">&quot;宇宙人&quot;</span>);
-        <span class="ident">buffer</span>
-            .<span class="ident">with_editor</span>(<span class="op">|</span><span class="kw">_</span>, <span class="kw-2">mut</span> <span class="ident">r</span><span class="op">|</span> {
-                <span class="ident">r</span>.<span class="ident">replace_ref</span>(<span class="number">3</span>..<span class="number">9</span>, <span class="string">&quot;&quot;</span>);
-                <span class="prelude-val">Ok</span>(<span class="ident">r</span>)
+    <span class="attribute">#[test]
+    </span><span class="kw">fn </span>replace_end_w_none() {
+        <span class="kw">let </span><span class="kw-2">mut </span>buffer = InputBuffer::from(<span class="string">&quot;宇宙人&quot;</span>);
+        buffer
+            .with_editor(|<span class="kw">_</span>, <span class="kw-2">mut </span>r| {
+                r.replace_ref(<span class="number">3</span>..<span class="number">9</span>, <span class="string">&quot;&quot;</span>);
+                <span class="prelude-val">Ok</span>(r)
             })
-            .<span class="ident">expect</span>(<span class="string">&quot;should not break&quot;</span>);
-        <span class="macro">assert_eq!</span>(<span class="number">0</span>, <span class="ident">buffer</span>.<span class="ident">replaces</span>.<span class="ident">len</span>());
-        <span class="macro">assert_eq!</span>(<span class="ident">buffer</span>.<span class="ident">current</span>(), <span class="string">&quot;宇&quot;</span>);
-        <span class="macro">assert_eq!</span>(<span class="ident">buffer</span>.<span class="ident">m2o</span>, <span class="kw-2">&amp;</span>[<span class="number">0</span>, <span class="number">1</span>, <span class="number">2</span>, <span class="number">9</span>]);
-        <span class="macro">assert_eq!</span>(<span class="ident">buffer</span>.<span class="ident">orig_slice</span>(<span class="number">0</span>..<span class="number">3</span>), <span class="string">&quot;宇宙人&quot;</span>);
+            .expect(<span class="string">&quot;should not break&quot;</span>);
+        <span class="macro">assert_eq!</span>(<span class="number">0</span>, buffer.replaces.len());
+        <span class="macro">assert_eq!</span>(buffer.current(), <span class="string">&quot;宇&quot;</span>);
+        <span class="macro">assert_eq!</span>(buffer.m2o, <span class="kw-2">&amp;</span>[<span class="number">0</span>, <span class="number">1</span>, <span class="number">2</span>, <span class="number">9</span>]);
+        <span class="macro">assert_eq!</span>(buffer.orig_slice(<span class="number">0</span>..<span class="number">3</span>), <span class="string">&quot;宇宙人&quot;</span>);
     }
 
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">replace_diff_width</span>() {
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">buffer</span> <span class="op">=</span> <span class="ident">InputBuffer::from</span>(<span class="string">&quot;âｂC1あ&quot;</span>);
-        <span class="ident">buffer</span>
-            .<span class="ident">with_editor</span>(<span class="op">|</span><span class="kw">_</span>, <span class="kw-2">mut</span> <span class="ident">r</span><span class="op">|</span> {
-                <span class="ident">r</span>.<span class="ident">replace_ref</span>(<span class="number">0</span>..<span class="number">2</span>, <span class="string">&quot;a&quot;</span>);
-                <span class="ident">r</span>.<span class="ident">replace_ref</span>(<span class="number">2</span>..<span class="number">5</span>, <span class="string">&quot;b&quot;</span>);
-                <span class="ident">r</span>.<span class="ident">replace_ref</span>(<span class="number">5</span>..<span class="number">6</span>, <span class="string">&quot;c&quot;</span>);
-                <span class="prelude-val">Ok</span>(<span class="ident">r</span>)
+    <span class="attribute">#[test]
+    </span><span class="kw">fn </span>replace_diff_width() {
+        <span class="kw">let </span><span class="kw-2">mut </span>buffer = InputBuffer::from(<span class="string">&quot;âｂC1あ&quot;</span>);
+        buffer
+            .with_editor(|<span class="kw">_</span>, <span class="kw-2">mut </span>r| {
+                r.replace_ref(<span class="number">0</span>..<span class="number">2</span>, <span class="string">&quot;a&quot;</span>);
+                r.replace_ref(<span class="number">2</span>..<span class="number">5</span>, <span class="string">&quot;b&quot;</span>);
+                r.replace_ref(<span class="number">5</span>..<span class="number">6</span>, <span class="string">&quot;c&quot;</span>);
+                <span class="prelude-val">Ok</span>(r)
             })
-            .<span class="ident">expect</span>(<span class="string">&quot;should not break&quot;</span>);
-        <span class="macro">assert_eq!</span>(<span class="number">0</span>, <span class="ident">buffer</span>.<span class="ident">replaces</span>.<span class="ident">len</span>());
-        <span class="macro">assert_eq!</span>(<span class="ident">buffer</span>.<span class="ident">current</span>(), <span class="string">&quot;abc1あ&quot;</span>);
-        <span class="macro">assert_eq!</span>(<span class="ident">buffer</span>.<span class="ident">m2o</span>, <span class="kw-2">&amp;</span>[<span class="number">0</span>, <span class="number">2</span>, <span class="number">5</span>, <span class="number">6</span>, <span class="number">7</span>, <span class="number">8</span>, <span class="number">9</span>, <span class="number">10</span>]);
-        <span class="macro">assert_eq!</span>(<span class="ident">buffer</span>.<span class="ident">orig_slice</span>(<span class="number">0</span>..<span class="number">3</span>), <span class="string">&quot;âｂC&quot;</span>);
-        <span class="macro">assert_eq!</span>(<span class="ident">buffer</span>.<span class="ident">orig_slice</span>(<span class="number">0</span>..<span class="number">1</span>), <span class="string">&quot;â&quot;</span>);
-        <span class="macro">assert_eq!</span>(<span class="ident">buffer</span>.<span class="ident">orig_slice</span>(<span class="number">1</span>..<span class="number">2</span>), <span class="string">&quot;ｂ&quot;</span>);
-        <span class="macro">assert_eq!</span>(<span class="ident">buffer</span>.<span class="ident">orig_slice</span>(<span class="number">2</span>..<span class="number">3</span>), <span class="string">&quot;C&quot;</span>);
+            .expect(<span class="string">&quot;should not break&quot;</span>);
+        <span class="macro">assert_eq!</span>(<span class="number">0</span>, buffer.replaces.len());
+        <span class="macro">assert_eq!</span>(buffer.current(), <span class="string">&quot;abc1あ&quot;</span>);
+        <span class="macro">assert_eq!</span>(buffer.m2o, <span class="kw-2">&amp;</span>[<span class="number">0</span>, <span class="number">2</span>, <span class="number">5</span>, <span class="number">6</span>, <span class="number">7</span>, <span class="number">8</span>, <span class="number">9</span>, <span class="number">10</span>]);
+        <span class="macro">assert_eq!</span>(buffer.orig_slice(<span class="number">0</span>..<span class="number">3</span>), <span class="string">&quot;âｂC&quot;</span>);
+        <span class="macro">assert_eq!</span>(buffer.orig_slice(<span class="number">0</span>..<span class="number">1</span>), <span class="string">&quot;â&quot;</span>);
+        <span class="macro">assert_eq!</span>(buffer.orig_slice(<span class="number">1</span>..<span class="number">2</span>), <span class="string">&quot;ｂ&quot;</span>);
+        <span class="macro">assert_eq!</span>(buffer.orig_slice(<span class="number">2</span>..<span class="number">3</span>), <span class="string">&quot;C&quot;</span>);
     }
 
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">replace_with_more_cnt</span>() {
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">buffer</span> <span class="op">=</span> <span class="ident">InputBuffer::from</span>(<span class="string">&quot;あ&quot;</span>);
-        <span class="ident">buffer</span>
-            .<span class="ident">with_editor</span>(<span class="op">|</span><span class="kw">_</span>, <span class="kw-2">mut</span> <span class="ident">r</span><span class="op">|</span> {
-                <span class="ident">r</span>.<span class="ident">replace_ref</span>(<span class="number">0</span>..<span class="number">3</span>, <span class="string">&quot;abc&quot;</span>);
-                <span class="prelude-val">Ok</span>(<span class="ident">r</span>)
+    <span class="attribute">#[test]
+    </span><span class="kw">fn </span>replace_with_more_cnt() {
+        <span class="kw">let </span><span class="kw-2">mut </span>buffer = InputBuffer::from(<span class="string">&quot;あ&quot;</span>);
+        buffer
+            .with_editor(|<span class="kw">_</span>, <span class="kw-2">mut </span>r| {
+                r.replace_ref(<span class="number">0</span>..<span class="number">3</span>, <span class="string">&quot;abc&quot;</span>);
+                <span class="prelude-val">Ok</span>(r)
             })
-            .<span class="ident">expect</span>(<span class="string">&quot;should not break&quot;</span>);
-        <span class="macro">assert_eq!</span>(<span class="number">0</span>, <span class="ident">buffer</span>.<span class="ident">replaces</span>.<span class="ident">len</span>());
-        <span class="macro">assert_eq!</span>(<span class="ident">buffer</span>.<span class="ident">current</span>(), <span class="string">&quot;abc&quot;</span>);
-        <span class="macro">assert_eq!</span>(<span class="ident">buffer</span>.<span class="ident">m2o</span>, <span class="kw-2">&amp;</span>[<span class="number">0</span>, <span class="number">3</span>, <span class="number">3</span>, <span class="number">3</span>]);
-        <span class="macro">assert_eq!</span>(<span class="ident">buffer</span>.<span class="ident">orig_slice</span>(<span class="number">0</span>..<span class="number">3</span>), <span class="string">&quot;あ&quot;</span>);
-        <span class="macro">assert_eq!</span>(<span class="ident">buffer</span>.<span class="ident">orig_slice</span>(<span class="number">0</span>..<span class="number">1</span>), <span class="string">&quot;あ&quot;</span>);
-        <span class="macro">assert_eq!</span>(<span class="ident">buffer</span>.<span class="ident">orig_slice</span>(<span class="number">1</span>..<span class="number">2</span>), <span class="string">&quot;&quot;</span>);
-        <span class="macro">assert_eq!</span>(<span class="ident">buffer</span>.<span class="ident">orig_slice</span>(<span class="number">2</span>..<span class="number">3</span>), <span class="string">&quot;&quot;</span>);
+            .expect(<span class="string">&quot;should not break&quot;</span>);
+        <span class="macro">assert_eq!</span>(<span class="number">0</span>, buffer.replaces.len());
+        <span class="macro">assert_eq!</span>(buffer.current(), <span class="string">&quot;abc&quot;</span>);
+        <span class="macro">assert_eq!</span>(buffer.m2o, <span class="kw-2">&amp;</span>[<span class="number">0</span>, <span class="number">3</span>, <span class="number">3</span>, <span class="number">3</span>]);
+        <span class="macro">assert_eq!</span>(buffer.orig_slice(<span class="number">0</span>..<span class="number">3</span>), <span class="string">&quot;あ&quot;</span>);
+        <span class="macro">assert_eq!</span>(buffer.orig_slice(<span class="number">0</span>..<span class="number">1</span>), <span class="string">&quot;あ&quot;</span>);
+        <span class="macro">assert_eq!</span>(buffer.orig_slice(<span class="number">1</span>..<span class="number">2</span>), <span class="string">&quot;&quot;</span>);
+        <span class="macro">assert_eq!</span>(buffer.orig_slice(<span class="number">2</span>..<span class="number">3</span>), <span class="string">&quot;&quot;</span>);
     }
 }
 </code></pre></div>
-</section><section id="search" class="content hidden"></section><div id="rustdoc-vars" data-root-path="../../../../" data-current-crate="sudachi" data-search-index-js="../../../../search-index.js" data-search-js="../../../../search.js"></div>
-</body></html>
+</section></div></main><div id="rustdoc-vars" data-root-path="../../../../" data-current-crate="sudachi" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0 (897e37553 2022-11-02)" ></div></body></html>

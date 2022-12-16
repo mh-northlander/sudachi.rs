@@ -1,103 +1,102 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `sudachi&#x2F;src&#x2F;config.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>config.rs - source</title><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../ayu.css" disabled ><script id="default-settings" ></script><script src="../../storage.js"></script><script src="../../crates.js"></script><script defer src="../../main.js"></script><script defer src="../../source-script.js"></script><script defer src="../../source-files.js"></script>
-    <noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../favicon.svg"><style type="text/css">#crate-search{background-image:url("../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu" role="button">&#9776;</div><a href='../../sudachi/index.html'><div class='logo-container rust-logo'><img src='../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu" title="themes"><img width="18" height="18" alt="Pick another theme!" src="../../brush.svg"></button><div id="theme-choices" role="menu"></div></div><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" id="help-button" title="help">?</button><a id="settings-menu" href="../../settings.html" title="settings"><img width="18" height="18" alt="Change settings" src="../../wheel.svg"></a></div></form></nav><section id="main" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">  1</span>
-<span id="2">  2</span>
-<span id="3">  3</span>
-<span id="4">  4</span>
-<span id="5">  5</span>
-<span id="6">  6</span>
-<span id="7">  7</span>
-<span id="8">  8</span>
-<span id="9">  9</span>
-<span id="10"> 10</span>
-<span id="11"> 11</span>
-<span id="12"> 12</span>
-<span id="13"> 13</span>
-<span id="14"> 14</span>
-<span id="15"> 15</span>
-<span id="16"> 16</span>
-<span id="17"> 17</span>
-<span id="18"> 18</span>
-<span id="19"> 19</span>
-<span id="20"> 20</span>
-<span id="21"> 21</span>
-<span id="22"> 22</span>
-<span id="23"> 23</span>
-<span id="24"> 24</span>
-<span id="25"> 25</span>
-<span id="26"> 26</span>
-<span id="27"> 27</span>
-<span id="28"> 28</span>
-<span id="29"> 29</span>
-<span id="30"> 30</span>
-<span id="31"> 31</span>
-<span id="32"> 32</span>
-<span id="33"> 33</span>
-<span id="34"> 34</span>
-<span id="35"> 35</span>
-<span id="36"> 36</span>
-<span id="37"> 37</span>
-<span id="38"> 38</span>
-<span id="39"> 39</span>
-<span id="40"> 40</span>
-<span id="41"> 41</span>
-<span id="42"> 42</span>
-<span id="43"> 43</span>
-<span id="44"> 44</span>
-<span id="45"> 45</span>
-<span id="46"> 46</span>
-<span id="47"> 47</span>
-<span id="48"> 48</span>
-<span id="49"> 49</span>
-<span id="50"> 50</span>
-<span id="51"> 51</span>
-<span id="52"> 52</span>
-<span id="53"> 53</span>
-<span id="54"> 54</span>
-<span id="55"> 55</span>
-<span id="56"> 56</span>
-<span id="57"> 57</span>
-<span id="58"> 58</span>
-<span id="59"> 59</span>
-<span id="60"> 60</span>
-<span id="61"> 61</span>
-<span id="62"> 62</span>
-<span id="63"> 63</span>
-<span id="64"> 64</span>
-<span id="65"> 65</span>
-<span id="66"> 66</span>
-<span id="67"> 67</span>
-<span id="68"> 68</span>
-<span id="69"> 69</span>
-<span id="70"> 70</span>
-<span id="71"> 71</span>
-<span id="72"> 72</span>
-<span id="73"> 73</span>
-<span id="74"> 74</span>
-<span id="75"> 75</span>
-<span id="76"> 76</span>
-<span id="77"> 77</span>
-<span id="78"> 78</span>
-<span id="79"> 79</span>
-<span id="80"> 80</span>
-<span id="81"> 81</span>
-<span id="82"> 82</span>
-<span id="83"> 83</span>
-<span id="84"> 84</span>
-<span id="85"> 85</span>
-<span id="86"> 86</span>
-<span id="87"> 87</span>
-<span id="88"> 88</span>
-<span id="89"> 89</span>
-<span id="90"> 90</span>
-<span id="91"> 91</span>
-<span id="92"> 92</span>
-<span id="93"> 93</span>
-<span id="94"> 94</span>
-<span id="95"> 95</span>
-<span id="96"> 96</span>
-<span id="97"> 97</span>
-<span id="98"> 98</span>
-<span id="99"> 99</span>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `sudachi/src/config.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>config.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" href="../../normalize.css"><link rel="stylesheet" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" href="../../ayu.css" disabled><link rel="stylesheet" href="../../dark.css" disabled><link rel="stylesheet" href="../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../storage.js"></script><script defer src="../../source-script.js"></script><script defer src="../../source-files.js"></script><script defer src="../../main.js"></script><noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../favicon.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="sidebar-logo" href="../../sudachi/index.html"><div class="logo-container"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></div></a><h2 class="location"></h2></nav><nav class="sidebar"><a class="sidebar-logo" href="../../sudachi/index.html"><div class="logo-container"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></div></a></nav><main><div class="width-limiter"><div class="sub-container"><a class="sub-logo-container" href="../../sudachi/index.html"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></a><nav class="sub"><form class="search-form"><div class="search-container"><span></span><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><button type="button">?</button></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../wheel.svg"></a></div></div></form></nav></div><section id="main-content" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">1</span>
+<span id="2">2</span>
+<span id="3">3</span>
+<span id="4">4</span>
+<span id="5">5</span>
+<span id="6">6</span>
+<span id="7">7</span>
+<span id="8">8</span>
+<span id="9">9</span>
+<span id="10">10</span>
+<span id="11">11</span>
+<span id="12">12</span>
+<span id="13">13</span>
+<span id="14">14</span>
+<span id="15">15</span>
+<span id="16">16</span>
+<span id="17">17</span>
+<span id="18">18</span>
+<span id="19">19</span>
+<span id="20">20</span>
+<span id="21">21</span>
+<span id="22">22</span>
+<span id="23">23</span>
+<span id="24">24</span>
+<span id="25">25</span>
+<span id="26">26</span>
+<span id="27">27</span>
+<span id="28">28</span>
+<span id="29">29</span>
+<span id="30">30</span>
+<span id="31">31</span>
+<span id="32">32</span>
+<span id="33">33</span>
+<span id="34">34</span>
+<span id="35">35</span>
+<span id="36">36</span>
+<span id="37">37</span>
+<span id="38">38</span>
+<span id="39">39</span>
+<span id="40">40</span>
+<span id="41">41</span>
+<span id="42">42</span>
+<span id="43">43</span>
+<span id="44">44</span>
+<span id="45">45</span>
+<span id="46">46</span>
+<span id="47">47</span>
+<span id="48">48</span>
+<span id="49">49</span>
+<span id="50">50</span>
+<span id="51">51</span>
+<span id="52">52</span>
+<span id="53">53</span>
+<span id="54">54</span>
+<span id="55">55</span>
+<span id="56">56</span>
+<span id="57">57</span>
+<span id="58">58</span>
+<span id="59">59</span>
+<span id="60">60</span>
+<span id="61">61</span>
+<span id="62">62</span>
+<span id="63">63</span>
+<span id="64">64</span>
+<span id="65">65</span>
+<span id="66">66</span>
+<span id="67">67</span>
+<span id="68">68</span>
+<span id="69">69</span>
+<span id="70">70</span>
+<span id="71">71</span>
+<span id="72">72</span>
+<span id="73">73</span>
+<span id="74">74</span>
+<span id="75">75</span>
+<span id="76">76</span>
+<span id="77">77</span>
+<span id="78">78</span>
+<span id="79">79</span>
+<span id="80">80</span>
+<span id="81">81</span>
+<span id="82">82</span>
+<span id="83">83</span>
+<span id="84">84</span>
+<span id="85">85</span>
+<span id="86">86</span>
+<span id="87">87</span>
+<span id="88">88</span>
+<span id="89">89</span>
+<span id="90">90</span>
+<span id="91">91</span>
+<span id="92">92</span>
+<span id="93">93</span>
+<span id="94">94</span>
+<span id="95">95</span>
+<span id="96">96</span>
+<span id="97">97</span>
+<span id="98">98</span>
+<span id="99">99</span>
 <span id="100">100</span>
 <span id="101">101</span>
 <span id="102">102</span>
@@ -414,393 +413,392 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- */</span>
+ */
 
-<span class="kw">use</span> <span class="ident">std::env::current_exe</span>;
-<span class="kw">use</span> <span class="ident">std::fs::File</span>;
-<span class="kw">use</span> <span class="ident">std::io::BufReader</span>;
-<span class="kw">use</span> <span class="ident">std::path</span>::{<span class="ident">Path</span>, <span class="ident">PathBuf</span>};
+</span><span class="kw">use </span>std::env::current_exe;
+<span class="kw">use </span>std::fs::File;
+<span class="kw">use </span>std::io::BufReader;
+<span class="kw">use </span>std::path::{Path, PathBuf};
 
-<span class="kw">use</span> <span class="ident">lazy_static::lazy_static</span>;
-<span class="kw">use</span> <span class="ident">serde::Deserialize</span>;
-<span class="kw">use</span> <span class="ident">serde_json::Value</span>;
-<span class="kw">use</span> <span class="ident">thiserror::Error</span>;
+<span class="kw">use </span>lazy_static::lazy_static;
+<span class="kw">use </span>serde::Deserialize;
+<span class="kw">use </span>serde_json::Value;
+<span class="kw">use </span>thiserror::Error;
 
-<span class="kw">const</span> <span class="ident">DEFAULT_RESOURCE_DIR</span>: <span class="kw-2">&amp;</span><span class="ident">str</span> <span class="op">=</span> <span class="string">&quot;resources&quot;</span>;
-<span class="kw">const</span> <span class="ident">DEFAULT_SETTING_FILE</span>: <span class="kw-2">&amp;</span><span class="ident">str</span> <span class="op">=</span> <span class="string">&quot;sudachi.json&quot;</span>;
-<span class="kw">const</span> <span class="ident">DEFAULT_CHAR_DEF_FILE</span>: <span class="kw-2">&amp;</span><span class="ident">str</span> <span class="op">=</span> <span class="string">&quot;char.def&quot;</span>;
+<span class="kw">const </span>DEFAULT_RESOURCE_DIR: <span class="kw-2">&amp;</span>str = <span class="string">&quot;resources&quot;</span>;
+<span class="kw">const </span>DEFAULT_SETTING_FILE: <span class="kw-2">&amp;</span>str = <span class="string">&quot;sudachi.json&quot;</span>;
+<span class="kw">const </span>DEFAULT_CHAR_DEF_FILE: <span class="kw-2">&amp;</span>str = <span class="string">&quot;char.def&quot;</span>;
 
-<span class="doccomment">/// Sudachi Error</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Error</span>, <span class="ident">Debug</span>)]</span>
-<span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">ConfigError</span> {
-    <span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;IO Error: {0}&quot;</span>)]</span>
-    <span class="ident">Io</span>(<span class="attribute">#[<span class="ident">from</span>]</span> <span class="ident">std::io::Error</span>),
+<span class="doccomment">/// Sudachi Error
+</span><span class="attribute">#[derive(Error, Debug)]
+</span><span class="kw">pub enum </span>ConfigError {
+    <span class="attribute">#[error(<span class="string">&quot;IO Error: {0}&quot;</span>)]
+    </span>Io(<span class="attribute">#[from] </span>std::io::Error),
 
-    <span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Serde error: {0}&quot;</span>)]</span>
-    <span class="ident">SerdeError</span>(<span class="attribute">#[<span class="ident">from</span>]</span> <span class="ident">serde_json::Error</span>),
+    <span class="attribute">#[error(<span class="string">&quot;Serde error: {0}&quot;</span>)]
+    </span>SerdeError(<span class="attribute">#[from] </span>serde_json::Error),
 
-    <span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Config file not found&quot;</span>)]</span>
-    <span class="ident">FileNotFound</span>(<span class="ident">String</span>),
+    <span class="attribute">#[error(<span class="string">&quot;Config file not found&quot;</span>)]
+    </span>FileNotFound(String),
 
-    <span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Invalid format: {0}&quot;</span>)]</span>
-    <span class="ident">InvalidFormat</span>(<span class="ident">String</span>),
+    <span class="attribute">#[error(<span class="string">&quot;Invalid format: {0}&quot;</span>)]
+    </span>InvalidFormat(String),
 
-    <span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Argument {0} is missing&quot;</span>)]</span>
-    <span class="ident">MissingArgument</span>(<span class="ident">String</span>),
+    <span class="attribute">#[error(<span class="string">&quot;Argument {0} is missing&quot;</span>)]
+    </span>MissingArgument(String),
 
-    <span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Failed to resolve relative path {0}, tried: {1:?}&quot;</span>)]</span>
-    <span class="ident">PathResolution</span>(<span class="ident">String</span>, <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>),
+    <span class="attribute">#[error(<span class="string">&quot;Failed to resolve relative path {0}, tried: {1:?}&quot;</span>)]
+    </span>PathResolution(String, Vec&lt;String&gt;),
 }
 
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Default</span>, <span class="ident">Debug</span>, <span class="ident">Clone</span>)]</span>
-<span class="kw">struct</span> <span class="ident">PathResolver</span> {
-    <span class="ident">roots</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">PathBuf</span><span class="op">&gt;</span>,
+<span class="attribute">#[derive(Default, Debug, Clone)]
+</span><span class="kw">struct </span>PathResolver {
+    roots: Vec&lt;PathBuf&gt;,
 }
 
-<span class="kw">impl</span> <span class="ident">PathResolver</span> {
-    <span class="kw">fn</span> <span class="ident">with_capacity</span>(<span class="ident">capacity</span>: <span class="ident">usize</span>) -&gt; <span class="ident">PathResolver</span> {
-        <span class="kw">return</span> <span class="ident">PathResolver</span> {
-            <span class="ident">roots</span>: <span class="ident">Vec::with_capacity</span>(<span class="ident">capacity</span>),
+<span class="kw">impl </span>PathResolver {
+    <span class="kw">fn </span>with_capacity(capacity: usize) -&gt; PathResolver {
+        <span class="kw">return </span>PathResolver {
+            roots: Vec::with_capacity(capacity),
         };
     }
 
-    <span class="kw">fn</span> <span class="ident">add</span><span class="op">&lt;</span><span class="ident">P</span>: <span class="ident">Into</span><span class="op">&lt;</span><span class="ident">PathBuf</span><span class="op">&gt;</span><span class="op">&gt;</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">path</span>: <span class="ident">P</span>) {
-        <span class="self">self</span>.<span class="ident">roots</span>.<span class="ident">push</span>(<span class="ident">path</span>.<span class="ident">into</span>())
+    <span class="kw">fn </span>add&lt;P: Into&lt;PathBuf&gt;&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, path: P) {
+        <span class="self">self</span>.roots.push(path.into())
     }
 
-    <span class="kw">fn</span> <span class="ident">contains</span><span class="op">&lt;</span><span class="ident">P</span>: <span class="ident">AsRef</span><span class="op">&lt;</span><span class="ident">Path</span><span class="op">&gt;</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">path</span>: <span class="ident">P</span>) -&gt; <span class="ident">bool</span> {
-        <span class="kw">let</span> <span class="ident">query</span> <span class="op">=</span> <span class="ident">path</span>.<span class="ident">as_ref</span>();
-        <span class="kw">return</span> <span class="self">self</span>.<span class="ident">roots</span>.<span class="ident">iter</span>().<span class="ident">find</span>(<span class="op">|</span><span class="ident">p</span><span class="op">|</span> <span class="ident">p</span>.<span class="ident">as_path</span>() <span class="op">==</span> <span class="ident">query</span>).<span class="ident">is_some</span>();
+    <span class="kw">fn </span>contains&lt;P: AsRef&lt;Path&gt;&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, path: P) -&gt; bool {
+        <span class="kw">let </span>query = path.as_ref();
+        <span class="kw">return </span><span class="self">self</span>.roots.iter().find(|p| p.as_path() == query).is_some();
     }
 
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">first_existing</span><span class="op">&lt;</span><span class="ident">P</span>: <span class="ident">AsRef</span><span class="op">&lt;</span><span class="ident">Path</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">Clone</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">path</span>: <span class="ident">P</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">PathBuf</span><span class="op">&gt;</span> {
-        <span class="self">self</span>.<span class="ident">all_candidates</span>(<span class="ident">path</span>).<span class="ident">find</span>(<span class="op">|</span><span class="ident">p</span><span class="op">|</span> <span class="ident">p</span>.<span class="ident">exists</span>())
+    <span class="kw">pub fn </span>first_existing&lt;P: AsRef&lt;Path&gt; + Clone&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, path: P) -&gt; <span class="prelude-ty">Option</span>&lt;PathBuf&gt; {
+        <span class="self">self</span>.all_candidates(path).find(|p| p.exists())
     }
 
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">resolution_failure</span><span class="op">&lt;</span><span class="ident">P</span>: <span class="ident">AsRef</span><span class="op">&lt;</span><span class="ident">Path</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">Clone</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">path</span>: <span class="ident">P</span>) -&gt; <span class="ident">ConfigError</span> {
-        <span class="kw">let</span> <span class="ident">candidates</span> <span class="op">=</span> <span class="self">self</span>
-            .<span class="ident">all_candidates</span>(<span class="ident">path</span>.<span class="ident">clone</span>())
-            .<span class="ident">map</span>(<span class="op">|</span><span class="ident">p</span><span class="op">|</span> <span class="ident">p</span>.<span class="ident">to_string_lossy</span>().<span class="ident">into_owned</span>())
-            .<span class="ident">collect</span>();
+    <span class="kw">pub fn </span>resolution_failure&lt;P: AsRef&lt;Path&gt; + Clone&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, path: P) -&gt; ConfigError {
+        <span class="kw">let </span>candidates = <span class="self">self
+            </span>.all_candidates(path.clone())
+            .map(|p| p.to_string_lossy().into_owned())
+            .collect();
 
-        <span class="ident">ConfigError::PathResolution</span>(<span class="ident">path</span>.<span class="ident">as_ref</span>().<span class="ident">to_string_lossy</span>().<span class="ident">into_owned</span>(), <span class="ident">candidates</span>)
+        ConfigError::PathResolution(path.as_ref().to_string_lossy().into_owned(), candidates)
     }
 
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">all_candidates</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">P</span>: <span class="ident">AsRef</span><span class="op">&lt;</span><span class="ident">Path</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">Clone</span> <span class="op">+</span> <span class="lifetime">&#39;a</span><span class="op">&gt;</span>(
-        <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="self">self</span>,
-        <span class="ident">path</span>: <span class="ident">P</span>,
-    ) -&gt; <span class="kw">impl</span> <span class="ident">Iterator</span><span class="op">&lt;</span><span class="ident">Item</span> <span class="op">=</span> <span class="ident">PathBuf</span><span class="op">&gt;</span> <span class="op">+</span> <span class="lifetime">&#39;a</span> {
-        <span class="self">self</span>.<span class="ident">roots</span>.<span class="ident">iter</span>().<span class="ident">map</span>(<span class="kw">move</span> <span class="op">|</span><span class="ident">root</span><span class="op">|</span> <span class="ident">root</span>.<span class="ident">join</span>(<span class="ident">path</span>.<span class="ident">clone</span>()))
+    <span class="kw">pub fn </span>all_candidates&lt;<span class="lifetime">&#39;a</span>, P: AsRef&lt;Path&gt; + Clone + <span class="lifetime">&#39;a</span>&gt;(
+        <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="self">self</span>,
+        path: P,
+    ) -&gt; <span class="kw">impl </span>Iterator&lt;Item = PathBuf&gt; + <span class="lifetime">&#39;a </span>{
+        <span class="self">self</span>.roots.iter().map(<span class="kw">move </span>|root| root.join(path.clone()))
     }
 
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">roots</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>[<span class="ident">PathBuf</span>] {
-        <span class="kw">return</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">roots</span>;
+    <span class="kw">pub fn </span>roots(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>[PathBuf] {
+        <span class="kw">return </span><span class="kw-2">&amp;</span><span class="self">self</span>.roots;
     }
 }
 
-<span class="doccomment">/// Setting data loaded from config file</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Default</span>, <span class="ident">Clone</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Config</span> {
-    <span class="doccomment">/// Paths will be resolved against these roots, until a file will be found</span>
-    <span class="ident">resolver</span>: <span class="ident">PathResolver</span>,
-    <span class="kw">pub</span> <span class="ident">system_dict</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">PathBuf</span><span class="op">&gt;</span>,
-    <span class="kw">pub</span> <span class="ident">user_dicts</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">PathBuf</span><span class="op">&gt;</span>,
-    <span class="kw">pub</span> <span class="ident">character_definition_file</span>: <span class="ident">PathBuf</span>,
+<span class="doccomment">/// Setting data loaded from config file
+</span><span class="attribute">#[derive(Debug, Default, Clone)]
+</span><span class="kw">pub struct </span>Config {
+    <span class="doccomment">/// Paths will be resolved against these roots, until a file will be found
+    </span>resolver: PathResolver,
+    <span class="kw">pub </span>system_dict: <span class="prelude-ty">Option</span>&lt;PathBuf&gt;,
+    <span class="kw">pub </span>user_dicts: Vec&lt;PathBuf&gt;,
+    <span class="kw">pub </span>character_definition_file: PathBuf,
 
-    <span class="kw">pub</span> <span class="ident">connection_cost_plugins</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Value</span><span class="op">&gt;</span>,
-    <span class="kw">pub</span> <span class="ident">input_text_plugins</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Value</span><span class="op">&gt;</span>,
-    <span class="kw">pub</span> <span class="ident">oov_provider_plugins</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Value</span><span class="op">&gt;</span>,
-    <span class="kw">pub</span> <span class="ident">path_rewrite_plugins</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Value</span><span class="op">&gt;</span>,
+    <span class="kw">pub </span>connection_cost_plugins: Vec&lt;Value&gt;,
+    <span class="kw">pub </span>input_text_plugins: Vec&lt;Value&gt;,
+    <span class="kw">pub </span>oov_provider_plugins: Vec&lt;Value&gt;,
+    <span class="kw">pub </span>path_rewrite_plugins: Vec&lt;Value&gt;,
 }
 
-<span class="doccomment">/// Struct corresponds with raw config json file.</span>
-<span class="doccomment">/// You must use filed names defined here as json object key.</span>
-<span class="doccomment">/// For plugins, refer to each plugin.</span>
-<span class="attribute">#[<span class="ident">allow</span>(<span class="ident">non_snake_case</span>)]</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Deserialize</span>, <span class="ident">Debug</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">ConfigBuilder</span> {
-    <span class="doccomment">/// Analogue to Java Implementation path Override</span>
-    <span class="ident">path</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">PathBuf</span><span class="op">&gt;</span>,
-    <span class="doccomment">/// User-passed resourcePath</span>
-    <span class="attribute">#[<span class="ident">serde</span>(<span class="ident">skip</span>)]</span>
-    <span class="ident">resourcePath</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">PathBuf</span><span class="op">&gt;</span>,
-    <span class="doccomment">/// User-passed root directory.</span>
-    <span class="doccomment">/// Is also automatically set on from_file</span>
-    <span class="attribute">#[<span class="ident">serde</span>(<span class="ident">skip</span>)]</span>
-    <span class="ident">rootDirectory</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">PathBuf</span><span class="op">&gt;</span>,
-    <span class="ident">systemDict</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">PathBuf</span><span class="op">&gt;</span>,
-    <span class="ident">userDict</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">PathBuf</span><span class="op">&gt;</span><span class="op">&gt;</span>,
-    <span class="ident">characterDefinitionFile</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">PathBuf</span><span class="op">&gt;</span>,
+<span class="doccomment">/// Struct corresponds with raw config json file.
+/// You must use filed names defined here as json object key.
+/// For plugins, refer to each plugin.
+</span><span class="attribute">#[allow(non_snake_case)]
+#[derive(Deserialize, Debug)]
+</span><span class="kw">pub struct </span>ConfigBuilder {
+    <span class="doccomment">/// Analogue to Java Implementation path Override
+    </span>path: <span class="prelude-ty">Option</span>&lt;PathBuf&gt;,
+    <span class="doccomment">/// User-passed resourcePath
+    </span><span class="attribute">#[serde(skip)]
+    </span>resourcePath: <span class="prelude-ty">Option</span>&lt;PathBuf&gt;,
+    <span class="doccomment">/// User-passed root directory.
+    /// Is also automatically set on from_file
+    </span><span class="attribute">#[serde(skip)]
+    </span>rootDirectory: <span class="prelude-ty">Option</span>&lt;PathBuf&gt;,
+    systemDict: <span class="prelude-ty">Option</span>&lt;PathBuf&gt;,
+    userDict: <span class="prelude-ty">Option</span>&lt;Vec&lt;PathBuf&gt;&gt;,
+    characterDefinitionFile: <span class="prelude-ty">Option</span>&lt;PathBuf&gt;,
 
-    <span class="ident">connectionCostPlugin</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Value</span><span class="op">&gt;</span><span class="op">&gt;</span>,
-    <span class="ident">inputTextPlugin</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Value</span><span class="op">&gt;</span><span class="op">&gt;</span>,
-    <span class="ident">oovProviderPlugin</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Value</span><span class="op">&gt;</span><span class="op">&gt;</span>,
-    <span class="ident">pathRewritePlugin</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Value</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+    connectionCostPlugin: <span class="prelude-ty">Option</span>&lt;Vec&lt;Value&gt;&gt;,
+    inputTextPlugin: <span class="prelude-ty">Option</span>&lt;Vec&lt;Value&gt;&gt;,
+    oovProviderPlugin: <span class="prelude-ty">Option</span>&lt;Vec&lt;Value&gt;&gt;,
+    pathRewritePlugin: <span class="prelude-ty">Option</span>&lt;Vec&lt;Value&gt;&gt;,
 }
 
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">default_resource_dir</span>() -&gt; <span class="ident">PathBuf</span> {
-    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">src_root_path</span> <span class="op">=</span> <span class="ident">PathBuf::from</span>(<span class="macro">env!</span>(<span class="string">&quot;CARGO_MANIFEST_DIR&quot;</span>));
-    <span class="kw">if</span> <span class="op">!</span><span class="ident">src_root_path</span>.<span class="ident">pop</span>() {
-        <span class="ident">src_root_path</span>.<span class="ident">push</span>(<span class="string">&quot;..&quot;</span>);
+<span class="kw">pub fn </span>default_resource_dir() -&gt; PathBuf {
+    <span class="kw">let </span><span class="kw-2">mut </span>src_root_path = PathBuf::from(<span class="macro">env!</span>(<span class="string">&quot;CARGO_MANIFEST_DIR&quot;</span>));
+    <span class="kw">if </span>!src_root_path.pop() {
+        src_root_path.push(<span class="string">&quot;..&quot;</span>);
     }
-    <span class="ident">src_root_path</span>.<span class="ident">push</span>(<span class="ident">DEFAULT_RESOURCE_DIR</span>);
-    <span class="ident">src_root_path</span>
+    src_root_path.push(DEFAULT_RESOURCE_DIR);
+    src_root_path
 }
 
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">default_config_location</span>() -&gt; <span class="ident">PathBuf</span> {
-    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">resdir</span> <span class="op">=</span> <span class="ident">default_resource_dir</span>();
-    <span class="ident">resdir</span>.<span class="ident">push</span>(<span class="ident">DEFAULT_SETTING_FILE</span>);
-    <span class="ident">resdir</span>
+<span class="kw">pub fn </span>default_config_location() -&gt; PathBuf {
+    <span class="kw">let </span><span class="kw-2">mut </span>resdir = default_resource_dir();
+    resdir.push(DEFAULT_SETTING_FILE);
+    resdir
 }
 
-<span class="kw">impl</span> <span class="ident">ConfigBuilder</span> {
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">from_opt_file</span>(<span class="ident">config_file</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">Path</span><span class="op">&gt;</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="self">Self</span>, <span class="ident">ConfigError</span><span class="op">&gt;</span> {
-        <span class="kw">match</span> <span class="ident">config_file</span> {
-            <span class="prelude-val">None</span> =&gt; {
-                <span class="kw">let</span> <span class="ident">default_config</span> <span class="op">=</span> <span class="ident">default_config_location</span>();
-                <span class="ident"><span class="self">Self</span>::from_file</span>(<span class="kw-2">&amp;</span><span class="ident">default_config</span>)
+<span class="kw">impl </span>ConfigBuilder {
+    <span class="kw">pub fn </span>from_opt_file(config_file: <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>Path&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>, ConfigError&gt; {
+        <span class="kw">match </span>config_file {
+            <span class="prelude-val">None </span>=&gt; {
+                <span class="kw">let </span>default_config = default_config_location();
+                <span class="self">Self</span>::from_file(<span class="kw-2">&amp;</span>default_config)
             }
-            <span class="prelude-val">Some</span>(<span class="ident">cfg</span>) =&gt; <span class="ident"><span class="self">Self</span>::from_file</span>(<span class="ident">cfg</span>),
+            <span class="prelude-val">Some</span>(cfg) =&gt; <span class="self">Self</span>::from_file(cfg),
         }
     }
 
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">from_file</span>(<span class="ident">config_file</span>: <span class="kw-2">&amp;</span><span class="ident">Path</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="self">Self</span>, <span class="ident">ConfigError</span><span class="op">&gt;</span> {
-        <span class="kw">let</span> <span class="ident">file</span> <span class="op">=</span> <span class="ident">File::open</span>(<span class="ident">config_file</span>)<span class="question-mark">?</span>;
-        <span class="kw">let</span> <span class="ident">reader</span> <span class="op">=</span> <span class="ident">BufReader::new</span>(<span class="ident">file</span>);
-        <span class="ident">serde_json::from_reader</span>(<span class="ident">reader</span>)
-            .<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">e</span><span class="op">|</span> <span class="ident">e</span>.<span class="ident">into</span>())
-            .<span class="ident">map</span>(<span class="op">|</span><span class="ident">cfg</span>: <span class="ident">ConfigBuilder</span><span class="op">|</span> <span class="kw">match</span> <span class="ident">config_file</span>.<span class="ident">parent</span>() {
-                <span class="prelude-val">Some</span>(<span class="ident">p</span>) =&gt; <span class="ident">cfg</span>.<span class="ident">root_directory</span>(<span class="ident">p</span>),
-                <span class="prelude-val">None</span> =&gt; <span class="ident">cfg</span>,
+    <span class="kw">pub fn </span>from_file(config_file: <span class="kw-2">&amp;</span>Path) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>, ConfigError&gt; {
+        <span class="kw">let </span>file = File::open(config_file)<span class="question-mark">?</span>;
+        <span class="kw">let </span>reader = BufReader::new(file);
+        serde_json::from_reader(reader)
+            .map_err(|e| e.into())
+            .map(|cfg: ConfigBuilder| <span class="kw">match </span>config_file.parent() {
+                <span class="prelude-val">Some</span>(p) =&gt; cfg.root_directory(p),
+                <span class="prelude-val">None </span>=&gt; cfg,
             })
     }
 
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">from_bytes</span>(<span class="ident">data</span>: <span class="kw-2">&amp;</span>[<span class="ident">u8</span>]) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="self">Self</span>, <span class="ident">ConfigError</span><span class="op">&gt;</span> {
-        <span class="ident">serde_json::from_slice</span>(<span class="ident">data</span>).<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">e</span><span class="op">|</span> <span class="ident">e</span>.<span class="ident">into</span>())
+    <span class="kw">pub fn </span>from_bytes(data: <span class="kw-2">&amp;</span>[u8]) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>, ConfigError&gt; {
+        serde_json::from_slice(data).map_err(|e| e.into())
     }
 
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">empty</span>() -&gt; <span class="self">Self</span> {
-        <span class="ident">serde_json::from_slice</span>(<span class="string">b&quot;{}&quot;</span>).<span class="ident">unwrap</span>()
+    <span class="kw">pub fn </span>empty() -&gt; <span class="self">Self </span>{
+        serde_json::from_slice(<span class="string">b&quot;{}&quot;</span>).unwrap()
     }
 
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">system_dict</span>(<span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">dict</span>: <span class="kw">impl</span> <span class="ident">Into</span><span class="op">&lt;</span><span class="ident">PathBuf</span><span class="op">&gt;</span>) -&gt; <span class="self">Self</span> {
-        <span class="self">self</span>.<span class="ident">systemDict</span> <span class="op">=</span> <span class="prelude-val">Some</span>(<span class="ident">dict</span>.<span class="ident">into</span>());
-        <span class="self">self</span>
-    }
+    <span class="kw">pub fn </span>system_dict(<span class="kw-2">mut </span><span class="self">self</span>, dict: <span class="kw">impl </span>Into&lt;PathBuf&gt;) -&gt; <span class="self">Self </span>{
+        <span class="self">self</span>.systemDict = <span class="prelude-val">Some</span>(dict.into());
+        <span class="self">self
+    </span>}
 
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">user_dict</span>(<span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">dict</span>: <span class="kw">impl</span> <span class="ident">Into</span><span class="op">&lt;</span><span class="ident">PathBuf</span><span class="op">&gt;</span>) -&gt; <span class="self">Self</span> {
-        <span class="kw">let</span> <span class="ident">dicts</span> <span class="op">=</span> <span class="kw">match</span> <span class="self">self</span>.<span class="ident">userDict</span>.<span class="ident">as_mut</span>() {
-            <span class="prelude-val">None</span> =&gt; {
-                <span class="self">self</span>.<span class="ident">userDict</span> <span class="op">=</span> <span class="prelude-val">Some</span>(<span class="ident">Default::default</span>());
-                <span class="self">self</span>.<span class="ident">userDict</span>.<span class="ident">as_mut</span>().<span class="ident">unwrap</span>()
+    <span class="kw">pub fn </span>user_dict(<span class="kw-2">mut </span><span class="self">self</span>, dict: <span class="kw">impl </span>Into&lt;PathBuf&gt;) -&gt; <span class="self">Self </span>{
+        <span class="kw">let </span>dicts = <span class="kw">match </span><span class="self">self</span>.userDict.as_mut() {
+            <span class="prelude-val">None </span>=&gt; {
+                <span class="self">self</span>.userDict = <span class="prelude-val">Some</span>(Default::default());
+                <span class="self">self</span>.userDict.as_mut().unwrap()
             }
-            <span class="prelude-val">Some</span>(<span class="ident">dicts</span>) =&gt; <span class="ident">dicts</span>,
+            <span class="prelude-val">Some</span>(dicts) =&gt; dicts,
         };
-        <span class="ident">dicts</span>.<span class="ident">push</span>(<span class="ident">dict</span>.<span class="ident">into</span>());
-        <span class="self">self</span>
-    }
+        dicts.push(dict.into());
+        <span class="self">self
+    </span>}
 
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">resource_path</span>(<span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">path</span>: <span class="kw">impl</span> <span class="ident">Into</span><span class="op">&lt;</span><span class="ident">PathBuf</span><span class="op">&gt;</span>) -&gt; <span class="self">Self</span> {
-        <span class="self">self</span>.<span class="ident">resourcePath</span> <span class="op">=</span> <span class="prelude-val">Some</span>(<span class="ident">path</span>.<span class="ident">into</span>());
-        <span class="self">self</span>
-    }
+    <span class="kw">pub fn </span>resource_path(<span class="kw-2">mut </span><span class="self">self</span>, path: <span class="kw">impl </span>Into&lt;PathBuf&gt;) -&gt; <span class="self">Self </span>{
+        <span class="self">self</span>.resourcePath = <span class="prelude-val">Some</span>(path.into());
+        <span class="self">self
+    </span>}
 
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">root_directory</span>(<span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">path</span>: <span class="kw">impl</span> <span class="ident">Into</span><span class="op">&lt;</span><span class="ident">PathBuf</span><span class="op">&gt;</span>) -&gt; <span class="self">Self</span> {
-        <span class="self">self</span>.<span class="ident">rootDirectory</span> <span class="op">=</span> <span class="prelude-val">Some</span>(<span class="ident">path</span>.<span class="ident">into</span>());
-        <span class="self">self</span>
-    }
+    <span class="kw">pub fn </span>root_directory(<span class="kw-2">mut </span><span class="self">self</span>, path: <span class="kw">impl </span>Into&lt;PathBuf&gt;) -&gt; <span class="self">Self </span>{
+        <span class="self">self</span>.rootDirectory = <span class="prelude-val">Some</span>(path.into());
+        <span class="self">self
+    </span>}
 
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">build</span>(<span class="self">self</span>) -&gt; <span class="ident">Config</span> {
-        <span class="kw">let</span> <span class="ident">default_resource_dir</span> <span class="op">=</span> <span class="ident">default_resource_dir</span>();
-        <span class="kw">let</span> <span class="ident">resource_dir</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">resourcePath</span>.<span class="ident">unwrap_or</span>(<span class="ident">default_resource_dir</span>);
+    <span class="kw">pub fn </span>build(<span class="self">self</span>) -&gt; Config {
+        <span class="kw">let </span>default_resource_dir = default_resource_dir();
+        <span class="kw">let </span>resource_dir = <span class="self">self</span>.resourcePath.unwrap_or(default_resource_dir);
 
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">resolver</span> <span class="op">=</span> <span class="ident">PathResolver::with_capacity</span>(<span class="number">3</span>);
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">add_path</span> <span class="op">=</span> <span class="op">|</span><span class="ident">buf</span>: <span class="ident">PathBuf</span><span class="op">|</span> {
-            <span class="kw">if</span> <span class="op">!</span><span class="ident">resolver</span>.<span class="ident">contains</span>(<span class="kw-2">&amp;</span><span class="ident">buf</span>) {
-                <span class="ident">resolver</span>.<span class="ident">add</span>(<span class="ident">buf</span>);
+        <span class="kw">let </span><span class="kw-2">mut </span>resolver = PathResolver::with_capacity(<span class="number">3</span>);
+        <span class="kw">let </span><span class="kw-2">mut </span>add_path = |buf: PathBuf| {
+            <span class="kw">if </span>!resolver.contains(<span class="kw-2">&amp;</span>buf) {
+                resolver.add(buf);
             }
         };
-        <span class="self">self</span>.<span class="ident">path</span>.<span class="ident">map</span>(<span class="kw-2">&amp;mut</span> <span class="ident">add_path</span>);
-        <span class="ident">add_path</span>(<span class="ident">resource_dir</span>);
-        <span class="self">self</span>.<span class="ident">rootDirectory</span>.<span class="ident">map</span>(<span class="kw-2">&amp;mut</span> <span class="ident">add_path</span>);
+        <span class="self">self</span>.path.map(<span class="kw-2">&amp;mut </span>add_path);
+        add_path(resource_dir);
+        <span class="self">self</span>.rootDirectory.map(<span class="kw-2">&amp;mut </span>add_path);
 
-        <span class="kw">let</span> <span class="ident">character_definition_file</span> <span class="op">=</span> <span class="self">self</span>
-            .<span class="ident">characterDefinitionFile</span>
-            .<span class="ident">unwrap_or</span>(<span class="ident">PathBuf::from</span>(<span class="ident">DEFAULT_CHAR_DEF_FILE</span>));
+        <span class="kw">let </span>character_definition_file = <span class="self">self
+            </span>.characterDefinitionFile
+            .unwrap_or(PathBuf::from(DEFAULT_CHAR_DEF_FILE));
 
-        <span class="ident">Config</span> {
-            <span class="ident">resolver</span>,
-            <span class="ident">system_dict</span>: <span class="self">self</span>.<span class="ident">systemDict</span>,
-            <span class="ident">user_dicts</span>: <span class="self">self</span>.<span class="ident">userDict</span>.<span class="ident">unwrap_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">Vec::new</span>()),
-            <span class="ident">character_definition_file</span>,
+        Config {
+            resolver,
+            system_dict: <span class="self">self</span>.systemDict,
+            user_dicts: <span class="self">self</span>.userDict.unwrap_or_else(|| Vec::new()),
+            character_definition_file,
 
-            <span class="ident">connection_cost_plugins</span>: <span class="self">self</span>.<span class="ident">connectionCostPlugin</span>.<span class="ident">unwrap_or</span>(<span class="ident">Vec::new</span>()),
-            <span class="ident">input_text_plugins</span>: <span class="self">self</span>.<span class="ident">inputTextPlugin</span>.<span class="ident">unwrap_or</span>(<span class="ident">Vec::new</span>()),
-            <span class="ident">oov_provider_plugins</span>: <span class="self">self</span>.<span class="ident">oovProviderPlugin</span>.<span class="ident">unwrap_or</span>(<span class="ident">Vec::new</span>()),
-            <span class="ident">path_rewrite_plugins</span>: <span class="self">self</span>.<span class="ident">pathRewritePlugin</span>.<span class="ident">unwrap_or</span>(<span class="ident">Vec::new</span>()),
+            connection_cost_plugins: <span class="self">self</span>.connectionCostPlugin.unwrap_or(Vec::new()),
+            input_text_plugins: <span class="self">self</span>.inputTextPlugin.unwrap_or(Vec::new()),
+            oov_provider_plugins: <span class="self">self</span>.oovProviderPlugin.unwrap_or(Vec::new()),
+            path_rewrite_plugins: <span class="self">self</span>.pathRewritePlugin.unwrap_or(Vec::new()),
         }
     }
 }
 
-<span class="kw">impl</span> <span class="ident">Config</span> {
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(
-        <span class="ident">config_file</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">PathBuf</span><span class="op">&gt;</span>,
-        <span class="ident">resource_dir</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">PathBuf</span><span class="op">&gt;</span>,
-        <span class="ident">dictionary_path</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">PathBuf</span><span class="op">&gt;</span>,
-    ) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="self">Self</span>, <span class="ident">ConfigError</span><span class="op">&gt;</span> {
-        <span class="comment">// prioritize arg (cli option) &gt; default</span>
-        <span class="kw">let</span> <span class="ident">raw_config</span> <span class="op">=</span> <span class="ident">ConfigBuilder::from_opt_file</span>(<span class="ident">config_file</span>.<span class="ident">as_deref</span>())<span class="question-mark">?</span>;
+<span class="kw">impl </span>Config {
+    <span class="kw">pub fn </span>new(
+        config_file: <span class="prelude-ty">Option</span>&lt;PathBuf&gt;,
+        resource_dir: <span class="prelude-ty">Option</span>&lt;PathBuf&gt;,
+        dictionary_path: <span class="prelude-ty">Option</span>&lt;PathBuf&gt;,
+    ) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>, ConfigError&gt; {
+        <span class="comment">// prioritize arg (cli option) &gt; default
+        </span><span class="kw">let </span>raw_config = ConfigBuilder::from_opt_file(config_file.as_deref())<span class="question-mark">?</span>;
 
-        <span class="comment">// prioritize arg (cli option) &gt; config file</span>
-        <span class="kw">let</span> <span class="ident">raw_config</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">resource_dir</span> {
-            <span class="prelude-val">None</span> =&gt; <span class="ident">raw_config</span>,
-            <span class="prelude-val">Some</span>(<span class="ident">p</span>) =&gt; <span class="ident">raw_config</span>.<span class="ident">resource_path</span>(<span class="ident">p</span>),
+        <span class="comment">// prioritize arg (cli option) &gt; config file
+        </span><span class="kw">let </span>raw_config = <span class="kw">match </span>resource_dir {
+            <span class="prelude-val">None </span>=&gt; raw_config,
+            <span class="prelude-val">Some</span>(p) =&gt; raw_config.resource_path(p),
         };
 
-        <span class="comment">// prioritize arg (cli option) &gt; config file</span>
-        <span class="kw">let</span> <span class="ident">raw_config</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">dictionary_path</span> {
-            <span class="prelude-val">None</span> =&gt; <span class="ident">raw_config</span>,
-            <span class="prelude-val">Some</span>(<span class="ident">p</span>) =&gt; <span class="ident">raw_config</span>.<span class="ident">system_dict</span>(<span class="ident">p</span>),
+        <span class="comment">// prioritize arg (cli option) &gt; config file
+        </span><span class="kw">let </span>raw_config = <span class="kw">match </span>dictionary_path {
+            <span class="prelude-val">None </span>=&gt; raw_config,
+            <span class="prelude-val">Some</span>(p) =&gt; raw_config.system_dict(p),
         };
 
-        <span class="prelude-val">Ok</span>(<span class="ident">raw_config</span>.<span class="ident">build</span>())
+        <span class="prelude-val">Ok</span>(raw_config.build())
     }
 
-    <span class="doccomment">/// Creates a minimal config with the provided resource directory</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">minimal_at</span>(<span class="ident">resource_dir</span>: <span class="kw">impl</span> <span class="ident">Into</span><span class="op">&lt;</span><span class="ident">PathBuf</span><span class="op">&gt;</span>) -&gt; <span class="ident">Config</span> {
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">cfg</span> <span class="op">=</span> <span class="ident">Config::default</span>();
-        <span class="kw">let</span> <span class="ident">resource</span> <span class="op">=</span> <span class="ident">resource_dir</span>.<span class="ident">into</span>();
-        <span class="ident">cfg</span>.<span class="ident">character_definition_file</span> <span class="op">=</span> <span class="ident">resource</span>.<span class="ident">join</span>(<span class="ident">DEFAULT_CHAR_DEF_FILE</span>);
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">resolver</span> <span class="op">=</span> <span class="ident">PathResolver::with_capacity</span>(<span class="number">1</span>);
-        <span class="ident">resolver</span>.<span class="ident">add</span>(<span class="ident">resource</span>);
-        <span class="ident">cfg</span>.<span class="ident">resolver</span> <span class="op">=</span> <span class="ident">resolver</span>;
-        <span class="ident">cfg</span>.<span class="ident">oov_provider_plugins</span> <span class="op">=</span> <span class="macro">vec!</span>[<span class="macro">serde_json::json!</span>(
-            { <span class="string">&quot;class&quot;</span> : <span class="string">&quot;com.worksap.nlp.sudachi.SimpleOovPlugin&quot;</span>,
-              <span class="string">&quot;oovPOS&quot;</span> : [ <span class="string">&quot;名詞&quot;</span>, <span class="string">&quot;普通名詞&quot;</span>, <span class="string">&quot;一般&quot;</span>, <span class="string">&quot;*&quot;</span>, <span class="string">&quot;*&quot;</span>, <span class="string">&quot;*&quot;</span> ],
-              <span class="string">&quot;leftId&quot;</span> : <span class="number">0</span>,
-              <span class="string">&quot;rightId&quot;</span> : <span class="number">0</span>,
-              <span class="string">&quot;cost&quot;</span> : <span class="number">30000</span> }
+    <span class="doccomment">/// Creates a minimal config with the provided resource directory
+    </span><span class="kw">pub fn </span>minimal_at(resource_dir: <span class="kw">impl </span>Into&lt;PathBuf&gt;) -&gt; Config {
+        <span class="kw">let </span><span class="kw-2">mut </span>cfg = Config::default();
+        <span class="kw">let </span>resource = resource_dir.into();
+        cfg.character_definition_file = resource.join(DEFAULT_CHAR_DEF_FILE);
+        <span class="kw">let </span><span class="kw-2">mut </span>resolver = PathResolver::with_capacity(<span class="number">1</span>);
+        resolver.add(resource);
+        cfg.resolver = resolver;
+        cfg.oov_provider_plugins = <span class="macro">vec!</span>[<span class="macro">serde_json::json!</span>(
+            { <span class="string">&quot;class&quot; </span>: <span class="string">&quot;com.worksap.nlp.sudachi.SimpleOovPlugin&quot;</span>,
+              <span class="string">&quot;oovPOS&quot; </span>: [ <span class="string">&quot;名詞&quot;</span>, <span class="string">&quot;普通名詞&quot;</span>, <span class="string">&quot;一般&quot;</span>, <span class="string">&quot;*&quot;</span>, <span class="string">&quot;*&quot;</span>, <span class="string">&quot;*&quot; </span>],
+              <span class="string">&quot;leftId&quot; </span>: <span class="number">0</span>,
+              <span class="string">&quot;rightId&quot; </span>: <span class="number">0</span>,
+              <span class="string">&quot;cost&quot; </span>: <span class="number">30000 </span>}
         )];
-        <span class="ident">cfg</span>
+        cfg
     }
 
-    <span class="doccomment">/// Sets the system dictionary to the provided path</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">with_system_dic</span>(<span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">system</span>: <span class="kw">impl</span> <span class="ident">Into</span><span class="op">&lt;</span><span class="ident">PathBuf</span><span class="op">&gt;</span>) -&gt; <span class="ident">Config</span> {
-        <span class="self">self</span>.<span class="ident">system_dict</span> <span class="op">=</span> <span class="prelude-val">Some</span>(<span class="ident">system</span>.<span class="ident">into</span>());
-        <span class="self">self</span>
-    }
+    <span class="doccomment">/// Sets the system dictionary to the provided path
+    </span><span class="kw">pub fn </span>with_system_dic(<span class="kw-2">mut </span><span class="self">self</span>, system: <span class="kw">impl </span>Into&lt;PathBuf&gt;) -&gt; Config {
+        <span class="self">self</span>.system_dict = <span class="prelude-val">Some</span>(system.into());
+        <span class="self">self
+    </span>}
 
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">resolve_paths</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="kw-2">mut</span> <span class="ident">path</span>: <span class="ident">String</span>) -&gt; <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span> {
-        <span class="kw">if</span> <span class="ident">path</span>.<span class="ident">starts_with</span>(<span class="string">&quot;$exe&quot;</span>) {
-            <span class="ident">path</span>.<span class="ident">replace_range</span>(<span class="number">0</span>..<span class="number">4</span>, <span class="kw-2">&amp;</span><span class="ident">CURRENT_EXE_DIR</span>);
+    <span class="kw">pub fn </span>resolve_paths(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="kw-2">mut </span>path: String) -&gt; Vec&lt;String&gt; {
+        <span class="kw">if </span>path.starts_with(<span class="string">&quot;$exe&quot;</span>) {
+            path.replace_range(<span class="number">0</span>..<span class="number">4</span>, <span class="kw-2">&amp;</span>CURRENT_EXE_DIR);
 
-            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">path2</span> <span class="op">=</span> <span class="ident">path</span>.<span class="ident">clone</span>();
-            <span class="ident">path2</span>.<span class="ident">insert_str</span>(<span class="ident">CURRENT_EXE_DIR</span>.<span class="ident">len</span>(), <span class="string">&quot;/deps&quot;</span>);
-            <span class="kw">return</span> <span class="macro">vec!</span>[<span class="ident">path2</span>, <span class="ident">path</span>];
+            <span class="kw">let </span><span class="kw-2">mut </span>path2 = path.clone();
+            path2.insert_str(CURRENT_EXE_DIR.len(), <span class="string">&quot;/deps&quot;</span>);
+            <span class="kw">return </span><span class="macro">vec!</span>[path2, path];
         }
 
-        <span class="kw">if</span> <span class="ident">path</span>.<span class="ident">starts_with</span>(<span class="string">&quot;$cfg/&quot;</span>) <span class="op">|</span><span class="op">|</span> <span class="ident">path</span>.<span class="ident">starts_with</span>(<span class="string">&quot;$cfg\\&quot;</span>) {
-            <span class="kw">let</span> <span class="ident">roots</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">resolver</span>.<span class="ident">roots</span>();
-            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">Vec::with_capacity</span>(<span class="ident">roots</span>.<span class="ident">len</span>());
-            <span class="ident">path</span>.<span class="ident">replace_range</span>(<span class="number">0</span>..<span class="number">5</span>, <span class="string">&quot;&quot;</span>);
-            <span class="kw">for</span> <span class="ident">root</span> <span class="kw">in</span> <span class="ident">roots</span> {
-                <span class="kw">let</span> <span class="ident">subpath</span> <span class="op">=</span> <span class="ident">root</span>.<span class="ident">join</span>(<span class="kw-2">&amp;</span><span class="ident">path</span>);
-                <span class="ident">result</span>.<span class="ident">push</span>(<span class="ident">subpath</span>.<span class="ident">to_string_lossy</span>().<span class="ident">into_owned</span>());
+        <span class="kw">if </span>path.starts_with(<span class="string">&quot;$cfg/&quot;</span>) || path.starts_with(<span class="string">&quot;$cfg\\&quot;</span>) {
+            <span class="kw">let </span>roots = <span class="self">self</span>.resolver.roots();
+            <span class="kw">let </span><span class="kw-2">mut </span>result = Vec::with_capacity(roots.len());
+            path.replace_range(<span class="number">0</span>..<span class="number">5</span>, <span class="string">&quot;&quot;</span>);
+            <span class="kw">for </span>root <span class="kw">in </span>roots {
+                <span class="kw">let </span>subpath = root.join(<span class="kw-2">&amp;</span>path);
+                result.push(subpath.to_string_lossy().into_owned());
             }
-            <span class="kw">return</span> <span class="ident">result</span>;
+            <span class="kw">return </span>result;
         }
 
-        <span class="macro">vec!</span>[<span class="ident">path</span>]
+        <span class="macro">vec!</span>[path]
     }
 
-    <span class="doccomment">/// Resolves a possibly relative path with regards to all possible anchors:</span>
-    <span class="doccomment">/// 1. Absolute paths stay as they are</span>
-    <span class="doccomment">/// 2. Paths are resolved wrt to anchors, returning the first existing one</span>
-    <span class="doccomment">/// 3. Path are checked wrt to CWD</span>
-    <span class="doccomment">/// 4. If all fail, return an error with all candidate paths listed</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">complete_path</span><span class="op">&lt;</span><span class="ident">P</span>: <span class="ident">AsRef</span><span class="op">&lt;</span><span class="ident">Path</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">Into</span><span class="op">&lt;</span><span class="ident">PathBuf</span><span class="op">&gt;</span><span class="op">&gt;</span>(
+    <span class="doccomment">/// Resolves a possibly relative path with regards to all possible anchors:
+    /// 1. Absolute paths stay as they are
+    /// 2. Paths are resolved wrt to anchors, returning the first existing one
+    /// 3. Path are checked wrt to CWD
+    /// 4. If all fail, return an error with all candidate paths listed
+    </span><span class="kw">pub fn </span>complete_path&lt;P: AsRef&lt;Path&gt; + Into&lt;PathBuf&gt;&gt;(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
-        <span class="ident">file_path</span>: <span class="ident">P</span>,
-    ) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">PathBuf</span>, <span class="ident">ConfigError</span><span class="op">&gt;</span> {
-        <span class="kw">let</span> <span class="ident">pref</span> <span class="op">=</span> <span class="ident">file_path</span>.<span class="ident">as_ref</span>();
-        <span class="comment">// 1. absolute paths are not normalized</span>
-        <span class="kw">if</span> <span class="ident">pref</span>.<span class="ident">is_absolute</span>() {
-            <span class="kw">return</span> <span class="prelude-val">Ok</span>(<span class="ident">file_path</span>.<span class="ident">into</span>());
+        file_path: P,
+    ) -&gt; <span class="prelude-ty">Result</span>&lt;PathBuf, ConfigError&gt; {
+        <span class="kw">let </span>pref = file_path.as_ref();
+        <span class="comment">// 1. absolute paths are not normalized
+        </span><span class="kw">if </span>pref.is_absolute() {
+            <span class="kw">return </span><span class="prelude-val">Ok</span>(file_path.into());
         }
 
-        <span class="comment">// 2. try to resolve paths wrt anchors</span>
-        <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">p</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">resolver</span>.<span class="ident">first_existing</span>(<span class="ident">pref</span>) {
-            <span class="kw">return</span> <span class="prelude-val">Ok</span>(<span class="ident">p</span>);
+        <span class="comment">// 2. try to resolve paths wrt anchors
+        </span><span class="kw">if let </span><span class="prelude-val">Some</span>(p) = <span class="self">self</span>.resolver.first_existing(pref) {
+            <span class="kw">return </span><span class="prelude-val">Ok</span>(p);
         }
 
-        <span class="comment">// 3. try to resolve path wrt CWD</span>
-        <span class="kw">if</span> <span class="ident">pref</span>.<span class="ident">exists</span>() {
-            <span class="kw">return</span> <span class="prelude-val">Ok</span>(<span class="ident">file_path</span>.<span class="ident">into</span>());
+        <span class="comment">// 3. try to resolve path wrt CWD
+        </span><span class="kw">if </span>pref.exists() {
+            <span class="kw">return </span><span class="prelude-val">Ok</span>(file_path.into());
         }
 
-        <span class="comment">// Report an error</span>
-        <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="self">self</span>.<span class="ident">resolver</span>.<span class="ident">resolution_failure</span>(<span class="kw-2">&amp;</span><span class="ident">file_path</span>));
+        <span class="comment">// Report an error
+        </span><span class="kw">return </span><span class="prelude-val">Err</span>(<span class="self">self</span>.resolver.resolution_failure(<span class="kw-2">&amp;</span>file_path));
     }
 
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">resolved_system_dict</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">PathBuf</span>, <span class="ident">ConfigError</span><span class="op">&gt;</span> {
-        <span class="kw">match</span> <span class="self">self</span>.<span class="ident">system_dict</span>.<span class="ident">as_ref</span>() {
-            <span class="prelude-val">Some</span>(<span class="ident">p</span>) =&gt; <span class="self">self</span>.<span class="ident">complete_path</span>(<span class="ident">p</span>),
-            <span class="prelude-val">None</span> =&gt; <span class="prelude-val">Err</span>(<span class="ident">ConfigError::MissingArgument</span>(<span class="string">&quot;systemDict&quot;</span>.<span class="ident">to_owned</span>())),
+    <span class="kw">pub fn </span>resolved_system_dict(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;PathBuf, ConfigError&gt; {
+        <span class="kw">match </span><span class="self">self</span>.system_dict.as_ref() {
+            <span class="prelude-val">Some</span>(p) =&gt; <span class="self">self</span>.complete_path(p),
+            <span class="prelude-val">None </span>=&gt; <span class="prelude-val">Err</span>(ConfigError::MissingArgument(<span class="string">&quot;systemDict&quot;</span>.to_owned())),
         }
     }
 
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">resolved_user_dicts</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">PathBuf</span><span class="op">&gt;</span>, <span class="ident">ConfigError</span><span class="op">&gt;</span> {
-        <span class="self">self</span>.<span class="ident">user_dicts</span>
-            .<span class="ident">iter</span>()
-            .<span class="ident">map</span>(<span class="op">|</span><span class="ident">p</span><span class="op">|</span> <span class="self">self</span>.<span class="ident">complete_path</span>(<span class="ident">p</span>))
-            .<span class="ident">collect</span>()
+    <span class="kw">pub fn </span>resolved_user_dicts(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;Vec&lt;PathBuf&gt;, ConfigError&gt; {
+        <span class="self">self</span>.user_dicts
+            .iter()
+            .map(|p| <span class="self">self</span>.complete_path(p))
+            .collect()
     }
 }
 
-<span class="kw">fn</span> <span class="ident">current_exe_dir</span>() -&gt; <span class="ident">String</span> {
-    <span class="kw">let</span> <span class="ident">exe</span> <span class="op">=</span> <span class="ident">current_exe</span>().<span class="ident">unwrap_or_else</span>(<span class="op">|</span><span class="ident">e</span><span class="op">|</span> <span class="macro">panic!</span>(<span class="string">&quot;Current exe is not available {:?}&quot;</span>, <span class="ident">e</span>));
+<span class="kw">fn </span>current_exe_dir() -&gt; String {
+    <span class="kw">let </span>exe = current_exe().unwrap_or_else(|e| <span class="macro">panic!</span>(<span class="string">&quot;Current exe is not available {:?}&quot;</span>, e));
 
-    <span class="kw">let</span> <span class="ident">parent</span> <span class="op">=</span> <span class="ident">exe</span>
-        .<span class="ident">parent</span>()
-        .<span class="ident">unwrap_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="macro">panic!</span>(<span class="string">&quot;Path to executable must have a parent&quot;</span>));
+    <span class="kw">let </span>parent = exe
+        .parent()
+        .unwrap_or_else(|| <span class="macro">panic!</span>(<span class="string">&quot;Path to executable must have a parent&quot;</span>));
 
-    <span class="ident">parent</span>.<span class="ident">to_str</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">s</span><span class="op">|</span> <span class="ident">s</span>.<span class="ident">to_owned</span>()).<span class="ident">unwrap_or_else</span>(<span class="op">|</span><span class="op">|</span> {
+    parent.to_str().map(|s| s.to_owned()).unwrap_or_else(|| {
         <span class="macro">panic!</span>(<span class="string">&quot;placing Sudachi in directories with non-utf paths is not supported&quot;</span>)
     })
 }
 
-<span class="macro">lazy_static!</span> {
-    <span class="kw">static</span> <span class="kw-2">ref</span> <span class="ident">CURRENT_EXE_DIR</span>: <span class="ident">String</span> <span class="op">=</span> <span class="ident">current_exe_dir</span>();
+<span class="macro">lazy_static! </span>{
+    <span class="kw">static </span><span class="kw-2">ref </span>CURRENT_EXE_DIR: String = current_exe_dir();
 }
 
-<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">test</span>)]</span>
-<span class="kw">mod</span> <span class="ident">tests</span> {
-    <span class="kw">use</span> <span class="kw">super</span>::<span class="kw-2">*</span>;
-    <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::prelude::SudachiResult</span>;
+<span class="attribute">#[cfg(test)]
+</span><span class="kw">mod </span>tests {
+    <span class="kw">use super</span>::<span class="kw-2">*</span>;
+    <span class="kw">use </span><span class="kw">crate</span>::prelude::SudachiResult;
 
-    <span class="kw">use</span> <span class="ident"><span class="kw">super</span>::CURRENT_EXE_DIR</span>;
+    <span class="kw">use </span><span class="kw">super</span>::CURRENT_EXE_DIR;
 
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">resolve_exe</span>() -&gt; <span class="ident">SudachiResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
-        <span class="kw">let</span> <span class="ident">cfg</span> <span class="op">=</span> <span class="ident">Config::new</span>(<span class="prelude-val">None</span>, <span class="prelude-val">None</span>, <span class="prelude-val">None</span>)<span class="question-mark">?</span>;
-        <span class="kw">let</span> <span class="ident">npath</span> <span class="op">=</span> <span class="ident">cfg</span>.<span class="ident">resolve_paths</span>(<span class="string">&quot;$exe/data&quot;</span>.<span class="ident">to_owned</span>());
-        <span class="kw">let</span> <span class="ident">exe_dir</span>: <span class="kw-2">&amp;</span><span class="ident">str</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">CURRENT_EXE_DIR</span>;
-        <span class="macro">assert_eq!</span>(<span class="ident">npath</span>.<span class="ident">len</span>(), <span class="number">2</span>);
-        <span class="macro">assert!</span>(<span class="ident">npath</span>[<span class="number">0</span>].<span class="ident">starts_with</span>(<span class="ident">exe_dir</span>));
+    <span class="attribute">#[test]
+    </span><span class="kw">fn </span>resolve_exe() -&gt; SudachiResult&lt;()&gt; {
+        <span class="kw">let </span>cfg = Config::new(<span class="prelude-val">None</span>, <span class="prelude-val">None</span>, <span class="prelude-val">None</span>)<span class="question-mark">?</span>;
+        <span class="kw">let </span>npath = cfg.resolve_paths(<span class="string">&quot;$exe/data&quot;</span>.to_owned());
+        <span class="kw">let </span>exe_dir: <span class="kw-2">&amp;</span>str = <span class="kw-2">&amp;</span>CURRENT_EXE_DIR;
+        <span class="macro">assert_eq!</span>(npath.len(), <span class="number">2</span>);
+        <span class="macro">assert!</span>(npath[<span class="number">0</span>].starts_with(exe_dir));
         <span class="prelude-val">Ok</span>(())
     }
 
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">resolve_cfg</span>() -&gt; <span class="ident">SudachiResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
-        <span class="kw">let</span> <span class="ident">cfg</span> <span class="op">=</span> <span class="ident">Config::new</span>(<span class="prelude-val">None</span>, <span class="prelude-val">None</span>, <span class="prelude-val">None</span>)<span class="question-mark">?</span>;
-        <span class="kw">let</span> <span class="ident">npath</span> <span class="op">=</span> <span class="ident">cfg</span>.<span class="ident">resolve_paths</span>(<span class="string">&quot;$cfg/data&quot;</span>.<span class="ident">to_owned</span>());
-        <span class="kw">let</span> <span class="ident">def</span> <span class="op">=</span> <span class="ident">default_resource_dir</span>();
-        <span class="kw">let</span> <span class="ident">path_dir</span>: <span class="kw-2">&amp;</span><span class="ident">str</span> <span class="op">=</span> <span class="ident">def</span>.<span class="ident">to_str</span>().<span class="ident">unwrap</span>();
-        <span class="macro">assert_eq!</span>(<span class="number">1</span>, <span class="ident">npath</span>.<span class="ident">len</span>());
-        <span class="macro">assert!</span>(<span class="ident">npath</span>[<span class="number">0</span>].<span class="ident">starts_with</span>(<span class="ident">path_dir</span>));
+    <span class="attribute">#[test]
+    </span><span class="kw">fn </span>resolve_cfg() -&gt; SudachiResult&lt;()&gt; {
+        <span class="kw">let </span>cfg = Config::new(<span class="prelude-val">None</span>, <span class="prelude-val">None</span>, <span class="prelude-val">None</span>)<span class="question-mark">?</span>;
+        <span class="kw">let </span>npath = cfg.resolve_paths(<span class="string">&quot;$cfg/data&quot;</span>.to_owned());
+        <span class="kw">let </span>def = default_resource_dir();
+        <span class="kw">let </span>path_dir: <span class="kw-2">&amp;</span>str = def.to_str().unwrap();
+        <span class="macro">assert_eq!</span>(<span class="number">1</span>, npath.len());
+        <span class="macro">assert!</span>(npath[<span class="number">0</span>].starts_with(path_dir));
         <span class="prelude-val">Ok</span>(())
     }
 }
 </code></pre></div>
-</section><section id="search" class="content hidden"></section><div id="rustdoc-vars" data-root-path="../../" data-current-crate="sudachi" data-search-index-js="../../search-index.js" data-search-js="../../search.js"></div>
-</body></html>
+</section></div></main><div id="rustdoc-vars" data-root-path="../../" data-current-crate="sudachi" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0 (897e37553 2022-11-02)" ></div></body></html>

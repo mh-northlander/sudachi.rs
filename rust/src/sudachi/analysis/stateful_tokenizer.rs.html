@@ -1,103 +1,102 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `sudachi&#x2F;src&#x2F;analysis&#x2F;stateful_tokenizer.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>stateful_tokenizer.rs - source</title><link rel="stylesheet" type="text/css" href="../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../../ayu.css" disabled ><script id="default-settings" ></script><script src="../../../storage.js"></script><script src="../../../crates.js"></script><script defer src="../../../main.js"></script><script defer src="../../../source-script.js"></script><script defer src="../../../source-files.js"></script>
-    <noscript><link rel="stylesheet" href="../../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../../favicon.svg"><style type="text/css">#crate-search{background-image:url("../../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu" role="button">&#9776;</div><a href='../../../sudachi/index.html'><div class='logo-container rust-logo'><img src='../../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu" title="themes"><img width="18" height="18" alt="Pick another theme!" src="../../../brush.svg"></button><div id="theme-choices" role="menu"></div></div><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" id="help-button" title="help">?</button><a id="settings-menu" href="../../../settings.html" title="settings"><img width="18" height="18" alt="Change settings" src="../../../wheel.svg"></a></div></form></nav><section id="main" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">  1</span>
-<span id="2">  2</span>
-<span id="3">  3</span>
-<span id="4">  4</span>
-<span id="5">  5</span>
-<span id="6">  6</span>
-<span id="7">  7</span>
-<span id="8">  8</span>
-<span id="9">  9</span>
-<span id="10"> 10</span>
-<span id="11"> 11</span>
-<span id="12"> 12</span>
-<span id="13"> 13</span>
-<span id="14"> 14</span>
-<span id="15"> 15</span>
-<span id="16"> 16</span>
-<span id="17"> 17</span>
-<span id="18"> 18</span>
-<span id="19"> 19</span>
-<span id="20"> 20</span>
-<span id="21"> 21</span>
-<span id="22"> 22</span>
-<span id="23"> 23</span>
-<span id="24"> 24</span>
-<span id="25"> 25</span>
-<span id="26"> 26</span>
-<span id="27"> 27</span>
-<span id="28"> 28</span>
-<span id="29"> 29</span>
-<span id="30"> 30</span>
-<span id="31"> 31</span>
-<span id="32"> 32</span>
-<span id="33"> 33</span>
-<span id="34"> 34</span>
-<span id="35"> 35</span>
-<span id="36"> 36</span>
-<span id="37"> 37</span>
-<span id="38"> 38</span>
-<span id="39"> 39</span>
-<span id="40"> 40</span>
-<span id="41"> 41</span>
-<span id="42"> 42</span>
-<span id="43"> 43</span>
-<span id="44"> 44</span>
-<span id="45"> 45</span>
-<span id="46"> 46</span>
-<span id="47"> 47</span>
-<span id="48"> 48</span>
-<span id="49"> 49</span>
-<span id="50"> 50</span>
-<span id="51"> 51</span>
-<span id="52"> 52</span>
-<span id="53"> 53</span>
-<span id="54"> 54</span>
-<span id="55"> 55</span>
-<span id="56"> 56</span>
-<span id="57"> 57</span>
-<span id="58"> 58</span>
-<span id="59"> 59</span>
-<span id="60"> 60</span>
-<span id="61"> 61</span>
-<span id="62"> 62</span>
-<span id="63"> 63</span>
-<span id="64"> 64</span>
-<span id="65"> 65</span>
-<span id="66"> 66</span>
-<span id="67"> 67</span>
-<span id="68"> 68</span>
-<span id="69"> 69</span>
-<span id="70"> 70</span>
-<span id="71"> 71</span>
-<span id="72"> 72</span>
-<span id="73"> 73</span>
-<span id="74"> 74</span>
-<span id="75"> 75</span>
-<span id="76"> 76</span>
-<span id="77"> 77</span>
-<span id="78"> 78</span>
-<span id="79"> 79</span>
-<span id="80"> 80</span>
-<span id="81"> 81</span>
-<span id="82"> 82</span>
-<span id="83"> 83</span>
-<span id="84"> 84</span>
-<span id="85"> 85</span>
-<span id="86"> 86</span>
-<span id="87"> 87</span>
-<span id="88"> 88</span>
-<span id="89"> 89</span>
-<span id="90"> 90</span>
-<span id="91"> 91</span>
-<span id="92"> 92</span>
-<span id="93"> 93</span>
-<span id="94"> 94</span>
-<span id="95"> 95</span>
-<span id="96"> 96</span>
-<span id="97"> 97</span>
-<span id="98"> 98</span>
-<span id="99"> 99</span>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `sudachi/src/analysis/stateful_tokenizer.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>stateful_tokenizer.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" href="../../../normalize.css"><link rel="stylesheet" href="../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" href="../../../ayu.css" disabled><link rel="stylesheet" href="../../../dark.css" disabled><link rel="stylesheet" href="../../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../../storage.js"></script><script defer src="../../../source-script.js"></script><script defer src="../../../source-files.js"></script><script defer src="../../../main.js"></script><noscript><link rel="stylesheet" href="../../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../../favicon.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="sidebar-logo" href="../../../sudachi/index.html"><div class="logo-container"><img class="rust-logo" src="../../../rust-logo.svg" alt="logo"></div></a><h2 class="location"></h2></nav><nav class="sidebar"><a class="sidebar-logo" href="../../../sudachi/index.html"><div class="logo-container"><img class="rust-logo" src="../../../rust-logo.svg" alt="logo"></div></a></nav><main><div class="width-limiter"><div class="sub-container"><a class="sub-logo-container" href="../../../sudachi/index.html"><img class="rust-logo" src="../../../rust-logo.svg" alt="logo"></a><nav class="sub"><form class="search-form"><div class="search-container"><span></span><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><button type="button">?</button></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../wheel.svg"></a></div></div></form></nav></div><section id="main-content" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">1</span>
+<span id="2">2</span>
+<span id="3">3</span>
+<span id="4">4</span>
+<span id="5">5</span>
+<span id="6">6</span>
+<span id="7">7</span>
+<span id="8">8</span>
+<span id="9">9</span>
+<span id="10">10</span>
+<span id="11">11</span>
+<span id="12">12</span>
+<span id="13">13</span>
+<span id="14">14</span>
+<span id="15">15</span>
+<span id="16">16</span>
+<span id="17">17</span>
+<span id="18">18</span>
+<span id="19">19</span>
+<span id="20">20</span>
+<span id="21">21</span>
+<span id="22">22</span>
+<span id="23">23</span>
+<span id="24">24</span>
+<span id="25">25</span>
+<span id="26">26</span>
+<span id="27">27</span>
+<span id="28">28</span>
+<span id="29">29</span>
+<span id="30">30</span>
+<span id="31">31</span>
+<span id="32">32</span>
+<span id="33">33</span>
+<span id="34">34</span>
+<span id="35">35</span>
+<span id="36">36</span>
+<span id="37">37</span>
+<span id="38">38</span>
+<span id="39">39</span>
+<span id="40">40</span>
+<span id="41">41</span>
+<span id="42">42</span>
+<span id="43">43</span>
+<span id="44">44</span>
+<span id="45">45</span>
+<span id="46">46</span>
+<span id="47">47</span>
+<span id="48">48</span>
+<span id="49">49</span>
+<span id="50">50</span>
+<span id="51">51</span>
+<span id="52">52</span>
+<span id="53">53</span>
+<span id="54">54</span>
+<span id="55">55</span>
+<span id="56">56</span>
+<span id="57">57</span>
+<span id="58">58</span>
+<span id="59">59</span>
+<span id="60">60</span>
+<span id="61">61</span>
+<span id="62">62</span>
+<span id="63">63</span>
+<span id="64">64</span>
+<span id="65">65</span>
+<span id="66">66</span>
+<span id="67">67</span>
+<span id="68">68</span>
+<span id="69">69</span>
+<span id="70">70</span>
+<span id="71">71</span>
+<span id="72">72</span>
+<span id="73">73</span>
+<span id="74">74</span>
+<span id="75">75</span>
+<span id="76">76</span>
+<span id="77">77</span>
+<span id="78">78</span>
+<span id="79">79</span>
+<span id="80">80</span>
+<span id="81">81</span>
+<span id="82">82</span>
+<span id="83">83</span>
+<span id="84">84</span>
+<span id="85">85</span>
+<span id="86">86</span>
+<span id="87">87</span>
+<span id="88">88</span>
+<span id="89">89</span>
+<span id="90">90</span>
+<span id="91">91</span>
+<span id="92">92</span>
+<span id="93">93</span>
+<span id="94">94</span>
+<span id="95">95</span>
+<span id="96">96</span>
+<span id="97">97</span>
+<span id="98">98</span>
+<span id="99">99</span>
 <span id="100">100</span>
 <span id="101">101</span>
 <span id="102">102</span>
@@ -293,6 +292,43 @@
 <span id="292">292</span>
 <span id="293">293</span>
 <span id="294">294</span>
+<span id="295">295</span>
+<span id="296">296</span>
+<span id="297">297</span>
+<span id="298">298</span>
+<span id="299">299</span>
+<span id="300">300</span>
+<span id="301">301</span>
+<span id="302">302</span>
+<span id="303">303</span>
+<span id="304">304</span>
+<span id="305">305</span>
+<span id="306">306</span>
+<span id="307">307</span>
+<span id="308">308</span>
+<span id="309">309</span>
+<span id="310">310</span>
+<span id="311">311</span>
+<span id="312">312</span>
+<span id="313">313</span>
+<span id="314">314</span>
+<span id="315">315</span>
+<span id="316">316</span>
+<span id="317">317</span>
+<span id="318">318</span>
+<span id="319">319</span>
+<span id="320">320</span>
+<span id="321">321</span>
+<span id="322">322</span>
+<span id="323">323</span>
+<span id="324">324</span>
+<span id="325">325</span>
+<span id="326">326</span>
+<span id="327">327</span>
+<span id="328">328</span>
+<span id="329">329</span>
+<span id="330">330</span>
+<span id="331">331</span>
 </pre><pre class="rust"><code><span class="comment">/*
  *  Copyright (c) 2021 Works Applications Co., Ltd.
  *
@@ -307,286 +343,322 @@
  *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
- */</span>
+ */
 
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::analysis::inner</span>::{<span class="ident">Node</span>, <span class="ident">NodeIdx</span>};
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::analysis::lattice::Lattice</span>;
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::analysis::node</span>::{<span class="ident">LatticeNode</span>, <span class="ident">ResultNode</span>};
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::analysis::stateless_tokenizer</span>::{<span class="ident">dump_path</span>, <span class="ident">split_path</span>, <span class="ident">DictionaryAccess</span>};
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::analysis::Mode</span>;
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::dic::category_type::CategoryType</span>;
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::dic::lexicon::word_infos::WordInfoData</span>;
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::dic::subset::InfoSubset</span>;
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::error</span>::{<span class="ident">SudachiError</span>, <span class="ident">SudachiResult</span>};
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::input_text::InputBuffer</span>;
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::input_text::InputTextIndex</span>;
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::prelude::MorphemeList</span>;
+</span><span class="kw">use </span><span class="kw">crate</span>::analysis::created::CreatedWords;
+<span class="kw">use </span><span class="kw">crate</span>::analysis::inner::{Node, NodeIdx};
+<span class="kw">use </span><span class="kw">crate</span>::analysis::lattice::Lattice;
+<span class="kw">use </span><span class="kw">crate</span>::analysis::node::{LatticeNode, ResultNode};
+<span class="kw">use </span><span class="kw">crate</span>::analysis::stateless_tokenizer::{dump_path, split_path, DictionaryAccess};
+<span class="kw">use </span><span class="kw">crate</span>::analysis::Mode;
+<span class="kw">use </span><span class="kw">crate</span>::dic::category_type::CategoryType;
+<span class="kw">use </span><span class="kw">crate</span>::dic::connect::ConnectionMatrix;
+<span class="kw">use </span><span class="kw">crate</span>::dic::lexicon::word_infos::WordInfoData;
+<span class="kw">use </span><span class="kw">crate</span>::dic::lexicon_set::LexiconSet;
+<span class="kw">use </span><span class="kw">crate</span>::dic::subset::InfoSubset;
+<span class="kw">use </span><span class="kw">crate</span>::error::{SudachiError, SudachiResult};
+<span class="kw">use </span><span class="kw">crate</span>::input_text::InputBuffer;
+<span class="kw">use </span><span class="kw">crate</span>::input_text::InputTextIndex;
+<span class="kw">use </span><span class="kw">crate</span>::plugin::oov::OovProviderPlugin;
+<span class="kw">use </span><span class="kw">crate</span>::prelude::MorphemeList;
 
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">StatefulTokenizer</span><span class="op">&lt;</span><span class="ident">D</span><span class="op">&gt;</span> {
-    <span class="ident">dictionary</span>: <span class="ident">D</span>,
-    <span class="ident">input</span>: <span class="ident">InputBuffer</span>,
-    <span class="ident">debug</span>: <span class="ident">bool</span>,
-    <span class="ident">mode</span>: <span class="ident">Mode</span>,
-    <span class="ident">oov</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Node</span><span class="op">&gt;</span>,
-    <span class="ident">lattice</span>: <span class="ident">Lattice</span>,
-    <span class="ident">top_path_ids</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">NodeIdx</span><span class="op">&gt;</span>,
-    <span class="ident">top_path</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">ResultNode</span><span class="op">&gt;</span><span class="op">&gt;</span>,
-    <span class="ident">subset</span>: <span class="ident">InfoSubset</span>,
+<span class="kw">pub struct </span>StatefulTokenizer&lt;D&gt; {
+    dictionary: D,
+    input: InputBuffer,
+    debug: bool,
+    mode: Mode,
+    oov: Vec&lt;Node&gt;,
+    lattice: Lattice,
+    top_path_ids: Vec&lt;NodeIdx&gt;,
+    top_path: <span class="prelude-ty">Option</span>&lt;Vec&lt;ResultNode&gt;&gt;,
+    subset: InfoSubset,
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">D</span>: <span class="ident">DictionaryAccess</span> <span class="op">+</span> <span class="ident">Clone</span><span class="op">&gt;</span> <span class="ident">StatefulTokenizer</span><span class="op">&lt;</span><span class="ident">D</span><span class="op">&gt;</span> {
-    <span class="doccomment">/// Get a clone of current dictionary</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">dict_clone</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">D</span> {
-        <span class="self">self</span>.<span class="ident">dictionary</span>.<span class="ident">clone</span>()
+<span class="kw">impl</span>&lt;D: DictionaryAccess + Clone&gt; StatefulTokenizer&lt;D&gt; {
+    <span class="doccomment">/// Get a clone of current dictionary
+    </span><span class="kw">pub fn </span>dict_clone(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; D {
+        <span class="self">self</span>.dictionary.clone()
     }
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">D</span>: <span class="ident">DictionaryAccess</span><span class="op">&gt;</span> <span class="ident">StatefulTokenizer</span><span class="op">&lt;</span><span class="ident">D</span><span class="op">&gt;</span> {
-    <span class="doccomment">/// Create a new non-debug stateful tokenizer</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">dic</span>: <span class="ident">D</span>, <span class="ident">mode</span>: <span class="ident">Mode</span>) -&gt; <span class="self">Self</span> {
-        <span class="ident"><span class="self">Self</span>::create</span>(<span class="ident">dic</span>, <span class="bool-val">false</span>, <span class="ident">mode</span>)
+<span class="kw">impl</span>&lt;D: DictionaryAccess&gt; StatefulTokenizer&lt;D&gt; {
+    <span class="doccomment">/// Create a new non-debug stateful tokenizer
+    </span><span class="kw">pub fn </span>new(dic: D, mode: Mode) -&gt; <span class="self">Self </span>{
+        <span class="self">Self</span>::create(dic, <span class="bool-val">false</span>, mode)
     }
 
-    <span class="doccomment">/// Create a new debug stateful tokenizer with the following options</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">create</span>(<span class="ident">dic</span>: <span class="ident">D</span>, <span class="ident">debug</span>: <span class="ident">bool</span>, <span class="ident">mode</span>: <span class="ident">Mode</span>) -&gt; <span class="self">Self</span> {
-        <span class="self">Self</span> {
-            <span class="ident">dictionary</span>: <span class="ident">dic</span>,
-            <span class="ident">input</span>: <span class="ident">InputBuffer::default</span>(),
-            <span class="ident">debug</span>,
-            <span class="ident">mode</span>,
-            <span class="ident">oov</span>: <span class="ident">Vec::with_capacity</span>(<span class="number">10</span>),
-            <span class="ident">lattice</span>: <span class="ident">Lattice::default</span>(),
-            <span class="ident">top_path_ids</span>: <span class="ident">Vec::new</span>(),
-            <span class="ident">top_path</span>: <span class="prelude-val">Some</span>(<span class="ident">Vec::new</span>()),
-            <span class="ident">subset</span>: <span class="ident">InfoSubset::all</span>(),
+    <span class="doccomment">/// Create a new debug stateful tokenizer with the following options
+    </span><span class="kw">pub fn </span>create(dic: D, debug: bool, mode: Mode) -&gt; <span class="self">Self </span>{
+        <span class="self">Self </span>{
+            dictionary: dic,
+            input: InputBuffer::default(),
+            debug,
+            mode,
+            oov: Vec::with_capacity(<span class="number">10</span>),
+            lattice: Lattice::default(),
+            top_path_ids: Vec::new(),
+            top_path: <span class="prelude-val">Some</span>(Vec::new()),
+            subset: InfoSubset::all(),
         }
     }
 
-    <span class="doccomment">/// Set debug flag and returns the current one</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">set_debug</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">debug</span>: <span class="ident">bool</span>) -&gt; <span class="ident">bool</span> {
-        <span class="ident">std::mem::replace</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>.<span class="ident">debug</span>, <span class="ident">debug</span>)
+    <span class="doccomment">/// Set debug flag and returns the current one
+    </span><span class="kw">pub fn </span>set_debug(<span class="kw-2">&amp;mut </span><span class="self">self</span>, debug: bool) -&gt; bool {
+        std::mem::replace(<span class="kw-2">&amp;mut </span><span class="self">self</span>.debug, debug)
     }
 
-    <span class="doccomment">/// Set the analysis mode and returns the current one</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">set_mode</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">mode</span>: <span class="ident">Mode</span>) -&gt; <span class="ident">Mode</span> {
-        <span class="self">self</span>.<span class="ident">subset</span> <span class="op">|</span><span class="op">=</span> <span class="kw">match</span> <span class="ident">mode</span> {
-            <span class="ident">Mode::A</span> =&gt; <span class="ident">InfoSubset::SPLIT_A</span>,
-            <span class="ident">Mode::B</span> =&gt; <span class="ident">InfoSubset::SPLIT_B</span>,
-            <span class="kw">_</span> =&gt; <span class="ident">InfoSubset::empty</span>(),
+    <span class="doccomment">/// Set the analysis mode and returns the current one
+    </span><span class="kw">pub fn </span>set_mode(<span class="kw-2">&amp;mut </span><span class="self">self</span>, mode: Mode) -&gt; Mode {
+        <span class="self">self</span>.subset |= <span class="kw">match </span>mode {
+            Mode::A =&gt; InfoSubset::SPLIT_A,
+            Mode::B =&gt; InfoSubset::SPLIT_B,
+            <span class="kw">_ </span>=&gt; InfoSubset::empty(),
         };
-        <span class="ident">std::mem::replace</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>.<span class="ident">mode</span>, <span class="ident">mode</span>)
+        std::mem::replace(<span class="kw-2">&amp;mut </span><span class="self">self</span>.mode, mode)
     }
 
-    <span class="doccomment">/// Analyzer will read only following WordInfo field subset</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">set_subset</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">subset</span>: <span class="ident">InfoSubset</span>) -&gt; <span class="ident">InfoSubset</span> {
-        <span class="kw">let</span> <span class="ident">mode_subset</span> <span class="op">=</span> <span class="kw">match</span> <span class="self">self</span>.<span class="ident">mode</span> {
-            <span class="ident">Mode::A</span> =&gt; <span class="ident">InfoSubset::SPLIT_A</span>,
-            <span class="ident">Mode::B</span> =&gt; <span class="ident">InfoSubset::SPLIT_B</span>,
-            <span class="kw">_</span> =&gt; <span class="ident">InfoSubset::empty</span>(),
+    <span class="doccomment">/// Analyzer will read only following [`WordInfo`] field subset
+    </span><span class="kw">pub fn </span>set_subset(<span class="kw-2">&amp;mut </span><span class="self">self</span>, subset: InfoSubset) -&gt; InfoSubset {
+        <span class="kw">let </span>mode_subset = <span class="kw">match </span><span class="self">self</span>.mode {
+            Mode::A =&gt; InfoSubset::SPLIT_A,
+            Mode::B =&gt; InfoSubset::SPLIT_B,
+            <span class="kw">_ </span>=&gt; InfoSubset::empty(),
         };
-        <span class="kw">let</span> <span class="ident">new_subset</span> <span class="op">=</span> (<span class="ident">subset</span> <span class="op">|</span> <span class="ident">mode_subset</span>).<span class="ident">normalize</span>();
-        <span class="ident">std::mem::replace</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>.<span class="ident">subset</span>, <span class="ident">new_subset</span> <span class="op">|</span> <span class="ident">mode_subset</span>)
+        <span class="kw">let </span>new_subset = (subset | mode_subset).normalize();
+        std::mem::replace(<span class="kw-2">&amp;mut </span><span class="self">self</span>.subset, new_subset | mode_subset)
     }
 
-    <span class="doccomment">/// Prepare StatefulTokenizer for the next data.</span>
-    <span class="doccomment">/// Data must be written in the returned reference.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">reset</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>) -&gt; <span class="kw-2">&amp;mut</span> <span class="ident">String</span> {
-        <span class="self">self</span>.<span class="ident">top_path</span>.<span class="ident">as_mut</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">p</span><span class="op">|</span> <span class="ident">p</span>.<span class="ident">clear</span>());
-        <span class="self">self</span>.<span class="ident">oov</span>.<span class="ident">clear</span>();
-        <span class="self">self</span>.<span class="ident">input</span>.<span class="ident">reset</span>()
+    <span class="doccomment">/// Prepare StatefulTokenizer for the next data.
+    /// Data must be written in the returned reference.
+    </span><span class="kw">pub fn </span>reset(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;mut </span>String {
+        <span class="self">self</span>.top_path.as_mut().map(|p| p.clear());
+        <span class="self">self</span>.oov.clear();
+        <span class="self">self</span>.input.reset()
     }
 
-    <span class="doccomment">/// Borrow current dictionary</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">dict</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="ident">D</span> {
-        <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">dictionary</span>
+    <span class="doccomment">/// Borrow current dictionary
+    </span><span class="kw">pub fn </span>dict(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>D {
+        <span class="kw-2">&amp;</span><span class="self">self</span>.dictionary
     }
 
-    <span class="doccomment">/// Perform the actual tokenization so the analysis result will be available</span>
-    <span class="doccomment">/// for consumption</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">do_tokenize</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>) -&gt; <span class="ident">SudachiResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
-        <span class="self">self</span>.<span class="ident">input</span>.<span class="ident">start_build</span>()<span class="question-mark">?</span>;
-        <span class="self">self</span>.<span class="ident">rewrite_input</span>()<span class="question-mark">?</span>;
-        <span class="self">self</span>.<span class="ident">input</span>.<span class="ident">build</span>(<span class="self">self</span>.<span class="ident">dictionary</span>.<span class="ident">grammar</span>())<span class="question-mark">?</span>;
+    <span class="doccomment">/// Perform the actual tokenization so the analysis result will be available
+    /// for consumption
+    </span><span class="kw">pub fn </span>do_tokenize(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; SudachiResult&lt;()&gt; {
+        <span class="self">self</span>.input.start_build()<span class="question-mark">?</span>;
+        <span class="self">self</span>.rewrite_input()<span class="question-mark">?</span>;
+        <span class="self">self</span>.input.build(<span class="self">self</span>.dictionary.grammar())<span class="question-mark">?</span>;
 
-        <span class="kw">if</span> <span class="self">self</span>.<span class="ident">input</span>.<span class="ident">current</span>().<span class="ident">is_empty</span>() {
-            <span class="kw">return</span> <span class="prelude-val">Ok</span>(());
+        <span class="kw">if </span><span class="self">self</span>.input.current().is_empty() {
+            <span class="kw">return </span><span class="prelude-val">Ok</span>(());
         }
 
-        <span class="kw">let</span> <span class="ident">debug</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">debug</span>;
+        <span class="kw">let </span>debug = <span class="self">self</span>.debug;
 
-        <span class="kw">if</span> <span class="ident">debug</span> {
-            <span class="macro">println!</span>(<span class="string">&quot;=== Input dump:\n{}&quot;</span>, <span class="self">self</span>.<span class="ident">input</span>.<span class="ident">current</span>());
+        <span class="kw">if </span>debug {
+            <span class="macro">println!</span>(<span class="string">&quot;=== Input dump:\n{}&quot;</span>, <span class="self">self</span>.input.current());
         }
 
-        <span class="self">self</span>.<span class="ident">build_lattice</span>()<span class="question-mark">?</span>;
+        <span class="self">self</span>.build_lattice()<span class="question-mark">?</span>;
 
-        <span class="kw">if</span> <span class="ident">debug</span> {
+        <span class="kw">if </span>debug {
             <span class="macro">println!</span>(<span class="string">&quot;=== Lattice dump:&quot;</span>);
-            <span class="kw">let</span> <span class="ident">dict</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">dictionary</span>;
-            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">writer</span> <span class="op">=</span> <span class="ident">std::io::stdout</span>();
-            <span class="self">self</span>.<span class="ident">lattice</span>
-                .<span class="ident">dump</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">input</span>, <span class="ident">dict</span>.<span class="ident">grammar</span>(), <span class="ident">dict</span>.<span class="ident">lexicon</span>(), <span class="kw-2">&amp;mut</span> <span class="ident">writer</span>)<span class="question-mark">?</span>;
+            <span class="kw">let </span>dict = <span class="kw-2">&amp;</span><span class="self">self</span>.dictionary;
+            <span class="kw">let </span><span class="kw-2">mut </span>writer = std::io::stdout();
+            <span class="self">self</span>.lattice
+                .dump(<span class="kw-2">&amp;</span><span class="self">self</span>.input, dict.grammar(), dict.lexicon(), <span class="kw-2">&amp;mut </span>writer)<span class="question-mark">?</span>;
         };
 
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">path</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">resolve_best_path</span>()<span class="question-mark">?</span>;
+        <span class="kw">let </span><span class="kw-2">mut </span>path = <span class="self">self</span>.resolve_best_path()<span class="question-mark">?</span>;
 
-        <span class="kw">if</span> <span class="ident">debug</span> {
+        <span class="kw">if </span>debug {
             <span class="macro">println!</span>(<span class="string">&quot;=== Before Rewriting:&quot;</span>);
-            <span class="ident">dump_path</span>(<span class="kw-2">&amp;</span><span class="ident">path</span>);
+            dump_path(<span class="kw-2">&amp;</span>path);
         };
 
-        <span class="kw">for</span> <span class="ident">plugin</span> <span class="kw">in</span> <span class="self">self</span>.<span class="ident">dictionary</span>.<span class="ident">path_rewrite_plugins</span>() {
-            <span class="ident">path</span> <span class="op">=</span> <span class="ident">plugin</span>.<span class="ident">rewrite</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">input</span>, <span class="ident">path</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">lattice</span>)<span class="question-mark">?</span>;
+        <span class="kw">for </span>plugin <span class="kw">in </span><span class="self">self</span>.dictionary.path_rewrite_plugins() {
+            path = plugin.rewrite(<span class="kw-2">&amp;</span><span class="self">self</span>.input, path, <span class="kw-2">&amp;</span><span class="self">self</span>.lattice)<span class="question-mark">?</span>;
         }
 
-        <span class="ident">path</span> <span class="op">=</span> <span class="ident">split_path</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">dictionary</span>, <span class="ident">path</span>, <span class="self">self</span>.<span class="ident">mode</span>, <span class="self">self</span>.<span class="ident">subset</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">input</span>)<span class="question-mark">?</span>;
+        path = split_path(<span class="kw-2">&amp;</span><span class="self">self</span>.dictionary, path, <span class="self">self</span>.mode, <span class="self">self</span>.subset, <span class="kw-2">&amp;</span><span class="self">self</span>.input)<span class="question-mark">?</span>;
 
-        <span class="kw">if</span> <span class="ident">debug</span> {
+        <span class="kw">if </span>debug {
             <span class="macro">println!</span>(<span class="string">&quot;=== After Rewriting:&quot;</span>);
-            <span class="ident">dump_path</span>(<span class="kw-2">&amp;</span><span class="ident">path</span>);
+            dump_path(<span class="kw-2">&amp;</span>path);
             <span class="macro">println!</span>(<span class="string">&quot;===&quot;</span>);
         };
 
-        <span class="self">self</span>.<span class="ident">top_path</span> <span class="op">=</span> <span class="prelude-val">Some</span>(<span class="ident">path</span>);
+        <span class="self">self</span>.top_path = <span class="prelude-val">Some</span>(path);
 
         <span class="prelude-val">Ok</span>(())
     }
 
-    <span class="doccomment">/// Resolve the path (as ResultNodes) with the smallest cost</span>
-    <span class="kw">fn</span> <span class="ident">resolve_best_path</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>) -&gt; <span class="ident">SudachiResult</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">ResultNode</span><span class="op">&gt;</span><span class="op">&gt;</span> {
-        <span class="kw">let</span> <span class="ident">lex</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">dictionary</span>.<span class="ident">lexicon</span>();
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">path</span> <span class="op">=</span> <span class="ident">std::mem::replace</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>.<span class="ident">top_path</span>, <span class="prelude-val">None</span>).<span class="ident">unwrap_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">Vec::new</span>());
-        <span class="self">self</span>.<span class="ident">lattice</span>.<span class="ident">fill_top_path</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>.<span class="ident">top_path_ids</span>);
-        <span class="self">self</span>.<span class="ident">top_path_ids</span>.<span class="ident">reverse</span>();
-        <span class="kw">for</span> <span class="ident">pid</span> <span class="kw">in</span> <span class="self">self</span>.<span class="ident">top_path_ids</span>.<span class="ident">drain</span>(..) {
-            <span class="kw">let</span> (<span class="ident">inner</span>, <span class="ident">cost</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">lattice</span>.<span class="ident">node</span>(<span class="ident">pid</span>);
-            <span class="kw">let</span> <span class="ident">wi</span> <span class="op">=</span> <span class="kw">if</span> <span class="ident">inner</span>.<span class="ident">word_id</span>().<span class="ident">is_oov</span>() {
-                <span class="kw">let</span> <span class="ident">curr_slice</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">input</span>.<span class="ident">curr_slice_c</span>(<span class="ident">inner</span>.<span class="ident">char_range</span>()).<span class="ident">to_owned</span>();
-                <span class="ident">WordInfoData</span> {
-                    <span class="ident">pos_id</span>: <span class="ident">inner</span>.<span class="ident">word_id</span>().<span class="ident">word</span>() <span class="kw">as</span> <span class="ident">u16</span>,
-                    <span class="ident">surface</span>: <span class="ident">curr_slice</span>,
-                    ..<span class="ident">Default::default</span>()
+    <span class="doccomment">/// Resolve the path (as ResultNodes) with the smallest cost
+    </span><span class="kw">fn </span>resolve_best_path(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; SudachiResult&lt;Vec&lt;ResultNode&gt;&gt; {
+        <span class="kw">let </span>lex = <span class="self">self</span>.dictionary.lexicon();
+        <span class="kw">let </span><span class="kw-2">mut </span>path = std::mem::replace(<span class="kw-2">&amp;mut </span><span class="self">self</span>.top_path, <span class="prelude-val">None</span>).unwrap_or_else(|| Vec::new());
+        <span class="self">self</span>.lattice.fill_top_path(<span class="kw-2">&amp;mut </span><span class="self">self</span>.top_path_ids);
+        <span class="self">self</span>.top_path_ids.reverse();
+        <span class="kw">for </span>pid <span class="kw">in </span><span class="self">self</span>.top_path_ids.drain(..) {
+            <span class="kw">let </span>(inner, cost) = <span class="self">self</span>.lattice.node(pid);
+            <span class="kw">let </span>wi = <span class="kw">if </span>inner.word_id().is_oov() {
+                <span class="kw">let </span>curr_slice = <span class="self">self</span>.input.curr_slice_c(inner.char_range()).to_owned();
+                WordInfoData {
+                    pos_id: inner.word_id().word() <span class="kw">as </span>u16,
+                    surface: curr_slice,
+                    ..Default::default()
                 }
-                .<span class="ident">into</span>()
-            } <span class="kw">else</span> {
-                <span class="ident">lex</span>.<span class="ident">get_word_info_subset</span>(<span class="ident">inner</span>.<span class="ident">word_id</span>(), <span class="self">self</span>.<span class="ident">subset</span>)<span class="question-mark">?</span>
-            };
+                .into()
+            } <span class="kw">else </span>{
+                lex.get_word_info_subset(inner.word_id(), <span class="self">self</span>.subset)<span class="question-mark">?
+            </span>};
 
-            <span class="kw">let</span> <span class="ident">byte_begin</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">input</span>.<span class="ident">to_curr_byte_idx</span>(<span class="ident">inner</span>.<span class="ident">begin</span>());
-            <span class="kw">let</span> <span class="ident">byte_end</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">input</span>.<span class="ident">to_curr_byte_idx</span>(<span class="ident">inner</span>.<span class="ident">end</span>());
+            <span class="kw">let </span>byte_begin = <span class="self">self</span>.input.to_curr_byte_idx(inner.begin());
+            <span class="kw">let </span>byte_end = <span class="self">self</span>.input.to_curr_byte_idx(inner.end());
 
-            <span class="ident">path</span>.<span class="ident">push</span>(<span class="ident">ResultNode::new</span>(
-                <span class="ident">inner</span>.<span class="ident">clone</span>(),
-                <span class="ident">cost</span>,
-                <span class="ident">byte_begin</span> <span class="kw">as</span> <span class="ident">u16</span>,
-                <span class="ident">byte_end</span> <span class="kw">as</span> <span class="ident">u16</span>,
-                <span class="ident">wi</span>,
+            path.push(ResultNode::new(
+                inner.clone(),
+                cost,
+                byte_begin <span class="kw">as </span>u16,
+                byte_end <span class="kw">as </span>u16,
+                wi,
             ));
         }
-        <span class="prelude-val">Ok</span>(<span class="ident">path</span>)
+        <span class="prelude-val">Ok</span>(path)
     }
 
-    <span class="doccomment">/// Swap result data with the current analyzer</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">swap_result</span>(
-        <span class="kw-2">&amp;mut</span> <span class="self">self</span>,
-        <span class="ident">input</span>: <span class="kw-2">&amp;mut</span> <span class="ident">InputBuffer</span>,
-        <span class="ident">result</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">ResultNode</span><span class="op">&gt;</span>,
-        <span class="ident">subset</span>: <span class="kw-2">&amp;mut</span> <span class="ident">InfoSubset</span>,
+    <span class="doccomment">/// Swap result data with the current analyzer
+    </span><span class="kw">pub fn </span>swap_result(
+        <span class="kw-2">&amp;mut </span><span class="self">self</span>,
+        input: <span class="kw-2">&amp;mut </span>InputBuffer,
+        result: <span class="kw-2">&amp;mut </span>Vec&lt;ResultNode&gt;,
+        subset: <span class="kw-2">&amp;mut </span>InfoSubset,
     ) {
-        <span class="ident">std::mem::swap</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>.<span class="ident">input</span>, <span class="ident">input</span>);
-        <span class="ident">std::mem::swap</span>(<span class="self">self</span>.<span class="ident">top_path</span>.<span class="ident">as_mut</span>().<span class="ident">unwrap</span>(), <span class="ident">result</span>);
-        <span class="kw-2">*</span><span class="ident">subset</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">subset</span>;
+        std::mem::swap(<span class="kw-2">&amp;mut </span><span class="self">self</span>.input, input);
+        std::mem::swap(<span class="self">self</span>.top_path.as_mut().unwrap(), result);
+        <span class="kw-2">*</span>subset = <span class="self">self</span>.subset;
     }
 
-    <span class="kw">fn</span> <span class="ident">rewrite_input</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>) -&gt; <span class="ident">SudachiResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
-        <span class="kw">for</span> <span class="ident">p</span> <span class="kw">in</span> <span class="self">self</span>.<span class="ident">dictionary</span>.<span class="ident">input_text_plugins</span>() {
-            <span class="ident">p</span>.<span class="ident">rewrite</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>.<span class="ident">input</span>)<span class="question-mark">?</span>;
+    <span class="kw">fn </span>rewrite_input(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; SudachiResult&lt;()&gt; {
+        <span class="kw">for </span>p <span class="kw">in </span><span class="self">self</span>.dictionary.input_text_plugins() {
+            p.rewrite(<span class="kw-2">&amp;mut </span><span class="self">self</span>.input)<span class="question-mark">?</span>;
         }
         <span class="prelude-val">Ok</span>(())
     }
 
-    <span class="kw">fn</span> <span class="ident">build_lattice</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>) -&gt; <span class="ident">SudachiResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
-        <span class="kw">let</span> <span class="ident">input</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">input</span>;
-        <span class="kw">let</span> <span class="ident">dict</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">dictionary</span>;
-        <span class="kw">let</span> <span class="ident">input_bytes</span> <span class="op">=</span> <span class="ident">input</span>.<span class="ident">current</span>().<span class="ident">as_bytes</span>();
-        <span class="kw">let</span> <span class="ident">oovs</span> <span class="op">=</span> <span class="kw-2">&amp;mut</span> <span class="self">self</span>.<span class="ident">oov</span>;
-        <span class="kw">let</span> <span class="ident">lattice</span> <span class="op">=</span> <span class="kw-2">&amp;mut</span> <span class="self">self</span>.<span class="ident">lattice</span>;
-
-        <span class="ident">lattice</span>.<span class="ident">reset</span>(<span class="ident">input</span>.<span class="ident">current_chars</span>().<span class="ident">len</span>());
-
-        <span class="kw">for</span> (<span class="ident">ch_off</span>, <span class="kw-2">&amp;</span><span class="ident">byte_off</span>) <span class="kw">in</span> <span class="ident">input</span>.<span class="ident">curr_byte_offsets</span>().<span class="ident">iter</span>().<span class="ident">enumerate</span>() {
-            <span class="kw">if</span> <span class="op">!</span><span class="ident">lattice</span>.<span class="ident">has_previous_node</span>(<span class="ident">ch_off</span>) {
-                <span class="kw">continue</span>;
-            }
-
-            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">has_word</span> <span class="op">=</span> <span class="bool-val">false</span>;
-            <span class="kw">for</span> <span class="ident">e</span> <span class="kw">in</span> <span class="ident">dict</span>.<span class="ident">lexicon</span>().<span class="ident">lookup</span>(<span class="ident">input_bytes</span>, <span class="ident">byte_off</span>) {
-                <span class="comment">// do we really need input.can_bow condition?</span>
-                <span class="kw">if</span> (<span class="ident">e</span>.<span class="ident">end</span> <span class="op">&lt;</span> <span class="ident">input_bytes</span>.<span class="ident">len</span>()) <span class="op">&amp;&amp;</span> <span class="op">!</span><span class="ident">input</span>.<span class="ident">can_bow</span>(<span class="ident">e</span>.<span class="ident">end</span>) {
-                    <span class="kw">continue</span>;
-                }
-                <span class="ident">has_word</span> <span class="op">=</span> <span class="bool-val">true</span>;
-                <span class="kw">let</span> (<span class="ident">left_id</span>, <span class="ident">right_id</span>, <span class="ident">cost</span>) <span class="op">=</span> <span class="ident">dict</span>.<span class="ident">lexicon</span>().<span class="ident">get_word_param</span>(<span class="ident">e</span>.<span class="ident">word_id</span>);
-                <span class="kw">let</span> <span class="ident">end_c</span> <span class="op">=</span> <span class="ident">input</span>.<span class="ident">ch_idx</span>(<span class="ident">e</span>.<span class="ident">end</span>);
-                <span class="kw">let</span> <span class="ident">node</span> <span class="op">=</span> <span class="ident">Node::new</span>(
-                    <span class="ident">ch_off</span> <span class="kw">as</span> <span class="ident">u16</span>,
-                    <span class="ident">end_c</span> <span class="kw">as</span> <span class="ident">u16</span>,
-                    <span class="ident">left_id</span> <span class="kw">as</span> <span class="ident">u16</span>,
-                    <span class="ident">right_id</span> <span class="kw">as</span> <span class="ident">u16</span>,
-                    <span class="ident">cost</span>,
-                    <span class="ident">e</span>.<span class="ident">word_id</span>,
-                );
-                <span class="ident">lattice</span>.<span class="ident">insert</span>(<span class="ident">node</span>, <span class="ident">dict</span>.<span class="ident">grammar</span>().<span class="ident">conn_matrix</span>());
-            }
-
-            <span class="comment">// OOV</span>
-            <span class="kw">if</span> <span class="op">!</span><span class="ident">input</span>
-                .<span class="ident">cat_at_char</span>(<span class="ident">ch_off</span>)
-                .<span class="ident">intersects</span>(<span class="ident">CategoryType::NOOOVBOW</span> <span class="op">|</span> <span class="ident">CategoryType::NOOOVBOW2</span>)
-            {
-                <span class="kw">for</span> <span class="ident">oov_provider</span> <span class="kw">in</span> <span class="ident">dict</span>.<span class="ident">oov_provider_plugins</span>() {
-                    <span class="ident">oov_provider</span>.<span class="ident">get_oov</span>(<span class="kw-2">&amp;</span><span class="ident">input</span>, <span class="ident">ch_off</span>, <span class="ident">has_word</span>, <span class="ident">oovs</span>)<span class="question-mark">?</span>;
-                    <span class="kw">for</span> <span class="ident">node</span> <span class="kw">in</span> <span class="ident">oovs</span>.<span class="ident">drain</span>(..) {
-                        <span class="ident">has_word</span> <span class="op">=</span> <span class="bool-val">true</span>;
-                        <span class="ident">lattice</span>.<span class="ident">insert</span>(<span class="ident">node</span>, <span class="ident">dict</span>.<span class="ident">grammar</span>().<span class="ident">conn_matrix</span>());
-                    }
-                }
-            }
-
-            <span class="kw">if</span> <span class="op">!</span><span class="ident">has_word</span> {
-                <span class="ident">dict</span>.<span class="ident">oov_provider_plugins</span>()
-                    .<span class="ident">last</span>()
-                    .<span class="ident">unwrap</span>() <span class="comment">// JapaneseDictionary</span>
-                    .<span class="ident">get_oov</span>(<span class="kw-2">&amp;</span><span class="ident">input</span>, <span class="ident">ch_off</span>, <span class="ident">has_word</span>, <span class="ident">oovs</span>)<span class="question-mark">?</span>;
-                <span class="comment">// use last oov_provider as default</span>
-                <span class="kw">for</span> <span class="ident">node</span> <span class="kw">in</span> <span class="ident">oovs</span>.<span class="ident">drain</span>(..) {
-                    <span class="ident">has_word</span> <span class="op">=</span> <span class="bool-val">true</span>;
-                    <span class="ident">lattice</span>.<span class="ident">insert</span>(<span class="ident">node</span>, <span class="ident">dict</span>.<span class="ident">grammar</span>().<span class="ident">conn_matrix</span>());
-                }
-            }
-
-            <span class="kw">if</span> <span class="op">!</span><span class="ident">has_word</span> {
-                <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">SudachiError::EosBosDisconnect</span>);
-            }
-        }
-        <span class="ident">lattice</span>.<span class="ident">connect_eos</span>(<span class="ident">dict</span>.<span class="ident">grammar</span>().<span class="ident">conn_matrix</span>())<span class="question-mark">?</span>;
-
-        <span class="prelude-val">Ok</span>(())
+    <span class="kw">fn </span>build_lattice(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; SudachiResult&lt;()&gt; {
+        <span class="kw">let </span><span class="kw-2">mut </span>builder = LatticeBuilder {
+            node_buffer: <span class="kw-2">&amp;mut </span><span class="self">self</span>.oov,
+            lattice: <span class="kw-2">&amp;mut </span><span class="self">self</span>.lattice,
+            matrix: <span class="self">self</span>.dictionary.grammar().conn_matrix(),
+            oov_providers: <span class="self">self</span>.dictionary.oov_provider_plugins(),
+            lexicon: <span class="self">self</span>.dictionary.lexicon(),
+            input: <span class="kw-2">&amp;</span><span class="self">self</span>.input,
+        };
+        builder.build_lattice()
     }
 
-    <span class="doccomment">/// Consume the Tokenizer and produce MorphemeList</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">into_morpheme_list</span>(<span class="self">self</span>) -&gt; <span class="ident">SudachiResult</span><span class="op">&lt;</span><span class="ident">MorphemeList</span><span class="op">&lt;</span><span class="ident">D</span><span class="op">&gt;</span><span class="op">&gt;</span> {
-        <span class="kw">match</span> <span class="self">self</span>.<span class="ident">top_path</span> {
-            <span class="prelude-val">None</span> =&gt; <span class="prelude-val">Err</span>(<span class="ident">SudachiError::EosBosDisconnect</span>),
-            <span class="prelude-val">Some</span>(<span class="ident">path</span>) =&gt; <span class="prelude-val">Ok</span>(<span class="ident">MorphemeList::from_components</span>(
-                <span class="self">self</span>.<span class="ident">dictionary</span>,
-                <span class="self">self</span>.<span class="ident">input</span>,
-                <span class="ident">path</span>,
-                <span class="self">self</span>.<span class="ident">subset</span>,
+    <span class="doccomment">/// Consume the Tokenizer and produce MorphemeList
+    </span><span class="kw">pub fn </span>into_morpheme_list(<span class="self">self</span>) -&gt; SudachiResult&lt;MorphemeList&lt;D&gt;&gt; {
+        <span class="kw">match </span><span class="self">self</span>.top_path {
+            <span class="prelude-val">None </span>=&gt; <span class="prelude-val">Err</span>(SudachiError::EosBosDisconnect),
+            <span class="prelude-val">Some</span>(path) =&gt; <span class="prelude-val">Ok</span>(MorphemeList::from_components(
+                <span class="self">self</span>.dictionary,
+                <span class="self">self</span>.input,
+                path,
+                <span class="self">self</span>.subset,
             )),
         }
     }
 }
+
+<span class="comment">// This structure is purely for Rust.
+// Otherwise splitting code into functions fails to compile with double borrow errors
+</span><span class="kw">struct </span>LatticeBuilder&lt;<span class="lifetime">&#39;a</span>&gt; {
+    node_buffer: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="kw-2">mut </span>Vec&lt;Node&gt;,
+    lattice: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="kw-2">mut </span>Lattice,
+    matrix: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>ConnectionMatrix&lt;<span class="lifetime">&#39;a</span>&gt;,
+    input: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>InputBuffer,
+    lexicon: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>LexiconSet&lt;<span class="lifetime">&#39;a</span>&gt;,
+    oov_providers: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>[Box&lt;<span class="kw">dyn </span>OovProviderPlugin + Sync + Send&gt;],
+}
+
+<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; LatticeBuilder&lt;<span class="lifetime">&#39;a</span>&gt; {
+    <span class="attribute">#[inline]
+    </span><span class="kw">fn </span>build_lattice(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; SudachiResult&lt;()&gt; {
+        <span class="self">self</span>.lattice.reset(<span class="self">self</span>.input.current_chars().len());
+        <span class="kw">let </span>input_bytes = <span class="self">self</span>.input.current().as_bytes();
+
+        <span class="kw">for </span>(ch_off, <span class="kw-2">&amp;</span>byte_off) <span class="kw">in </span><span class="self">self</span>.input.curr_byte_offsets().iter().enumerate() {
+            <span class="kw">if </span>!<span class="self">self</span>.lattice.has_previous_node(ch_off) {
+                <span class="kw">continue</span>;
+            }
+
+            <span class="self">self</span>.node_buffer.clear();
+            <span class="kw">let </span><span class="kw-2">mut </span>created = CreatedWords::default();
+            <span class="kw">for </span>e <span class="kw">in </span><span class="self">self</span>.lexicon.lookup(input_bytes, byte_off) {
+                <span class="comment">// do we really need input.can_bow condition?
+                </span><span class="kw">if </span>(e.end &lt; input_bytes.len()) &amp;&amp; !<span class="self">self</span>.input.can_bow(e.end) {
+                    <span class="kw">continue</span>;
+                }
+                <span class="kw">let </span>(left_id, right_id, cost) = <span class="self">self</span>.lexicon.get_word_param(e.word_id);
+                <span class="kw">let </span>end_c = <span class="self">self</span>.input.ch_idx(e.end);
+                <span class="kw">let </span>node = Node::new(
+                    ch_off <span class="kw">as </span>u16,
+                    end_c <span class="kw">as </span>u16,
+                    left_id <span class="kw">as </span>u16,
+                    right_id <span class="kw">as </span>u16,
+                    cost,
+                    e.word_id,
+                );
+                created = created.add_word((end_c - ch_off) <span class="kw">as </span>i64);
+                <span class="self">self</span>.node_buffer.push(node.clone());
+                <span class="self">self</span>.lattice.insert(node, <span class="self">self</span>.matrix);
+            }
+
+            <span class="comment">// OOV
+            </span><span class="kw">if </span>!<span class="self">self
+                </span>.input
+                .cat_at_char(ch_off)
+                .intersects(CategoryType::NOOOVBOW | CategoryType::NOOOVBOW2)
+            {
+                <span class="kw">for </span>provider <span class="kw">in </span><span class="self">self</span>.oov_providers {
+                    created = <span class="self">self</span>.provide_oovs(ch_off, created, provider.as_ref())<span class="question-mark">?</span>;
+                }
+            }
+
+            <span class="kw">if </span>created.is_empty() {
+                <span class="kw">let </span>provider = <span class="self">self</span>.oov_providers.last().unwrap();
+                created = <span class="self">self</span>.provide_oovs(ch_off, created, provider.as_ref())<span class="question-mark">?</span>;
+            }
+
+            <span class="kw">if </span>created.is_empty() {
+                <span class="kw">return </span><span class="prelude-val">Err</span>(SudachiError::EosBosDisconnect);
+            }
+        }
+        <span class="self">self</span>.lattice.connect_eos(<span class="self">self</span>.matrix)<span class="question-mark">?</span>;
+
+        <span class="prelude-val">Ok</span>(())
+    }
+
+    <span class="attribute">#[inline]
+    </span><span class="kw">fn </span>provide_oovs&lt;P&gt;(
+        <span class="kw-2">&amp;mut </span><span class="self">self</span>,
+        char_offset: usize,
+        <span class="kw-2">mut </span>other: CreatedWords,
+        plugin: <span class="kw-2">&amp;</span>P,
+    ) -&gt; SudachiResult&lt;CreatedWords&gt;
+    <span class="kw">where
+        </span>P: OovProviderPlugin + <span class="lifetime">&#39;a </span>+ <span class="question-mark">?</span>Sized,
+    {
+        <span class="kw">let </span>start_size = <span class="self">self</span>.node_buffer.len();
+        <span class="kw">let </span>num_provided = plugin.provide_oov(<span class="self">self</span>.input, char_offset, other, <span class="self">self</span>.node_buffer)<span class="question-mark">?</span>;
+        <span class="kw">for </span>idx <span class="kw">in </span>start_size..(start_size + num_provided) {
+            <span class="kw">let </span>node = <span class="self">self</span>.node_buffer[idx].clone();
+            other = other.add_word(node.char_range().len() <span class="kw">as </span>i64);
+            <span class="self">self</span>.lattice.insert(node, <span class="self">self</span>.matrix);
+        }
+        <span class="prelude-val">Ok</span>(other)
+    }
+}
 </code></pre></div>
-</section><section id="search" class="content hidden"></section><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="sudachi" data-search-index-js="../../../search-index.js" data-search-js="../../../search.js"></div>
-</body></html>
+</section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="sudachi" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.65.0 (897e37553 2022-11-02)" ></div></body></html>
