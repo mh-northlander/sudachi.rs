@@ -1,22 +1,23 @@
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<html class="writer-html5" lang="en" data-content_root="../">
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>sudachipy.dictionary package &mdash; SudachiPy 0.6.7-a1 documentation</title>
-      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <title>sudachipy.dictionary package &mdash; SudachiPy 0.6.9-a1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+
+  
   <!--[if lt IE 9]>
     <script src="../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-        <script src="../_static/jquery.js"></script>
-        <script src="../_static/underscore.js"></script>
-        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script src="../_static/doctools.js"></script>
-        <script src="../_static/sphinx_highlight.js"></script>
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=6cb8837e"></script>
+        <script src="../_static/doctools.js?v=888ff710"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -29,11 +30,15 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="../index.html" class="icon icon-home"> SudachiPy
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            SudachiPy
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -82,7 +87,7 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="../index.html" class="icon icon-home"></a></li>
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
       <li class="breadcrumb-item active">sudachipy.dictionary package</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../_sources/api/sudachipy.dictionary.rst.txt" rel="nofollow"> View page source</a>
@@ -94,9 +99,9 @@
            <div itemprop="articleBody">
              
   <section id="sudachipy-dictionary-package">
-<h1>sudachipy.dictionary package<a class="headerlink" href="#sudachipy-dictionary-package" title="Permalink to this heading"></a></h1>
+<h1>sudachipy.dictionary package<a class="headerlink" href="#sudachipy-dictionary-package" title="Link to this heading"></a></h1>
 <section id="note">
-<h2>Note<a class="headerlink" href="#note" title="Permalink to this heading"></a></h2>
+<h2>Note<a class="headerlink" href="#note" title="Link to this heading"></a></h2>
 <ul class="simple">
 <li><dl class="simple">
 <dt>Import from <code class="docutils literal notranslate"><span class="pre">sudachipy.dictionary</span></code> is deprecated.</dt><dd><ul>
@@ -109,24 +114,24 @@
 </ul>
 </section>
 <section id="module-sudachipy.dictionary">
-<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-sudachipy.dictionary" title="Permalink to this heading"></a></h2>
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-sudachipy.dictionary" title="Link to this heading"></a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="sudachipy.dictionary.Dictionary">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">sudachipy.dictionary.</span></span><span class="sig-name descname"><span class="pre">Dictionary</span></span><a class="headerlink" href="#sudachipy.dictionary.Dictionary" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">sudachipy.dictionary.</span></span><span class="sig-name descname"><span class="pre">Dictionary</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resource_dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dict</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dict_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#sudachipy.dictionary.Dictionary" title="Link to this definition"></a></dt>
 <dd><p>A sudachi dictionary</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="sudachipy.dictionary.Dictionary.close">
-<span class="sig-name descname"><span class="pre">close</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#sudachipy.dictionary.Dictionary.close" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">close</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#sudachipy.dictionary.Dictionary.close" title="Link to this definition"></a></dt>
 <dd><p>Close this dictionary</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="sudachipy.dictionary.Dictionary.create">
-<span class="sig-name descname"><span class="pre">create</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">$self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode:</span> <span class="pre">sudachipy.SplitMode</span> <span class="pre">=</span> <span class="pre">sudachipy.SplitMode.C</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="sudachipy.html#sudachipy.Tokenizer" title="sudachipy.Tokenizer"><span class="pre">sudachipy.Tokenizer</span></a></span></span><a class="headerlink" href="#sudachipy.dictionary.Dictionary.create" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">create</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">$self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode:</span> <span class="pre">sudachipy.SplitMode</span> <span class="pre">=</span> <span class="pre">sudachipy.SplitMode.C</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="sudachipy.html#sudachipy.Tokenizer" title="sudachipy.Tokenizer"><span class="pre">sudachipy.Tokenizer</span></a></span></span><a class="headerlink" href="#sudachipy.dictionary.Dictionary.create" title="Link to this definition"></a></dt>
 <dd><p>–</p>
 <p>Creates a sudachi tokenizer.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>mode</strong> – tokenizer’s default split mode (C by default).</p></li>
 <li><p><strong>fields</strong> – load only a subset of fields.
@@ -138,7 +143,7 @@ See <a class="reference external" href="https://worksapplications.github.io/suda
 
 <dl class="py method">
 <dt class="sig sig-object py" id="sudachipy.dictionary.Dictionary.lookup">
-<span class="sig-name descname"><span class="pre">lookup</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">$self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">surface</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out</span> <span class="pre">=</span> <span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="sudachipy.html#sudachipy.MorphemeList" title="sudachipy.MorphemeList"><span class="pre">sudachipy.MorphemeList</span></a></span></span><a class="headerlink" href="#sudachipy.dictionary.Dictionary.lookup" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">lookup</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">$self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">surface</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out</span> <span class="pre">=</span> <span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="sudachipy.html#sudachipy.MorphemeList" title="sudachipy.MorphemeList"><span class="pre">sudachipy.MorphemeList</span></a></span></span><a class="headerlink" href="#sudachipy.dictionary.Dictionary.lookup" title="Link to this definition"></a></dt>
 <dd><p>–</p>
 <p>Look up morphemes in the binary dictionary without performing the analysis.
 All morphemes from the dictionary with the given surface string are returned,
@@ -146,7 +151,7 @@ with the last user dictionary searched first and the system dictionary searched 
 Inside a dictionary, morphemes are outputted in-binary-dictionary order.
 Morphemes which are not indexed are not returned.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>surface</strong> (<em>str</em>) – find all morphemes with the given surface</p></li>
 <li><p><strong>out</strong> – if passed, reuse the given morpheme list instead of creating a new one.
@@ -159,7 +164,7 @@ See <a class="reference external" href="https://worksapplications.github.io/suda
 
 <dl class="py method">
 <dt class="sig sig-object py" id="sudachipy.dictionary.Dictionary.pos_matcher">
-<span class="sig-name descname"><span class="pre">pos_matcher</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#sudachipy.dictionary.Dictionary.pos_matcher" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">pos_matcher</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#sudachipy.dictionary.Dictionary.pos_matcher" title="Link to this definition"></a></dt>
 <dd><p>Creates a POS matcher object</p>
 <p>If target is a function, then it must return whether a POS should match or not.
 If target a list, it should contain partially specified POS.
@@ -168,7 +173,7 @@ use None as a sentinel value that matches any POS.</p>
 <p>For example, (‘名詞’,) will match any noun and
 (None, None, None, None, None, ‘終止形‐一般’) will match any word in 終止形‐一般 conjugation form.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>target</strong> – can be either a callable or list of POS partial tuples</p>
 </dd>
 </dl>
@@ -176,26 +181,28 @@ use None as a sentinel value that matches any POS.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="sudachipy.dictionary.Dictionary.pos_of">
-<span class="sig-name descname"><span class="pre">pos_of</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#sudachipy.dictionary.Dictionary.pos_of" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">pos_of</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#sudachipy.dictionary.Dictionary.pos_of" title="Link to this definition"></a></dt>
 <dd><p>Get POS Tuple by its id</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="sudachipy.dictionary.Dictionary.pre_tokenizer">
-<span class="sig-name descname"><span class="pre">pre_tokenizer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">$self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fields</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">handler</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tokenizers.PreTokenizer</span></span></span><a class="headerlink" href="#sudachipy.dictionary.Dictionary.pre_tokenizer" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">pre_tokenizer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">$self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fields</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">handler</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tokenizers.PreTokenizer</span></span></span><a class="headerlink" href="#sudachipy.dictionary.Dictionary.pre_tokenizer" title="Link to this definition"></a></dt>
 <dd><p>–</p>
 <p>Creates HuggingFace Tokenizers-compatible PreTokenizer.
 Requires package <cite>tokenizers</cite> to be installed.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>mode</strong> (<a class="reference internal" href="sudachipy.html#sudachipy.SplitMode" title="sudachipy.SplitMode"><em>sudachipy.SplitMode</em></a>) – Use this split mode (C by default)</p></li>
 <li><p><strong>fields</strong> (<em>Set</em><em>[</em><em>str</em><em>]</em>) – ask Sudachi to load only a subset of fields.
 See <a class="reference external" href="https://worksapplications.github.io/sudachi.rs/python/topics/subsetting.html">https://worksapplications.github.io/sudachi.rs/python/topics/subsetting.html</a></p></li>
 <li><p><strong>handler</strong> – a custom callable to transform MorphemeList into list of tokens.
-It should be should be a function(index: int, original: NormalizedString, morphemes: MorphemeList) -&gt; List[NormalizedString].
+It should be should be a <cite>function(index: int, original: NormalizedString, morphemes: MorphemeList) -&gt; List[NormalizedString]</cite>.
 See <a class="reference external" href="https://github.com/huggingface/tokenizers/blob/master/bindings/python/examples/custom_components.py">https://github.com/huggingface/tokenizers/blob/master/bindings/python/examples/custom_components.py</a>
 If nothing was passed, simply use surface as token representations.</p></li>
+<li><p><strong>projection</strong> – projection mode for a created PreTokenizer.
+See <a class="reference internal" href="sudachipy.html#sudachipy.config.Config" title="sudachipy.config.Config"><code class="xref py py-class docutils literal notranslate"><span class="pre">sudachipy.config.Config</span></code></a> object documentation for supported projections.</p></li>
 </ul>
 </dd>
 </dl>
@@ -217,7 +224,7 @@ If nothing was passed, simply use surface as token representations.</p></li>
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2021, Works Applications.</p>
+    <p>&#169; Copyright 2023, Works Applications.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
