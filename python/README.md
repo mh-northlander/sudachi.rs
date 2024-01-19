@@ -241,7 +241,7 @@ class Dictionary(config_path=None, resource_dir=None, dict_type=None)
 ```
 
 1. `config_path`
-    * You can specify the file path to the setting file with `config_path` (See [Dictionary in The Setting File](#Dictionary in The Setting File) for the detail).
+    * You can specify the file path to the setting file with `config_path` (See [Dictionary in The Setting File](#dictionary-in-the-setting-file) for the detail).
     * If the dictionary file is specified in the setting file as `systemDict`, SudachiPy will use the dictionary.
 2. `dict_type`
     * You can also specify the dictionary type with `dict_type`.
