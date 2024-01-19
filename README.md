@@ -2,7 +2,7 @@
 
 [![Rust](https://github.com/WorksApplications/sudachi.rs/actions/workflows/rust.yml/badge.svg)](https://github.com/WorksApplications/sudachi.rs/actions/workflows/rust.yml)
 
-**2023-12-14 UPDATE**: [0.6.8 Release](https://github.com/WorksApplications/sudachi.rs/releases/tag/v0.6.7)
+**2023-12-14 UPDATE**: [0.6.8 Release](https://github.com/WorksApplications/sudachi.rs/releases/tag/v0.6.8)
 
 Try it:
 ```shell
