@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `sudachi/src/dic/grammar.rs`."><title>grammar.rs - source</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-46f98efaafac5295.ttf.woff2,FiraSans-Regular-018c141bf0843ffd.woff2,FiraSans-Medium-8f9a781e4970d388.woff2,SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2,SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-081576b923113409.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="sudachi" data-themes="" data-resource-suffix="" data-rustdoc-version="1.79.0 (129f3b996 2024-06-10)" data-channel="1.79.0" data-search-js="search-bf21c90c8c1d92b1.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../../static.files/storage-e32f0c247825364d.js"></script><script defer src="../../../static.files/src-script-e66d777a5a92e9b2.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-20a3ad099b048cf2.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-09095024cf37855e.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="src-sidebar-title"><h2>Files</h2></div></nav><div class="sidebar-resizer"></div><main><nav class="sub"><form class="search-form"><span></span><div id="sidebar-button" tabindex="-1"><a href="../../../sudachi/all.html" title="show sidebar"></a></div><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Type ‘S’ or ‘/’ to search, ‘?’ for more options…" type="search"><div id="help-button" tabindex="-1"><a href="../../../help.html" title="help">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings">Settings</a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `sudachi/src/dic/grammar.rs`."><title>grammar.rs - source</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-46f98efaafac5295.ttf.woff2,FiraSans-Regular-018c141bf0843ffd.woff2,FiraSans-Medium-8f9a781e4970d388.woff2,SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2,SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-492a78a4a87dcc01.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="sudachi" data-themes="" data-resource-suffix="" data-rustdoc-version="1.82.0 (f6e511eec 2024-10-15)" data-channel="1.82.0" data-search-js="search-a99f1315e7cc5121.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../../static.files/storage-118b08c4c78b968e.js"></script><script defer src="../../../static.files/src-script-e66d777a5a92e9b2.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-921df33f47b8780c.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-3b12f09e550e0385.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="src-sidebar-title"><h2>Files</h2></div></nav><div class="sidebar-resizer"></div><main><rustdoc-search></rustdoc-search><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -300,12 +300,8 @@
 <a href="#300" id="300">300</a>
 <a href="#301" id="301">301</a>
 <a href="#302" id="302">302</a>
-<a href="#303" id="303">303</a>
-<a href="#304" id="304">304</a>
-<a href="#305" id="305">305</a>
-<a href="#306" id="306">306</a>
 </pre></div><pre class="rust"><code><span class="comment">/*
- * Copyright (c) 2021 Works Applications Co., Ltd.
+ * Copyright (c) 2021-2024 Works Applications Co., Ltd.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -333,13 +329,15 @@
 };
 <span class="kw">use </span>std::ops::Index;
 
+<span class="kw">type </span>PosList = Vec&lt;Vec&lt;String&gt;&gt;;
+
 <span class="doccomment">/// Dictionary grammar
 ///
 /// Contains part_of_speech list and connection cost map.
 /// It also holds character category.
 </span><span class="kw">pub struct </span>Grammar&lt;<span class="lifetime">'a</span>&gt; {
     _bytes: <span class="kw-2">&amp;</span><span class="lifetime">'a </span>[u8],
-    <span class="kw">pub </span>pos_list: Vec&lt;Vec&lt;String&gt;&gt;,
+    <span class="kw">pub </span>pos_list: PosList,
     <span class="kw">pub </span>storage_size: usize,
 
     <span class="doccomment">/// The mapping to overload cost table
@@ -469,7 +467,7 @@
     }
 }
 
-<span class="kw">fn </span>pos_list_parser(input: <span class="kw-2">&amp;</span>[u8]) -&gt; SudachiNomResult&lt;<span class="kw-2">&amp;</span>[u8], Vec&lt;Vec&lt;String&gt;&gt;&gt; {
+<span class="kw">fn </span>pos_list_parser(input: <span class="kw-2">&amp;</span>[u8]) -&gt; SudachiNomResult&lt;<span class="kw-2">&amp;</span>[u8], PosList&gt; {
     <span class="kw">let </span>(rest, pos_size) = le_u16(input)<span class="question-mark">?</span>;
     nom::multi::count(
         nom::multi::count(utf16_string_parser, POS_DEPTH),
@@ -477,10 +475,7 @@
     )(rest)
 }
 
-<span class="kw">fn </span>grammar_parser(
-    input: <span class="kw-2">&amp;</span>[u8],
-    offset: usize,
-) -&gt; SudachiNomResult&lt;<span class="kw-2">&amp;</span>[u8], (Vec&lt;Vec&lt;String&gt;&gt;, i16, i16)&gt; {
+<span class="kw">fn </span>grammar_parser(input: <span class="kw-2">&amp;</span>[u8], offset: usize) -&gt; SudachiNomResult&lt;<span class="kw-2">&amp;</span>[u8], (PosList, i16, i16)&gt; {
     nom::sequence::preceded(
         take(offset),
         nom::sequence::tuple((pos_list_parser, le_i16, le_i16)),
@@ -565,14 +560,11 @@
         storage
     }
     <span class="kw">fn </span>string_to_bytes(s: <span class="kw-2">&amp;</span>str) -&gt; Vec&lt;u8&gt; {
-        s.encode_utf16()
-            .map(|c| c.to_le_bytes())
-            .flatten()
-            .collect()
+        s.encode_utf16().flat_map(|c| c.to_le_bytes()).collect()
     }
-    <span class="kw">fn </span>build_partofspeech(storage: <span class="kw-2">&amp;mut </span>Vec&lt;u8&gt;) -&gt; () {
+    <span class="kw">fn </span>build_partofspeech(storage: <span class="kw-2">&amp;mut </span>Vec&lt;u8&gt;) {
         <span class="comment">// number of part of speech
-        </span>storage.extend(<span class="kw-2">&amp;</span>(<span class="number">3 </span><span class="kw">as </span>i16).to_le_bytes());
+        </span>storage.extend(<span class="kw-2">&amp;</span><span class="number">3_i16</span>.to_le_bytes());
 
         storage.extend(
             <span class="string">b"\x07B\x00O\x00S\x00/\x00E\x00O\x00S\x00\x01*\x00\x01*\x00\x01*\x00\x01*\x00\x01*\x00"</span>,
@@ -593,21 +585,21 @@
         storage.extend(<span class="string">b"\x06"</span>);
         storage.extend(string_to_bytes(<span class="string">"終止形-一般"</span>));
     }
-    <span class="kw">fn </span>build_connect_table(storage: <span class="kw-2">&amp;mut </span>Vec&lt;u8&gt;) -&gt; () {
-        storage.extend(<span class="kw-2">&amp;</span>(<span class="number">3 </span><span class="kw">as </span>i16).to_le_bytes());
-        storage.extend(<span class="kw-2">&amp;</span>(<span class="number">3 </span><span class="kw">as </span>i16).to_le_bytes());
+    <span class="kw">fn </span>build_connect_table(storage: <span class="kw-2">&amp;mut </span>Vec&lt;u8&gt;) {
+        storage.extend(<span class="kw-2">&amp;</span><span class="number">3_i16</span>.to_le_bytes());
+        storage.extend(<span class="kw-2">&amp;</span><span class="number">3_i16</span>.to_le_bytes());
 
-        storage.extend(<span class="kw-2">&amp;</span>(<span class="number">0 </span><span class="kw">as </span>i16).to_le_bytes());
-        storage.extend(<span class="kw-2">&amp;</span>(-<span class="number">300 </span><span class="kw">as </span>i16).to_le_bytes());
-        storage.extend(<span class="kw-2">&amp;</span>(<span class="number">300 </span><span class="kw">as </span>i16).to_le_bytes());
+        storage.extend(<span class="kw-2">&amp;</span><span class="number">0_i16</span>.to_le_bytes());
+        storage.extend(<span class="kw-2">&amp;</span>(-<span class="number">300_i16</span>).to_le_bytes());
+        storage.extend(<span class="kw-2">&amp;</span><span class="number">300_i16</span>.to_le_bytes());
 
-        storage.extend(<span class="kw-2">&amp;</span>(<span class="number">300 </span><span class="kw">as </span>i16).to_le_bytes());
-        storage.extend(<span class="kw-2">&amp;</span>(-<span class="number">500 </span><span class="kw">as </span>i16).to_le_bytes());
-        storage.extend(<span class="kw-2">&amp;</span>(-<span class="number">100 </span><span class="kw">as </span>i16).to_le_bytes());
+        storage.extend(<span class="kw-2">&amp;</span><span class="number">300_i16</span>.to_le_bytes());
+        storage.extend(<span class="kw-2">&amp;</span>(-<span class="number">500_i16</span>).to_le_bytes());
+        storage.extend(<span class="kw-2">&amp;</span>(-<span class="number">100_i16</span>).to_le_bytes());
 
-        storage.extend(<span class="kw-2">&amp;</span>(-<span class="number">3000 </span><span class="kw">as </span>i16).to_le_bytes());
-        storage.extend(<span class="kw-2">&amp;</span>(<span class="number">200 </span><span class="kw">as </span>i16).to_le_bytes());
-        storage.extend(<span class="kw-2">&amp;</span>(<span class="number">2000 </span><span class="kw">as </span>i16).to_le_bytes());
+        storage.extend(<span class="kw-2">&amp;</span>(-<span class="number">3000_i16</span>).to_le_bytes());
+        storage.extend(<span class="kw-2">&amp;</span><span class="number">200_i16</span>.to_le_bytes());
+        storage.extend(<span class="kw-2">&amp;</span><span class="number">2000_i16</span>.to_le_bytes());
     }
 }
 </code></pre></div></section></main></body></html>
