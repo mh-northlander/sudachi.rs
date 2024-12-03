@@ -14,142 +14,32 @@
  * limitations under the License.
  */
 
-use std::convert::TryFrom;
+pub mod builder;
+pub mod error;
+pub mod projection;
+pub mod resolver;
+
 use std::env::current_exe;
-use std::fs::File;
-use std::io::BufReader;
 use std::path::{Path, PathBuf};
 
-use crate::dic::subset::InfoSubset;
-use crate::error::SudachiError;
 use lazy_static::lazy_static;
-use serde::Deserialize;
 use serde_json::Value;
-use thiserror::Error;
+
+pub use builder::ConfigBuilder;
+pub use error::ConfigError;
+pub use projection::SurfaceProjection;
+use resolver::PathResolver;
 
 const DEFAULT_RESOURCE_DIR: &str = "resources";
 const DEFAULT_SETTING_FILE: &str = "sudachi.json";
 const DEFAULT_SETTING_BYTES: &[u8] = include_bytes!("../../resources/sudachi.json");
 const DEFAULT_CHAR_DEF_FILE: &str = "char.def";
 
-/// Sudachi Error
-#[derive(Error, Debug)]
-pub enum ConfigError {
-    #[error("IO Error: {0}")]
-    Io(#[from] std::io::Error),
-
-    #[error("Serde error: {0}")]
-    SerdeError(#[from] serde_json::Error),
-
-    #[error("Config file not found")]
-    FileNotFound(String),
-
-    #[error("Invalid format: {0}")]
-    InvalidFormat(String),
-
-    #[error("Argument {0} is missing")]
-    MissingArgument(String),
-
-    #[error("Failed to resolve relative path {0}, tried: {1:?}")]
-    PathResolution(String, Vec<String>),
-}
-
-#[derive(Default, Debug, Clone)]
-struct PathResolver {
-    roots: Vec<PathBuf>,
-}
-
-impl PathResolver {
-    fn with_capacity(capacity: usize) -> PathResolver {
-        PathResolver {
-            roots: Vec::with_capacity(capacity),
-        }
-    }
-
-    fn add<P: Into<PathBuf>>(&mut self, path: P) {
-        self.roots.push(path.into())
-    }
-
-    fn contains<P: AsRef<Path>>(&self, path: P) -> bool {
-        let query = path.as_ref();
-        return self.roots.iter().any(|p| p.as_path() == query);
-    }
-
-    pub fn first_existing<P: AsRef<Path> + Clone>(&self, path: P) -> Option<PathBuf> {
-        self.all_candidates(path).find(|p| p.exists())
-    }
-
-    pub fn resolution_failure<P: AsRef<Path> + Clone>(&self, path: P) -> ConfigError {
-        let candidates = self
-            .all_candidates(path.clone())
-            .map(|p| p.to_string_lossy().into_owned())
-            .collect();
-
-        ConfigError::PathResolution(path.as_ref().to_string_lossy().into_owned(), candidates)
-    }
-
-    pub fn all_candidates<'a, P: AsRef<Path> + Clone + 'a>(
-        &'a self,
-        path: P,
-    ) -> impl Iterator<Item = PathBuf> + 'a {
-        self.roots.iter().map(move |root| root.join(path.clone()))
-    }
-
-    pub fn roots(&self) -> &[PathBuf] {
-        &self.roots
-    }
-}
-
-#[derive(Deserialize, Clone, Copy, Debug, Eq, PartialEq, Default)]
-#[serde(rename_all = "snake_case")]
-pub enum SurfaceProjection {
-    #[default]
-    Surface,
-    Normalized,
-    Reading,
-    Dictionary,
-    DictionaryAndSurface,
-    NormalizedAndSurface,
-    NormalizedNouns,
-}
-
-impl SurfaceProjection {
-    /// Return required InfoSubset for the current projection type
-    pub fn required_subset(&self) -> InfoSubset {
-        match *self {
-            SurfaceProjection::Surface => InfoSubset::empty(),
-            SurfaceProjection::Normalized => InfoSubset::NORMALIZED_FORM,
-            SurfaceProjection::Reading => InfoSubset::READING_FORM,
-            SurfaceProjection::Dictionary => InfoSubset::DIC_FORM_WORD_ID,
-            SurfaceProjection::DictionaryAndSurface => InfoSubset::DIC_FORM_WORD_ID,
-            SurfaceProjection::NormalizedAndSurface => InfoSubset::NORMALIZED_FORM,
-            SurfaceProjection::NormalizedNouns => InfoSubset::NORMALIZED_FORM,
-        }
-    }
-}
-
-impl TryFrom<&str> for SurfaceProjection {
-    type Error = SudachiError;
-
-    fn try_from(value: &str) -> Result<Self, Self::Error> {
-        match value {
-            "surface" => Ok(SurfaceProjection::Surface),
-            "normalized" => Ok(SurfaceProjection::Normalized),
-            "reading" => Ok(SurfaceProjection::Reading),
-            "dictionary" => Ok(SurfaceProjection::Dictionary),
-            "dictionary_and_surface" => Ok(SurfaceProjection::DictionaryAndSurface),
-            "normalized_and_surface" => Ok(SurfaceProjection::NormalizedAndSurface),
-            "normalized_nouns" => Ok(SurfaceProjection::NormalizedNouns),
-            _ => Err(ConfigError::InvalidFormat(format!("unknown projection: {value}")).into()),
-        }
-    }
-}
-
 /// Setting data loaded from config file
 #[derive(Debug, Default, Clone)]
 pub struct Config {
     /// Paths will be resolved against these roots, until a file will be found
-    resolver: PathResolver,
+    pub(crate) resolver: PathResolver,
     pub system_dict: Option<PathBuf>,
     pub user_dicts: Vec<PathBuf>,
     pub character_definition_file: PathBuf,
@@ -160,159 +50,6 @@ pub struct Config {
     pub path_rewrite_plugins: Vec<Value>,
     // this option is Python-only and is ignored in Rust APIs
     pub projection: SurfaceProjection,
-}
-
-/// Struct corresponds with raw config json file.
-/// You must use filed names defined here as json object key.
-/// For plugins, refer to each plugin.
-#[allow(non_snake_case)]
-#[derive(Deserialize, Debug, Clone)]
-pub struct ConfigBuilder {
-    /// Analogue to Java Implementation path Override    
-    path: Option<PathBuf>,
-    /// User-passed resourcePath
-    #[serde(skip)]
-    resourcePath: Option<PathBuf>,
-    /// User-passed root directory.
-    /// Is also automatically set on from_file
-    #[serde(skip)]
-    rootDirectory: Option<PathBuf>,
-    #[serde(alias = "system")]
-    systemDict: Option<PathBuf>,
-    #[serde(alias = "user")]
-    userDict: Option<Vec<PathBuf>>,
-    characterDefinitionFile: Option<PathBuf>,
-    connectionCostPlugin: Option<Vec<Value>>,
-    inputTextPlugin: Option<Vec<Value>>,
-    oovProviderPlugin: Option<Vec<Value>>,
-    pathRewritePlugin: Option<Vec<Value>>,
-    projection: Option<SurfaceProjection>,
-}
-
-pub fn default_resource_dir() -> PathBuf {
-    let mut src_root_path = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
-    if !src_root_path.pop() {
-        src_root_path.push("..");
-    }
-    src_root_path.push(DEFAULT_RESOURCE_DIR);
-    src_root_path
-}
-
-pub fn default_config_location() -> PathBuf {
-    let mut resdir = default_resource_dir();
-    resdir.push(DEFAULT_SETTING_FILE);
-    resdir
-}
-
-macro_rules! merge_cfg_value {
-    ($base: ident, $o: ident, $name: tt) => {
-        $base.$name = $base.$name.or_else(|| $o.$name.clone())
-    };
-}
-
-impl ConfigBuilder {
-    pub fn from_opt_file(config_file: Option<&Path>) -> Result<Self, ConfigError> {
-        match config_file {
-            None => {
-                let default_config = default_config_location();
-                Self::from_file(&default_config)
-            }
-            Some(cfg) => Self::from_file(cfg),
-        }
-    }
-
-    pub fn from_file(config_file: &Path) -> Result<Self, ConfigError> {
-        let file = File::open(config_file)?;
-        let reader = BufReader::new(file);
-        serde_json::from_reader(reader)
-            .map_err(|e| e.into())
-            .map(|cfg: ConfigBuilder| match config_file.parent() {
-                Some(p) => cfg.root_directory(p),
-                None => cfg,
-            })
-    }
-
-    pub fn from_bytes(data: &[u8]) -> Result<Self, ConfigError> {
-        serde_json::from_slice(data).map_err(|e| e.into())
-    }
-
-    pub fn empty() -> Self {
-        serde_json::from_slice(b"{}").unwrap()
-    }
-
-    pub fn system_dict(mut self, dict: impl Into<PathBuf>) -> Self {
-        self.systemDict = Some(dict.into());
-        self
-    }
-
-    pub fn user_dict(mut self, dict: impl Into<PathBuf>) -> Self {
-        let dicts = match self.userDict.as_mut() {
-            None => {
-                self.userDict = Some(Default::default());
-                self.userDict.as_mut().unwrap()
-            }
-            Some(dicts) => dicts,
-        };
-        dicts.push(dict.into());
-        self
-    }
-
-    pub fn resource_path(mut self, path: impl Into<PathBuf>) -> Self {
-        self.resourcePath = Some(path.into());
-        self
-    }
-
-    pub fn root_directory(mut self, path: impl Into<PathBuf>) -> Self {
-        self.rootDirectory = Some(path.into());
-        self
-    }
-
-    pub fn build(self) -> Config {
-        let default_resource_dir = default_resource_dir();
-        let resource_dir = self.resourcePath.unwrap_or(default_resource_dir);
-
-        let mut resolver = PathResolver::with_capacity(3);
-        let mut add_path = |buf: PathBuf| {
-            if !resolver.contains(&buf) {
-                resolver.add(buf);
-            }
-        };
-        self.path.map(&mut add_path);
-        add_path(resource_dir);
-        self.rootDirectory.map(&mut add_path);
-
-        let character_definition_file = self
-            .characterDefinitionFile
-            .unwrap_or(PathBuf::from(DEFAULT_CHAR_DEF_FILE));
-
-        Config {
-            resolver,
-            system_dict: self.systemDict,
-            user_dicts: self.userDict.unwrap_or_default(),
-            character_definition_file,
-
-            connection_cost_plugins: self.connectionCostPlugin.unwrap_or_default(),
-            input_text_plugins: self.inputTextPlugin.unwrap_or_default(),
-            oov_provider_plugins: self.oovProviderPlugin.unwrap_or_default(),
-            path_rewrite_plugins: self.pathRewritePlugin.unwrap_or_default(),
-            projection: self.projection.unwrap_or(SurfaceProjection::Surface),
-        }
-    }
-
-    pub fn fallback(mut self, other: &ConfigBuilder) -> ConfigBuilder {
-        merge_cfg_value!(self, other, path);
-        merge_cfg_value!(self, other, resourcePath);
-        merge_cfg_value!(self, other, rootDirectory);
-        merge_cfg_value!(self, other, systemDict);
-        merge_cfg_value!(self, other, userDict);
-        merge_cfg_value!(self, other, characterDefinitionFile);
-        merge_cfg_value!(self, other, connectionCostPlugin);
-        merge_cfg_value!(self, other, inputTextPlugin);
-        merge_cfg_value!(self, other, oovProviderPlugin);
-        merge_cfg_value!(self, other, pathRewritePlugin);
-        merge_cfg_value!(self, other, projection);
-        self
-    }
 }
 
 impl Config {
@@ -449,15 +186,16 @@ fn current_exe_dir() -> String {
 }
 
 lazy_static! {
-    static ref CURRENT_EXE_DIR: String = current_exe_dir();
+    pub(crate) static ref CURRENT_EXE_DIR: String = current_exe_dir();
 }
 
 #[cfg(test)]
 mod tests {
+    use super::builder::default_resource_dir;
+    use super::CURRENT_EXE_DIR;
+    use super::projection::SurfaceProjection;
     use super::*;
     use crate::prelude::SudachiResult;
-
-    use super::CURRENT_EXE_DIR;
 
     #[test]
     fn resolve_exe() -> SudachiResult<()> {
