@@ -17,7 +17,7 @@
 use crate::analysis::stateful_tokenizer::StatefulTokenizer;
 use crate::analysis::stateless_tokenizer::StatelessTokenizer;
 use crate::analysis::{Mode, Tokenize};
-use crate::config::Config;
+use crate::config::{Config, ConfigBuilder, PathAnchor};
 use crate::dic::build::DictBuilder;
 use crate::dic::dictionary::JapaneseDictionary;
 use crate::dic::subset::InfoSubset;
@@ -103,7 +103,10 @@ impl ConfigTestSupport {
             .unwrap();
         tfile.write_all(cfg.as_bytes()).unwrap();
 
-        Config::new(Some(tfile.path().to_path_buf()), None, None).unwrap()
+        ConfigBuilder::from_file(tfile.path())
+            .unwrap()
+            .append_anchor(&mut PathAnchor::new_embedded())
+            .build()
     }
 }
 

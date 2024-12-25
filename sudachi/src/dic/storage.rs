@@ -14,13 +14,41 @@
  *  limitations under the License.
  */
 
+use std::fs::File;
+use std::path::Path;
+
 use memmap2::Mmap;
 use nom::AsBytes;
+
+use crate::config::DataSource;
+use crate::error::{SudachiError, SudachiResult};
 
 pub enum Storage {
     File(Mmap),
     Borrowed(&'static [u8]),
     Owned(Vec<u8>),
+}
+
+impl Storage {
+    fn from_path<P: AsRef<Path>>(path: P) -> SudachiResult<Self> {
+        let file = File::open(path)?;
+        let mapping = unsafe { Mmap::map(&file) }?;
+        Ok(Storage::File(mapping))
+    }
+}
+
+impl TryFrom<DataSource> for Storage {
+    type Error = SudachiError;
+
+    fn try_from(value: DataSource) -> SudachiResult<Self> {
+        match value {
+            DataSource::File(p) => {
+                Self::from_path(&p).map_err(|e| e.with_context(p.as_os_str().to_string_lossy()))
+            }
+            DataSource::Borrowed(b) => Ok(Self::Borrowed(b)),
+            DataSource::Owned(v) => Ok(Self::Owned(v)),
+        }
+    }
 }
 
 impl AsRef<[u8]> for Storage {

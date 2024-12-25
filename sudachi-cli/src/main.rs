@@ -27,7 +27,7 @@ use clap::Parser;
 
 use crate::analysis::{Analysis, AnalyzeNonSplitted, AnalyzeSplitted, SplitSentencesOnly};
 use crate::build::{build_main, is_build_mode, BuildCli};
-use sudachi::config::Config;
+use sudachi::config::{ConfigBuilder, PathAnchor};
 use sudachi::dic::dictionary::JapaneseDictionary;
 use sudachi::prelude::*;
 
@@ -159,12 +159,25 @@ fn main() {
     let mut writer = BufWriter::new(inner_writer);
 
     // load config file
-    let config = Config::new(
-        args.config_file.clone(),
-        args.resource_dir.clone(),
-        args.dictionary_path.clone(),
-    )
-    .expect("Failed to load config file");
+    let mut cfg_builder = ConfigBuilder::empty();
+    if let Some(p) = args.resource_dir {
+        cfg_builder = cfg_builder.with_anchor(PathAnchor::new_filesystem(p));
+    }
+    if let Some(p) = args.config_file {
+        cfg_builder =
+            cfg_builder.fallback(&ConfigBuilder::from_file(p).expect("failed to load config file"));
+    }
+    if let Some(p) = args.system_dict {
+        cfg_builder = cfg_builder.system_dict(p);
+    }
+    if let Some(ps) = args.user_dicts {
+        for p in ps {
+            cfg_builder = cfg_builder.add_user_dict(p);
+        }
+    }
+    let config = cfg_builder
+        .fallback(&ConfigBuilder::from_embedded().expect("failed to load default config"))
+        .build();
 
     let dict = JapaneseDictionary::from_cfg(&config)
         .unwrap_or_else(|e| panic!("Failed to create dictionary: {:?}", e));

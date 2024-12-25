@@ -19,13 +19,12 @@ extern crate sudachi;
 use std::fs;
 use std::fs::File;
 use std::io::Read;
-use std::path::{Path, PathBuf};
 use std::rc::Rc;
 use std::sync::Arc;
 
 use sudachi::analysis::stateful_tokenizer::StatefulTokenizer;
 use sudachi::analysis::stateless_tokenizer::StatelessTokenizer;
-use sudachi::config::{Config, ConfigBuilder};
+use sudachi::config::{Config, ConfigBuilder, DataSource};
 use sudachi::dic::dictionary::JapaneseDictionary;
 use sudachi::dic::{grammar::Grammar, header::Header, lexicon::Lexicon, DictionaryLoader};
 use sudachi::prelude::*;
@@ -36,30 +35,33 @@ use sudachi::dic::build::DictBuilder;
 use sudachi::dic::storage::{Storage, SudachiDicData};
 use sudachi::dic::subset::InfoSubset;
 
-pub fn dictionary_bytes_from_path<P: AsRef<Path>>(dictionary_path: P) -> SudachiResult<Vec<u8>> {
-    let dictionary_path = dictionary_path.as_ref();
-    let dictionary_stat = fs::metadata(dictionary_path)?;
-    let mut dictionary_file = File::open(dictionary_path)?;
-    let mut dictionary_bytes = Vec::with_capacity(dictionary_stat.len() as usize);
-    dictionary_file.read_to_end(&mut dictionary_bytes)?;
-
-    Ok(dictionary_bytes)
+pub fn dictionary_bytes_from_source(source: DataSource) -> SudachiResult<Vec<u8>> {
+    Ok(match source {
+        DataSource::File(p) => {
+            let stat = fs::metadata(&p)?;
+            let mut file = File::open(p)?;
+            let mut bytes = Vec::with_capacity(stat.len() as usize);
+            file.read_to_end(&mut bytes)?;
+            bytes
+        }
+        DataSource::Borrowed(b) => b.to_vec(),
+        DataSource::Owned(v) => v.clone(),
+    })
 }
 
 lazy_static! {
     pub static ref TEST_CONFIG: Config = {
         let test_config_path = "tests/resources/sudachi.json";
-        let conf = Config::new(Some(PathBuf::from(test_config_path)), None, None)
-            .expect("Failed to read config file for test");
-        println!("{:?}", conf);
-        conf
+        let builder =
+            ConfigBuilder::from_file(test_config_path).expect("failed to load test config");
+        builder.build()
     };
     static ref DICTIONARY_BYTES: Vec<u8> = {
-        let dictionary_path = TEST_CONFIG
+        let system_source = TEST_CONFIG
             .resolved_system_dict()
             .expect("system dict failure");
 
-        dictionary_bytes_from_path(dictionary_path).expect("Failed to read dictionary from path")
+        dictionary_bytes_from_source(system_source).expect("Failed to read dictionary from path")
     };
     static ref USER_DICTIONARY_BYTES: Vec<Box<[u8]>> = {
         let mut bytes = Vec::with_capacity(TEST_CONFIG.user_dicts.len());
@@ -67,7 +69,7 @@ lazy_static! {
             .resolved_user_dicts()
             .expect("user dicts failure")
         {
-            let storage_buf = dictionary_bytes_from_path(pb)
+            let storage_buf = dictionary_bytes_from_source(pb)
                 .expect("Failed to get user dictionary bytes from file");
             bytes.push(storage_buf.into_boxed_slice());
         }

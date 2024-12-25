@@ -24,7 +24,7 @@ use std::io::{BufRead, BufReader};
 use std::path::PathBuf;
 
 use crate::analysis::Node;
-use crate::config::Config;
+use crate::config::{Config, DataSource, DEFAULT_CHAR_DEF_FILE, DEFAULT_UNK_DEF_FILE};
 use crate::dic::category_type::CategoryType;
 use crate::dic::character_category::Error as CharacterCategoryError;
 use crate::dic::grammar::Grammar;
@@ -37,11 +37,6 @@ use crate::prelude::*;
 
 #[cfg(test)]
 mod test;
-
-const DEFAULT_CHAR_DEF_FILE: &str = "char.def";
-const DEFAULT_CHAR_DEF_BYTES: &[u8] = include_bytes!("../../../../../resources/char.def");
-const DEFAULT_UNK_DEF_FILE: &str = "unk.def";
-const DEFAULT_UNK_DEF_BYTES: &[u8] = include_bytes!("../../../../../resources/unk.def");
 
 /// provides MeCab oov nodes
 #[derive(Default)]
@@ -61,6 +56,26 @@ struct PluginSettings {
 }
 
 impl MeCabOovPlugin {
+    /// Loads character category definition from DataSource
+    fn read_character_property_from_source(
+        source: DataSource,
+    ) -> SudachiResult<HashMap<CategoryType, CategoryInfo, RoMu>> {
+        match source {
+            DataSource::File(p) => {
+                let reader = BufReader::new(fs::File::open(p)?);
+                Self::read_character_property(reader)
+            }
+            DataSource::Borrowed(b) => {
+                let reader = BufReader::new(b);
+                Self::read_character_property(reader)
+            }
+            DataSource::Owned(v) => {
+                let reader = BufReader::new(&*v);
+                Self::read_character_property(reader)
+            }
+        }
+    }
+
     /// Loads character category definition
     ///
     /// See resources/char.def for the syntax
@@ -110,6 +125,29 @@ impl MeCabOovPlugin {
         }
 
         Ok(categories)
+    }
+
+    /// Load OOV definition from DataSource
+    fn read_oov_from_source(
+        source: DataSource,
+        categories: &HashMap<CategoryType, CategoryInfo, RoMu>,
+        grammar: &mut Grammar,
+        user_pos: UserPosMode,
+    ) -> SudachiResult<HashMap<CategoryType, Vec<Oov>, RoMu>> {
+        match source {
+            DataSource::File(p) => {
+                let reader = BufReader::new(fs::File::open(p)?);
+                Self::read_oov(reader, categories, grammar, user_pos)
+            }
+            DataSource::Borrowed(b) => {
+                let reader = BufReader::new(b);
+                Self::read_oov(reader, categories, grammar, user_pos)
+            }
+            DataSource::Owned(v) => {
+                let reader = BufReader::new(&*v);
+                Self::read_oov(reader, categories, grammar, user_pos)
+            }
+        }
     }
 
     /// Load OOV definition
@@ -258,33 +296,20 @@ impl OovProviderPlugin for MeCabOovPlugin {
     ) -> SudachiResult<()> {
         let settings: PluginSettings = serde_json::from_value(settings.clone())?;
 
-        let char_def_path = config.complete_path(
+        let char_def_source = config.resolve(
             settings
                 .charDef
-                .unwrap_or_else(|| PathBuf::from(DEFAULT_CHAR_DEF_FILE)),
-        );
+                .unwrap_or_else(|| DEFAULT_CHAR_DEF_FILE.into()),
+        )?;
+        let categories = Self::read_character_property_from_source(char_def_source)?;
 
-        let categories = if char_def_path.is_ok() {
-            let reader = BufReader::new(fs::File::open(char_def_path?)?);
-            MeCabOovPlugin::read_character_property(reader)?
-        } else {
-            let reader = BufReader::new(DEFAULT_CHAR_DEF_BYTES);
-            MeCabOovPlugin::read_character_property(reader)?
-        };
-
-        let unk_def_path = config.complete_path(
+        let unk_def_source = config.resolve(
             settings
                 .unkDef
-                .unwrap_or_else(|| PathBuf::from(DEFAULT_UNK_DEF_FILE)),
-        );
-
-        let oov_list = if unk_def_path.is_ok() {
-            let reader = BufReader::new(fs::File::open(unk_def_path?)?);
-            MeCabOovPlugin::read_oov(reader, &categories, grammar, settings.userPOS)?
-        } else {
-            let reader = BufReader::new(DEFAULT_UNK_DEF_BYTES);
-            MeCabOovPlugin::read_oov(reader, &categories, grammar, settings.userPOS)?
-        };
+                .unwrap_or_else(|| DEFAULT_UNK_DEF_FILE.into()),
+        )?;
+        let oov_list =
+            Self::read_oov_from_source(unk_def_source, &categories, grammar, settings.userPOS)?;
 
         self.categories = categories;
         self.oov_list = oov_list;

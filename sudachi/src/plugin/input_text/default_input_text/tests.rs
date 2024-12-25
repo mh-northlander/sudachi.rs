@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Works Applications Co., Ltd.
+ * Copyright (c) 2021-2024 Works Applications Co., Ltd.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,7 @@
 use claim::assert_matches;
 use serde_json::{Map, Value};
 
-use crate::config::Config;
+use crate::config::{Config, PathAnchor};
 use crate::input_text::InputTextIndex;
 use crate::test::zero_grammar;
 
@@ -125,7 +125,10 @@ fn full_normalization_works() {
 
 fn test_plugin() -> DefaultInputTextPlugin {
     let settings = build_mock_setting_from_file_name("rewrite.def");
-    let config = Config::default();
+    let config = Config {
+        anchor: PathAnchor::new_cwd(),
+        ..Default::default()
+    };
     let grammar = zero_grammar();
     let mut plugin = DefaultInputTextPlugin::default();
     plugin

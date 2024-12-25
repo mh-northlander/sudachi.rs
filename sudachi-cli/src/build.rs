@@ -22,7 +22,7 @@ use clap::{Args, Subcommand};
 use memmap2::Mmap;
 
 use sudachi::analysis::stateless_tokenizer::DictionaryAccess;
-use sudachi::config::Config;
+use sudachi::config::ConfigBuilder;
 use sudachi::dic::build::report::DictPartReport;
 use sudachi::dic::build::DictBuilder;
 use sudachi::dic::dictionary::JapaneseDictionary;
@@ -142,8 +142,10 @@ fn build_system(mut cmd: BuildCmd, matrix: PathBuf) {
 }
 
 fn build_user(mut cmd: BuildCmd, system: PathBuf) {
-    let cfg =
-        Config::new(None, None, Some(system)).expect("failed to create default configuration");
+    let cfg = ConfigBuilder::from_embedded()
+        .expect("failed to load default configuration")
+        .system_dict(system)
+        .build();
     let dict = JapaneseDictionary::from_cfg(&cfg).expect("failed to load system dictionary");
 
     let mut builder = DictBuilder::new_user(&dict);

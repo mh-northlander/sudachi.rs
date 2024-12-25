@@ -42,7 +42,6 @@ pub mod storage;
 pub mod subset;
 pub mod word_id;
 
-const DEFAULT_CHAR_DEF_BYTES: &[u8] = include_bytes!("../../../resources/char.def");
 const POS_DEPTH: usize = 6;
 
 /// A dictionary consists of one system_dict and zero or more user_dicts
@@ -84,10 +83,11 @@ impl<'a> LoadedDictionary<'a> {
     pub fn from_system_dictionary_embedded(
         dictionary_bytes: &'a [u8],
     ) -> SudachiResult<LoadedDictionary<'a>> {
-        let character_category = CharacterCategory::from_bytes(DEFAULT_CHAR_DEF_BYTES)?;
+        let character_category = CharacterCategory::from_embedded()?;
         Self::from_system_dictionary_and_chardef(dictionary_bytes, character_category)
     }
 
+    // JapaneseDictionary::merge_user_dictionary, w/o cost_update
     #[cfg(test)]
     pub(crate) fn merge_dictionary(
         mut self,

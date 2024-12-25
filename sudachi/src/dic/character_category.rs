@@ -23,8 +23,11 @@ use std::path::Path;
 
 use thiserror::Error;
 
+use crate::config::DataSource;
 use crate::dic::category_type::CategoryType;
 use crate::prelude::*;
+
+pub(crate) const DEFAULT_CHAR_DEF_BYTES: &[u8] = include_bytes!("../../../resources/char.def");
 
 /// Sudachi error
 #[derive(Error, Debug, Eq, PartialEq)]
@@ -78,11 +81,26 @@ impl Default for CharacterCategory {
     }
 }
 
+impl TryFrom<DataSource> for CharacterCategory {
+    type Error = SudachiError;
+    fn try_from(value: DataSource) -> SudachiResult<Self> {
+        match value {
+            DataSource::File(p) => Self::from_file(&p),
+            DataSource::Borrowed(b) => Self::from_bytes(b),
+            DataSource::Owned(v) => Self::from_bytes(&v),
+        }
+    }
+}
+
 impl CharacterCategory {
     /// Creates a character category from file
     pub fn from_file(path: &Path) -> SudachiResult<CharacterCategory> {
         let reader = BufReader::new(fs::File::open(path)?);
         Self::from_reader(reader)
+    }
+
+    pub fn from_embedded() -> SudachiResult<Self> {
+        Self::from_bytes(DEFAULT_CHAR_DEF_BYTES)
     }
 
     pub fn from_bytes(bytes: &[u8]) -> SudachiResult<CharacterCategory> {
