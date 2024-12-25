@@ -14,10 +14,12 @@
  * limitations under the License.
  */
 
+pub mod anchor;
 pub mod builder;
 pub mod error;
 pub mod projection;
 pub mod resolver;
+pub mod source;
 
 use std::env::current_exe;
 use std::path::{Path, PathBuf};
@@ -25,22 +27,31 @@ use std::path::{Path, PathBuf};
 use lazy_static::lazy_static;
 use serde_json::Value;
 
+pub use anchor::PathAnchor;
 pub use builder::ConfigBuilder;
 pub use error::ConfigError;
 pub use projection::SurfaceProjection;
-use resolver::PathResolver;
+pub use source::DataSource;
 
+#[deprecated(
+    since = "0.7.0",
+    note = "default resources are now embedded in the binary"
+)]
 const DEFAULT_RESOURCE_DIR: &str = "resources";
+
 const DEFAULT_SETTING_FILE: &str = "sudachi.json";
-const DEFAULT_SETTING_BYTES: &[u8] = include_bytes!("../../resources/sudachi.json");
-const DEFAULT_CHAR_DEF_FILE: &str = "char.def";
+const DEFAULT_DICT_FILE: &str = "system_core.dic";
+pub(crate) const DEFAULT_CHAR_DEF_FILE: &str = "char.def";
+pub(crate) const DEFAULT_REWRITE_DEF_FILE: &str = "rewrite.def";
+pub(crate) const DEFAULT_UNK_DEF_FILE: &str = "unk.def";
 
 /// Setting data loaded from config file
 #[derive(Debug, Default, Clone)]
 pub struct Config {
-    /// Paths will be resolved against these roots, until a file will be found
-    pub(crate) resolver: PathResolver,
-    pub system_dict: Option<PathBuf>,
+    /// Paths will be resolved against this anchor, until a data source will be found
+    pub anchor: PathAnchor,
+
+    pub system_dict: PathBuf,
     pub user_dicts: Vec<PathBuf>,
     pub character_definition_file: PathBuf,
 
@@ -48,65 +59,74 @@ pub struct Config {
     pub input_text_plugins: Vec<Value>,
     pub oov_provider_plugins: Vec<Value>,
     pub path_rewrite_plugins: Vec<Value>,
+
     // this option is Python-only and is ignored in Rust APIs
     pub projection: SurfaceProjection,
 }
 
 impl Config {
+    #[deprecated(
+        since = "0.7.0",
+        note = "user should use proper PathAnchor to control the resource file resoltion"
+    )]
     pub fn new(
         config_file: Option<PathBuf>,
         resource_dir: Option<PathBuf>,
         dictionary_path: Option<PathBuf>,
     ) -> Result<Self, ConfigError> {
         // prioritize arg (cli option) > default
-        let raw_config = ConfigBuilder::from_opt_file(config_file.as_deref())?;
-
-        // prioritize arg (cli option) > config file
-        let raw_config = match resource_dir {
-            None => raw_config,
-            Some(p) => raw_config.resource_path(p),
+        let mut builder = match config_file {
+            Some(p) => ConfigBuilder::from_file(p)?,
+            None => ConfigBuilder::from_embedded()?,
         };
 
         // prioritize arg (cli option) > config file
-        let raw_config = match dictionary_path {
-            None => raw_config,
-            Some(p) => raw_config.system_dict(p),
-        };
+        if let Some(p) = resource_dir {
+            let mut anchor = PathAnchor::new_filesystem(p);
+            anchor.append(&mut builder.anchor);
+            builder = builder.with_anchor(anchor);
+        }
 
-        Ok(raw_config.build())
+        // prioritize arg (cli option) > config file
+        if let Some(p) = dictionary_path {
+            builder = builder.system_dict(p);
+        }
+
+        Ok(builder.build())
     }
 
+    /// Creates a default config (with a default path anchor)
     pub fn new_embedded() -> Result<Self, ConfigError> {
-        let raw_config = ConfigBuilder::from_bytes(DEFAULT_SETTING_BYTES)?;
-
-        Ok(raw_config.build())
+        let builder = ConfigBuilder::from_embedded()?;
+        Ok(builder.build())
     }
 
     /// Creates a minimal config with the provided resource directory
-    pub fn minimal_at(resource_dir: impl Into<PathBuf>) -> Config {
-        let mut cfg = Config::default();
-        let resource = resource_dir.into();
-        cfg.character_definition_file = resource.join(DEFAULT_CHAR_DEF_FILE);
-        let mut resolver = PathResolver::with_capacity(1);
-        resolver.add(resource);
-        cfg.resolver = resolver;
-        cfg.oov_provider_plugins = vec![serde_json::json!(
-            { "class" : "com.worksap.nlp.sudachi.SimpleOovPlugin",
-              "oovPOS" : [ "名詞", "普通名詞", "一般", "*", "*", "*" ],
-              "leftId" : 0,
-              "rightId" : 0,
-              "cost" : 30000 }
-        )];
-        cfg
+    pub fn minimal_at(resource_dir: impl Into<PathBuf>) -> Self {
+        Config {
+            anchor: PathAnchor::new_filesystem(resource_dir.into()),
+            system_dict: DEFAULT_DICT_FILE.into(),
+            character_definition_file: DEFAULT_CHAR_DEF_FILE.into(),
+            oov_provider_plugins: vec![serde_json::json!(
+                { "class" : "com.worksap.nlp.sudachi.SimpleOovPlugin",
+                  "oovPOS" : [ "名詞", "普通名詞", "一般", "*", "*", "*" ],
+                  "leftId" : 0,
+                  "rightId" : 0,
+                  "cost" : 30000 }
+            )],
+            ..Default::default()
+        }
     }
 
     /// Sets the system dictionary to the provided path
-    pub fn with_system_dic(mut self, system: impl Into<PathBuf>) -> Config {
-        self.system_dict = Some(system.into());
+    pub fn with_system_dic(mut self, system: impl Into<PathBuf>) -> Self {
+        self.system_dict = system.into();
         self
     }
 
+    /// resolve path in filesystem
     pub fn resolve_paths(&self, mut path: String) -> Vec<String> {
+        // resolve "$exe/" as the parent directory of the current executable
         if path.starts_with("$exe") {
             path.replace_range(0..4, &CURRENT_EXE_DIR);
 
@@ -115,8 +135,9 @@ impl Config {
             return vec![path2, path];
         }
 
+        // resolve "$cfg/" using (filesystem) path anchor
         if path.starts_with("$cfg/") || path.starts_with("$cfg\\") {
-            let roots = self.resolver.roots();
+            let roots = self.anchor.filesystem_roots();
             let mut result = Vec::with_capacity(roots.len());
             path.replace_range(0..5, "");
             for root in roots {
@@ -134,6 +155,10 @@ impl Config {
     /// 2. Paths are resolved wrt to anchors, returning the first existing one
     /// 3. Path are checked wrt to CWD
     /// 4. If all fail, return an error with all candidate paths listed
+    #[deprecated(
+        since = "0.7.0",
+        note = "User should use `resolve` with proper anchor to control path completion"
+    )]
     pub fn complete_path<P: AsRef<Path> + Into<PathBuf>>(
         &self,
         file_path: P,
@@ -144,8 +169,8 @@ impl Config {
             return Ok(file_path.into());
         }
 
-        // 2. try to resolve paths wrt anchors
-        if let Some(p) = self.resolver.first_existing(pref) {
+        // 2. try to resolve paths wrt (filesystem) anchors
+        if let Some(p) = self.anchor.first_existing_path(pref) {
             return Ok(p);
         }
 
@@ -155,21 +180,27 @@ impl Config {
         }
 
         // Report an error
-        Err(self.resolver.resolution_failure(&file_path))
+        Err(self.anchor.resolution_failure(&file_path))
     }
 
-    pub fn resolved_system_dict(&self) -> Result<PathBuf, ConfigError> {
-        match self.system_dict.as_ref() {
-            Some(p) => self.complete_path(p),
-            None => Err(ConfigError::MissingArgument("systemDict".to_owned())),
-        }
+    /// resolve path as DataSouce wrt the anchor
+    pub fn resolve<P: AsRef<Path>>(&self, path: P) -> Result<DataSource, ConfigError> {
+        self.anchor.resolve(path)
     }
 
-    pub fn resolved_user_dicts(&self) -> Result<Vec<PathBuf>, ConfigError> {
-        self.user_dicts
-            .iter()
-            .map(|p| self.complete_path(p))
-            .collect()
+    /// resolve system dictionary as data source
+    pub fn resolved_system_dict(&self) -> Result<DataSource, ConfigError> {
+        self.resolve::<&Path>(self.system_dict.as_ref())
+    }
+
+    /// resolve user dictionary as list of data sources
+    pub fn resolved_user_dicts(&self) -> Result<Vec<DataSource>, ConfigError> {
+        self.user_dicts.iter().map(|p| self.resolve(p)).collect()
+    }
+
+    /// resolve character definition as data source
+    pub fn resolved_char_category(&self) -> Result<DataSource, ConfigError> {
+        self.resolve::<&Path>(self.character_definition_file.as_ref())
     }
 }
 
@@ -191,15 +222,14 @@ lazy_static! {
 
 #[cfg(test)]
 mod tests {
-    use super::builder::default_resource_dir;
-    use super::CURRENT_EXE_DIR;
     use super::projection::SurfaceProjection;
+    use super::CURRENT_EXE_DIR;
     use super::*;
     use crate::prelude::SudachiResult;
 
     #[test]
     fn resolve_exe() -> SudachiResult<()> {
-        let cfg = Config::new(None, None, None)?;
+        let cfg = Config::new_embedded()?;
         let npath = cfg.resolve_paths("$exe/data".to_owned());
         let exe_dir: &str = &CURRENT_EXE_DIR;
         assert_eq!(npath.len(), 2);
@@ -209,12 +239,11 @@ mod tests {
 
     #[test]
     fn resolve_cfg() -> SudachiResult<()> {
-        let cfg = Config::new(None, None, None)?;
+        let cfg = Config::new_embedded()?;
         let npath = cfg.resolve_paths("$cfg/data".to_owned());
-        let def = default_resource_dir();
-        let path_dir: &str = def.to_str().unwrap();
+        let path_dir: &str = "data";
         assert_eq!(1, npath.len());
-        assert!(npath[0].starts_with(path_dir));
+        assert!(npath[0] == path_dir);
         Ok(())
     }
 

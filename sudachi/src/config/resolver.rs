@@ -19,10 +19,12 @@ use std::path::{Path, PathBuf};
 use super::ConfigError;
 
 #[derive(Default, Debug, Clone)]
+#[deprecated(since = "0.7.0", note = "Replaced by PathAnchor")]
 pub(crate) struct PathResolver {
     roots: Vec<PathBuf>,
 }
 
+#[allow(dead_code, deprecated)]
 impl PathResolver {
     pub(crate) fn with_capacity(capacity: usize) -> PathResolver {
         PathResolver {

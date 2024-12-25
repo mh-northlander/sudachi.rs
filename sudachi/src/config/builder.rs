@@ -21,12 +21,18 @@ use std::path::{Path, PathBuf};
 use serde::Deserialize;
 use serde_json::Value;
 
-use super::resolver::PathResolver;
+#[allow(deprecated)]
+use super::DEFAULT_RESOURCE_DIR;
 use super::{
-    Config, ConfigError, SurfaceProjection, DEFAULT_CHAR_DEF_FILE, DEFAULT_RESOURCE_DIR,
-    DEFAULT_SETTING_FILE,
+    Config, ConfigError, DataSource, PathAnchor, SurfaceProjection, DEFAULT_CHAR_DEF_FILE,
+    DEFAULT_DICT_FILE, DEFAULT_SETTING_FILE,
 };
 
+#[allow(dead_code, deprecated)]
+#[deprecated(
+    since = "0.7.0",
+    note = "default resources are now embedded in the binary"
+)]
 pub fn default_resource_dir() -> PathBuf {
     let mut src_root_path = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
     if !src_root_path.pop() {
@@ -36,6 +42,8 @@ pub fn default_resource_dir() -> PathBuf {
     src_root_path
 }
 
+#[allow(dead_code, deprecated)]
+#[deprecated(since = "0.7.0", note = "default config is now embedded in the binary")]
 pub fn default_config_location() -> PathBuf {
     let mut resdir = default_resource_dir();
     resdir.push(DEFAULT_SETTING_FILE);
@@ -54,63 +62,121 @@ macro_rules! merge_cfg_value {
 #[allow(non_snake_case)]
 #[derive(Deserialize, Debug, Clone)]
 pub struct ConfigBuilder {
-    /// Analogue to Java Implementation path Override    
+    // anchor
+    #[serde(skip)]
+    pub anchor: PathAnchor,
+
+    /// Analogue to Java Implementation path Override
     pub(crate) path: Option<PathBuf>,
-    /// User-passed resourcePath
-    #[serde(skip)]
-    resourcePath: Option<PathBuf>,
-    /// User-passed root directory.
-    /// Is also automatically set on from_file
-    #[serde(skip)]
-    rootDirectory: Option<PathBuf>,
+
     #[serde(alias = "system")]
     systemDict: Option<PathBuf>,
     #[serde(alias = "user")]
     userDict: Option<Vec<PathBuf>>,
     characterDefinitionFile: Option<PathBuf>,
+
     connectionCostPlugin: Option<Vec<Value>>,
     inputTextPlugin: Option<Vec<Value>>,
     oovProviderPlugin: Option<Vec<Value>>,
     pathRewritePlugin: Option<Vec<Value>>,
+
     projection: Option<SurfaceProjection>,
 }
 
 impl ConfigBuilder {
-    pub fn from_opt_file(config_file: Option<&Path>) -> Result<Self, ConfigError> {
-        match config_file {
-            None => {
-                let default_config = default_config_location();
-                Self::from_file(&default_config)
-            }
-            Some(cfg) => Self::from_file(cfg),
-        }
-    }
-
-    pub fn from_file(config_file: &Path) -> Result<Self, ConfigError> {
-        let file = File::open(config_file)?;
-        let reader = BufReader::new(file);
-        serde_json::from_reader(reader)
-            .map_err(|e| e.into())
-            .map(|cfg: ConfigBuilder| match config_file.parent() {
-                Some(p) => cfg.root_directory(p),
-                None => cfg,
-            })
-    }
-
-    pub fn from_bytes(data: &[u8]) -> Result<Self, ConfigError> {
-        serde_json::from_slice(data).map_err(|e| e.into())
-    }
-
+    /// empty builder with empty anchor
     pub fn empty() -> Self {
         serde_json::from_slice(b"{}").unwrap()
     }
 
+    /// load config from the embedded resouces
+    pub fn from_embedded() -> Result<Self, ConfigError> {
+        Self::from_anchor(PathAnchor::new_default())
+    }
+
+    /// load default config file from the anchor
+    pub fn from_anchor(anchor: PathAnchor) -> Result<Self, ConfigError> {
+        Self::from_anchored_file(PathBuf::from(DEFAULT_SETTING_FILE), anchor)
+    }
+
+    /// load config json file from the anchor
+    pub fn from_anchored_file<P: AsRef<Path>>(
+        config_file: P,
+        anchor: PathAnchor,
+    ) -> Result<Self, ConfigError> {
+        Self::from_source(anchor.resolve(config_file)?).map(|cfg: Self| cfg.with_anchor(anchor))
+    }
+
+    /// load config from file or embedded one
+    pub fn from_opt_file<P: AsRef<Path>>(config_file: Option<P>) -> Result<Self, ConfigError> {
+        match config_file {
+            None => Self::from_embedded(),
+            Some(cfg) => Self::from_file(cfg),
+        }
+    }
+
+    /// load config json file. set default anchor with its parent directory
+    pub fn from_file<P: AsRef<Path>>(config_file: P) -> Result<Self, ConfigError> {
+        let mut anchor = match config_file.as_ref().parent() {
+            Some(p) => PathAnchor::new_filesystem(p),
+            None => PathAnchor::empty(),
+        };
+        anchor.append(&mut PathAnchor::new_default());
+        Self::from_anchored_file(config_file, anchor)
+    }
+
+    /// load config json from a DataSource. anchor should be set by the caller.
+    fn from_source(source: DataSource) -> Result<Self, ConfigError> {
+        match source {
+            DataSource::File(p) => {
+                let file = File::open(p)?;
+                let reader = BufReader::new(file);
+                serde_json::from_reader(reader)
+            }
+            DataSource::Borrowed(b) => serde_json::from_slice(b),
+            DataSource::Owned(v) => serde_json::from_slice(&v),
+        }
+        .map_err(|e| e.into())
+    }
+
+    /// Read config json from bytes with CWD anchor.
+    pub fn from_bytes(data: &[u8]) -> Result<Self, ConfigError> {
+        Self::from_bytes_and_anchor(data, PathAnchor::new_cwd())
+    }
+
+    /// Read config json from bytes and set provided anchor
+    pub fn from_bytes_and_anchor(data: &[u8], anchor: PathAnchor) -> Result<Self, ConfigError> {
+        serde_json::from_slice(data)
+            .map_err(|e| e.into())
+            .map(|cfg: Self| cfg.with_anchor(anchor))
+    }
+
+    /// Sets the anchor to the provided one
+    pub fn with_anchor(mut self, anchor: PathAnchor) -> Self {
+        self.anchor = anchor;
+        self
+    }
+
+    /// Append provided anchor to the current one
+    pub fn append_anchor(mut self, anchor: &mut PathAnchor) -> Self {
+        self.anchor.append(anchor);
+        self
+    }
+
+    /// Set system dict path
     pub fn system_dict(mut self, dict: impl Into<PathBuf>) -> Self {
         self.systemDict = Some(dict.into());
         self
     }
 
-    pub fn user_dict(mut self, dict: impl Into<PathBuf>) -> Self {
+    /// Push user dict path
+    #[deprecated(since = "0.7.0", note = "use add_user_dict instead")]
+    pub fn user_dict(self, dict: impl Into<PathBuf>) -> Self {
+        self.add_user_dict(dict)
+    }
+
+    /// Push user dict path
+    pub fn add_user_dict(mut self, dict: impl Into<PathBuf>) -> Self {
         let dicts = match self.userDict.as_mut() {
             None => {
                 self.userDict = Some(Default::default());
@@ -122,40 +188,31 @@ impl ConfigBuilder {
         self
     }
 
-    pub fn resource_path(mut self, path: impl Into<PathBuf>) -> Self {
-        self.resourcePath = Some(path.into());
+    /// Clear the current user dict path list
+    pub fn clear_user_dict(mut self) -> Self {
+        self.userDict = None;
         self
     }
 
-    pub fn root_directory(mut self, path: impl Into<PathBuf>) -> Self {
-        self.rootDirectory = Some(path.into());
-        self
-    }
-
+    /// Bulid a Config from this builder.
     pub fn build(self) -> Config {
-        let default_resource_dir = default_resource_dir();
-        let resource_dir = self.resourcePath.unwrap_or(default_resource_dir);
-
-        let mut resolver = PathResolver::with_capacity(3);
-        let mut add_path = |buf: PathBuf| {
-            if !resolver.contains(&buf) {
-                resolver.add(buf);
+        // prepend path in the config json
+        let anchor = match self.path {
+            Some(p) => {
+                let mut anchor = PathAnchor::new_filesystem(p);
+                anchor.append(&mut self.anchor.clone());
+                anchor
             }
+            None => self.anchor.clone(),
         };
-        self.path.map(&mut add_path);
-        add_path(resource_dir);
-        self.rootDirectory.map(&mut add_path);
-
-        let character_definition_file = self
-            .characterDefinitionFile
-            .unwrap_or(PathBuf::from(DEFAULT_CHAR_DEF_FILE));
 
         Config {
-            resolver,
-            system_dict: self.systemDict,
+            anchor,
+            system_dict: self.systemDict.unwrap_or(DEFAULT_DICT_FILE.into()),
             user_dicts: self.userDict.unwrap_or_default(),
-            character_definition_file,
-
+            character_definition_file: self
+                .characterDefinitionFile
+                .unwrap_or(DEFAULT_CHAR_DEF_FILE.into()),
             connection_cost_plugins: self.connectionCostPlugin.unwrap_or_default(),
             input_text_plugins: self.inputTextPlugin.unwrap_or_default(),
             oov_provider_plugins: self.oovProviderPlugin.unwrap_or_default(),
@@ -164,10 +221,10 @@ impl ConfigBuilder {
         }
     }
 
+    /// Merge another builder to the current one
     pub fn fallback(mut self, other: &ConfigBuilder) -> ConfigBuilder {
+        self.anchor.append(&mut other.anchor.clone());
         merge_cfg_value!(self, other, path);
-        merge_cfg_value!(self, other, resourcePath);
-        merge_cfg_value!(self, other, rootDirectory);
         merge_cfg_value!(self, other, systemDict);
         merge_cfg_value!(self, other, userDict);
         merge_cfg_value!(self, other, characterDefinitionFile);
