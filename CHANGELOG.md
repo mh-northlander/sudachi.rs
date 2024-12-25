@@ -6,6 +6,17 @@ Also check [python changelog](python/CHANGELOG.md).
 
 ## [Unreleased]
 
+### Changed
+
+#### Config rework
+
+- `Config.resolved_system_dict` and `Config.resolved_user_dicts` now returns `Config::DataSource` instead of `PathBuf`.
+- type of `Config.system_dict` changed (`Option<PathBuf>` -> `PathBuf`)
+- `ConfigBuilder::resource_path` and `ConfigBuilder::root_directory` are removed.
+  - Use `ConfigBuilder::with_anchor` or `ConfigBuilder::append_anchor` to control path resolution.
+- many methods are deprecated:
+  - `config::builder::{default_resource_dir, default_config_location}`
+
 ## [0.6.9](https://github.com/WorksApplications/sudachi.rs/releases/tag/v0.6.9) (2024-11-20)
 
 ### Added
